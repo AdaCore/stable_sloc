@@ -35,21 +35,37 @@ package Stable_Sloc is
       Location   : Sloc;
       Diagnostic : Unbounded_String;
    end record;
+   --  Represents a diagnostic as to why a specification file or entry was not
+   --  able to be loaded.
 
    type Load_Diagnostic_Arr is array (Positive range <>) of Load_Diagnostic;
 
    type Match_Result (Success : Boolean := True) is record
       Identifier : Unbounded_String;
+      --  Identifier of the entry that matched
+
       Purpose    : Unbounded_String;
+      --  Purpose of the entry, may be null if not specified
+
       Annotation : Unbounded_String;
+      --  Annotation attached to the entry
+
       File       : GNATCOLL.VFS.Virtual_File;
+      --  File on which the entry matched
+
       case Success is
          when True =>
             Location   : Sloc_Span;
+            --  Location span that the entry matched
+
          when False =>
             Diagnostic : Unbounded_String;
+            --  Reason why the entry did not match
       end case;
    end record;
+   --  Match result, if Success is False, this means that the entry was
+   --  supposed to produce a successful match, but some context element renders
+   --  the match invalid. Otherwise, there is no match result produced.
 
    package Match_Result_Vectors is new Ada.Containers.Vectors
      (Index_Type => Positive, Element_Type => Match_Result);
@@ -69,8 +85,13 @@ package Stable_Sloc is
       DB        : in out Entry_DB;
       Strict    : Boolean := False) return Load_Diagnostic_Arr;
    --  Load the entries from Spec_File, initializing the relevant matchers in
-   --  the process. If Strict is True, only compute diagnostics but do not
-   --  modify DB.
+   --  the process.
+   --
+   --  If Ignore_Unknown is True, entries that have a matcher kind
+   --  not matching any of the registered matchers will be silently ignored.
+   --
+   --  If Strict is True, do not modify DB in case of load errors, but only
+   --  return the diagnostics.
 
    function Match_Entries
      (Files          : GNATCOLL.VFS.File_Array;
@@ -80,7 +101,7 @@ package Stable_Sloc is
    --  with and Purpose beginning with Purpose_Prefix.
 
    procedure Dump_Entries (DB : Entry_DB);
-   --  Dump the currently loaded entries to standard output.
+   --  Dump the entries in DB to standard output.
 
    type Sloc_Matcher_Acc is access all
      Stable_Sloc.Matchers.Sloc_Matcher_T'Class;

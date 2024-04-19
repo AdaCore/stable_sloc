@@ -24,6 +24,11 @@ package Stable_Sloc.Matchers is
             Reason : Unbounded_String;
       end case;
    end record;
+   --  Match result to be produced by the matchers. Success should be set to
+   --  True in case of a successful match. Success should be set to False in
+   --  case a matcher would have produced a match, but some context element
+   --  renders this match invalid. Otherwise if there is no match at all, do
+   --  not produce a Sloc_Match.
 
    package Sloc_Match_Vectors is new Ada.Containers.Vectors
      (Index_Type   => Positive,
