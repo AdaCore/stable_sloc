@@ -1,0 +1,18 @@
+with "./stable_sloc.gpr";
+with "./config.gpr";
+
+project Stable_Sloc_Cli is
+
+   for Main use ("stable_sloc-cli.adb");
+   for Source_Dirs use ("cli");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
+
+   package Builder is
+      for Executable ("stable_sloc-cli.adb") use "stable_sloc_cli";
+   end Builder;
+
+end Stable_Sloc_Cli;
