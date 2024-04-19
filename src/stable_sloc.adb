@@ -72,9 +72,10 @@ package body Stable_Sloc is
    ------------------
 
    function Load_Entries
-     (Spec_File : GNATCOLL.VFS.Virtual_File;
-      DB        : in out Entry_DB;
-      Strict    : Boolean := False) return Load_Diagnostic_Arr
+     (Spec_File      : GNATCOLL.VFS.Virtual_File;
+      DB             : in out Entry_DB;
+      Ignore_Unknown : Boolean := True;
+      Strict         : Boolean := False) return Load_Diagnostic_Arr
    is
       use Entry_Maps;
       Spec_Load_Res : constant TOML.Read_Result :=
@@ -148,6 +149,16 @@ package body Stable_Sloc is
                        +"Error while parsing entry" & Entr.Key & ": "
                        & "Could not compile file pattern. "
                        & Ada.Exceptions.Exception_Message (Exc)));
+            when Exc : Unknown_Matcher_Error =>
+               if not Ignore_Unknown then
+                  Diags.Append
+                    (Load_Diagnostic'
+                       (File       => Spec_File,
+                        Location   => No_Sloc,
+                        Diagnostic =>
+                        +"Error while parsing entry" & Entr.Key & ": "
+                        & Ada.Exceptions.Exception_Message (Exc)));
+               end if;
             when Exc : Parse_Error =>
                Diags.Append
                  (Load_Diagnostic'

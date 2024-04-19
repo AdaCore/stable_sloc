@@ -81,9 +81,10 @@ package Stable_Sloc is
    --  identifiers, the one from From is discarded.
 
    function Load_Entries
-     (Spec_File : GNATCOLL.VFS.Virtual_File;
-      DB        : in out Entry_DB;
-      Strict    : Boolean := False) return Load_Diagnostic_Arr;
+     (Spec_File      : GNATCOLL.VFS.Virtual_File;
+      DB             : in out Entry_DB;
+      Ignore_Unknown : Boolean := True;
+      Strict         : Boolean := False) return Load_Diagnostic_Arr;
    --  Load the entries from Spec_File, initializing the relevant matchers in
    --  the process.
    --

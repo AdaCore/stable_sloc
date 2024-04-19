@@ -28,7 +28,7 @@ begin
          end if;
          declare
             Parse_Errors : constant Load_Diagnostic_Arr :=
-              Load_Entries (Spec, DB, Cmd.Strict.Get);
+              Load_Entries (Spec, DB, Strict => Cmd.Strict.Get);
          begin
             for Err of Parse_Errors loop
                Put_Line

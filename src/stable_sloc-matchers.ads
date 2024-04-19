@@ -56,12 +56,17 @@ package Stable_Sloc.Matchers is
    --  Register the Sloc_Matcher to be used for entries with the specified
    --  Matcher_Kind.
 
+   Unknown_Matcher_Error : Exception;
+
    function Instantiate_Matcher
      (Entry_Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class with
      Pre => not Entry_Spec.Is_Null and then Entry_Spec.Kind in TOML.TOML_Table;
    --  Create a matcher of the appropriate kind as defined in Entry_Spec.
-   --  If there is no Matcher registered for this kind, or an error occurs
-   --  during loading of the Entry_Spec, a Parse_Error is raised.
+   --  If an error occurs during loading of the Entry_Spec, a Parse_Error is
+   --  raised.
+   --
+   --  If the is no matcher for the specified kind in Entry_Spec, raise
+   --  Unknown_Matcher_Error.
 
    procedure Free_Matcher is new Ada.Unchecked_Deallocation
      (Sloc_Matcher_T'Class, Sloc_Matcher_Acc);

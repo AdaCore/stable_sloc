@@ -45,7 +45,7 @@ package body Stable_Sloc.Matchers is
       Cur  : constant Cursor := Backend_Map.Find (Kind);
    begin
       if Cur = No_Element then
-         raise Parse_Error with "No such kind of matcher: " & Kind;
+         raise Unknown_Matcher_Error with "No such kind of matcher: " & Kind;
       end if;
       return Element (Cur) (Entry_Spec);
    end Instantiate_Matcher;
