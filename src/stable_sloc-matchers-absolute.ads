@@ -19,6 +19,10 @@ package Stable_Sloc.Matchers.Absolute is
    --  Create a matcher from the given Spec. Raise a Parse_Error in case
    --  parsing the spec was unsuccessful.
 
+   function Create
+     (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class;
+   --  Create a matcher that will match on File for the given Span.
+
 private
 
    type Absolute_Matcher is new Sloc_Matcher_T with

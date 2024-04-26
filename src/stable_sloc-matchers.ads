@@ -50,16 +50,28 @@ package Stable_Sloc.Matchers is
 
    type Sloc_Matcher_Factory is
      access function (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class;
+   --  Callback to create a matcher from a TOML matcher description
 
    procedure Register_Matcher
      (Matcher_Kind : String; Matcher_Factory : Sloc_Matcher_Factory);
    --  Register the Sloc_Matcher to be used for entries with the specified
    --  Matcher_Kind.
 
+   type Source_Sloc_Matcher_Factory is
+     access function
+       (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class;
+   --  Callback to create a matcher that will match on File for the given Span
+
+   procedure Register_Source_Matcher
+     (Matcher_Kind : String; Matcher_Factory : Source_Sloc_Matcher_Factory);
+   --  Register the factory to be used to instantiate a matcher from a source +
+   --  span description, for the specified Matcher_Kind.
+
    Unknown_Matcher_Error : Exception;
 
    function Instantiate_Matcher
-     (Entry_Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class with
+     (Entry_Spec : TOML.TOML_Value;
+      Kind       : String) return Sloc_Matcher_T'Class with
      Pre => not Entry_Spec.Is_Null and then Entry_Spec.Kind in TOML.TOML_Table;
    --  Create a matcher of the appropriate kind as defined in Entry_Spec.
    --  If an error occurs during loading of the Entry_Spec, a Parse_Error is
@@ -67,6 +79,11 @@ package Stable_Sloc.Matchers is
    --
    --  If the is no matcher for the specified kind in Entry_Spec, raise
    --  Unknown_Matcher_Error.
+
+   function Instantiate_Matcher
+     (File : Virtual_File;
+      Span : Sloc_Span;
+      Kind : String) return Sloc_Matcher_T'Class;
 
    procedure Free_Matcher is new Ada.Unchecked_Deallocation
      (Sloc_Matcher_T'Class, Sloc_Matcher_Acc);

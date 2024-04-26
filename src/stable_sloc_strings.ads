@@ -1,6 +1,6 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Fixed;
-with Ada.Strings.Hash;
+with Ada.Strings.Unbounded.Hash;
 with Ada.Strings.Unbounded;
 
 package Stable_Sloc_Strings is
@@ -24,7 +24,7 @@ package Stable_Sloc_Strings is
       begin Str (Str'First + 1 .. Str'Last));
    --  Returns X'Image without the leading space
 
-   function Hash (S : Unbounded_String) return Ada.Containers.Hash_Type is
-     (Ada.Strings.Hash (+S));
+   function Hash (S : Unbounded_String) return Ada.Containers.Hash_Type renames
+     Ada.Strings.Unbounded.Hash;
 
 end Stable_Sloc_Strings;

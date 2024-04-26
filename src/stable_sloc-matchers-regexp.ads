@@ -2,10 +2,11 @@ with Ada.Finalization;
 
 with GNAT.Regpat;
 
+with GNATCOLL.Refcount; use GNATCOLL.Refcount;
+
 package Stable_Sloc.Matchers.Regexp is
 
-   type Regexp_Matcher is new
-     Ada.Finalization.Controlled and Sloc_Matcher_T with private;
+   type Regexp_Matcher is new Sloc_Matcher_T with private;
    --  Matcher using a regular expression to match a stable sloc.
 
    overriding function Match
@@ -28,17 +29,12 @@ package Stable_Sloc.Matchers.Regexp is
 
 private
 
-   type Regpat_Acc is access GNAT.Regpat.Pattern_Matcher;
+   package SP is new Shared_Pointers (GNAT.Regpat.Pattern_Matcher);
 
-   type Regexp_Matcher is new
-     Ada.Finalization.Controlled and Sloc_Matcher_T with
-   record
+   type Regexp_Matcher is new Sloc_Matcher_T with record
       Orig_Spec : Unbounded_String;
-      Regexp    : Regpat_Acc;
+      Regexp    : SP.Ref;
       Flags     : GNAT.Regpat.Regexp_Flags;
    end record;
-
-   overriding procedure Finalize (Self : in out Regexp_Matcher);
-   overriding procedure Adjust (Self : in out Regexp_Matcher);
 
 end Stable_Sloc.Matchers.Regexp;

@@ -31,8 +31,10 @@ identifier. Each entry consist of the following fields
 - `kind`, a string, defining which source location matcher will be used to
   interpret this entry.
 
-- Additional fields are allowed, some required by the specific source location
-  matcher. Other fields will be ignored.
+- `matcher`, a table containing the required fields by the specific source
+  location matcher.
+
+Other fields will be ignored.
 
 ## Builtin matchers
 
@@ -66,6 +68,8 @@ Entry fields:
 When matching an absolute entry, a check is made on each file to which the
 matcher applies to ensure the lines/columns described in the entry fit in the
 current content of the file.
+
+This matcher supports updates (-u switch on the command line)
 
 ### `regexp` matcher
 

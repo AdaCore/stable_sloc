@@ -3,6 +3,7 @@ with Ada.Unchecked_Deallocation;
 
 with GNAT.OS_Lib; use GNAT.OS_Lib;
 
+with Stable_Sloc.TOML_Utils; use Stable_Sloc.TOML_Utils;
 with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
 package body Stable_Sloc.Matchers.Regexp is
@@ -43,7 +44,7 @@ package body Stable_Sloc.Matchers.Regexp is
       end if;
       From := Content.all'First;
       loop
-         Match (Self.Regexp.all, Content.all, Match_Arr, From);
+         Match (Self.Regexp.Get, Content.all, Match_Arr, From);
          exit when Match_Arr (0) = No_Match;
          declare
             Start_Line : constant Natural :=
@@ -80,33 +81,30 @@ package body Stable_Sloc.Matchers.Regexp is
    is
       use GNAT.Regpat;
    begin
-      --  TODO??? Add proper validation of the spec prior to loading
-
       return Res : Regexp_Matcher do
-         Res.Orig_Spec := Spec.Get ("regexp").As_Unbounded_String;
+         Res.Orig_Spec := Get (Spec, "regexp");
          Res.Flags := No_Flags;
          if Spec.Has ("case_insensitive") then
             Res.Flags := Res.Flags
-              + (if Spec.Get ("case_insensitive").As_Boolean
+              + (if Get (Spec, "case_insensitive")
                  then Case_Insensitive
                  else No_Flags);
          end if;
          if Spec.Has ("multi_line") then
             Res.Flags := Res.Flags
-              + (if Spec.Get ("multi_line").As_Boolean
+              + (if Get (Spec, "multi_line")
                  then Multiple_Lines
                  else No_Flags);
          end if;
          if Spec.Has ("single_line") then
             Res.Flags := Res.Flags
-              + (if Spec.Get ("single_line").As_Boolean
-                 then Single_Line
-                 else No_Flags);
+              + (if Get (Spec, "single_line") then Single_Line else No_Flags);
          end if;
-         Res.Regexp := new Pattern_Matcher'
-           (Compile (To_String (Res.Orig_Spec), Res.Flags));
+         Res.Regexp.Set (Compile (To_String (Res.Orig_Spec), Res.Flags));
       end return;
    exception
+      when Exc : Parse_Error =>
+         raise;
       when Exc : Expression_Error =>
          raise Parse_Error with
             "Failed to compile regular expression:" & ASCII.LF
@@ -125,10 +123,23 @@ package body Stable_Sloc.Matchers.Regexp is
    overriding function Dump_Spec
      (Self : Regexp_Matcher) return TOML.TOML_Value
    is
+      use type GNAT.Regpat.Regexp_Flags;
+      --  From System.Regpat:
+      --    No_Flags         : constant Regexp_Flags := 0;
+      --    Case_Insensitive : constant Regexp_Flags := 1;
+      --    Single_Line      : constant Regexp_Flags := 2;
+      --    Multiple_Lines   : constant Regexp_Flags := 4;
+
+      Case_Insensitive : constant Boolean := Self.Flags mod 2 = 1;
+      Single_Line      : constant Boolean := (Self.Flags / 2) mod 2 = 1;
+      Multi_Line       : constant Boolean := (Self.Flags / 4) mod 2 = 1;
    begin
-      --  TODO??? Implement
-      raise Program_Error with "TODO: Implement Dump_Spec for Regexp_Matcher";
-      return TOML.No_TOML_Value;
+      return Res : TOML.TOML_Value := TOML.Create_Table do
+         Res.Set ("regexp", TOML.Create_String (Self.Orig_Spec));
+         Res.Set ("case_insensitive", TOML.Create_Boolean (Case_Insensitive));
+         Res.Set ("single_line", TOML.Create_Boolean (Single_Line));
+         Res.Set ("multi_line", TOML.Create_Boolean (Multi_Line));
+      end return;
    end Dump_Spec;
 
    -----------
@@ -140,31 +151,6 @@ package body Stable_Sloc.Matchers.Regexp is
    begin
       return "Regexp matcher searching: " & Self.Orig_Spec;
    end Image;
-
-   ----------
-   -- Free --
-   ----------
-
-   procedure Free is new Ada.Unchecked_Deallocation
-     (GNAT.Regpat.Pattern_Matcher, Regpat_Acc);
-
-   --------------
-   -- Finalize --
-   --------------
-
-   overriding procedure Finalize (Self : in out Regexp_Matcher) is
-   begin
-      Free (Self.Regexp);
-   end Finalize;
-
-   ------------
-   -- Adjust --
-   ------------
-
-   overriding procedure Adjust (Self : in out Regexp_Matcher) is
-   begin
-      Self.Regexp := new GNAT.Regpat.Pattern_Matcher'(Self.Regexp.all);
-   end Adjust;
 
    --------------
    -- Count_LF --

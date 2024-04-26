@@ -80,11 +80,23 @@ package body Stable_Sloc.Matchers.Absolute is
    ---------------
 
    overriding function Dump_Spec
-     (Self : Absolute_Matcher) return TOML.TOML_Value is
+     (Self : Absolute_Matcher) return TOML.TOML_Value
+   is
    begin
-      raise Program_Error with
-        "???TODO: Implement Dump_Spec for absolute matcher";
-      return TOML.No_TOML_Value;
+      return Res : TOML.TOML_Value := TOML.Create_Table do
+         Res.Set
+           ("start_line", TOML.Create_Integer
+                            (TOML.Any_Integer (Self.Span.Start_Sloc.Line)));
+         Res.Set
+           ("start_col", TOML.Create_Integer
+                           (TOML.Any_Integer (Self.Span.Start_Sloc.Column)));
+         Res.Set
+           ("end_line", TOML.Create_Integer
+                          (TOML.Any_Integer (Self.Span.End_Sloc.Line)));
+         Res.Set
+           ("end_col", TOML.Create_Integer
+                         (TOML.Any_Integer (Self.Span.End_Sloc.Column)));
+      end return;
    end Dump_Spec;
 
    -----------
@@ -112,6 +124,17 @@ package body Stable_Sloc.Matchers.Absolute is
    begin
       return Absolute_Matcher'
         (Span => (Start_Sloc => (SL, SC), End_Sloc => (EL, EC)));
+   end Create;
+
+   ------------
+   -- Create --
+   ------------
+
+   function Create
+     (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class
+   is
+   begin
+      return Absolute_Matcher'(Span => Span);
    end Create;
 
 end Stable_Sloc.Matchers.Absolute;

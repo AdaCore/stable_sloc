@@ -6,6 +6,8 @@ with GNAT.Regexp;
 
 with GNATCOLL.VFS;
 
+with TOML;
+
 limited with Stable_Sloc.Matchers;
 with Stable_Sloc_Strings;  use Stable_Sloc_Strings;
 
@@ -104,8 +106,30 @@ package Stable_Sloc is
    procedure Dump_Entries (DB : Entry_DB);
    --  Dump the entries in DB to standard output.
 
+   procedure Write_Entries
+     (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File);
+   --  Write the DB entry database to File
+
    type Sloc_Matcher_Acc is access all
      Stable_Sloc.Matchers.Sloc_Matcher_T'Class;
+
+   function Add_Or_Update_Entry
+     (DB         : in out Entry_DB;
+      Identifier : Unbounded_String;
+      Purpose    : Unbounded_String;
+      Annotation : Unbounded_String;
+      Kind       : Unbounded_String;
+      File       : GNATCOLL.VFS.Virtual_File;
+      Span       : Sloc_Span;
+      Replace    : Boolean := True) return Load_Diagnostic_Arr;
+   --  Add or update the entry designated by Identifier for the given Purpose,
+   --  and Annotation. The new entry shall use the specified matcher Kind, and
+   --  return a positive match on File for the given location Span.
+   --
+   --  If Replace is False and there already is an entry with the same
+   --  Identifier in DB, then the new entry is not added to DB.
+   --
+   --  Return whether the new entry was successfully added to DB or not.
 
 private
 
@@ -114,6 +138,7 @@ private
       Annotation   : Unbounded_String;
       File_Pattern : Unbounded_String;
       File_Regexp  : GNAT.Regexp.Regexp;
+      Kind         : Unbounded_String;
       Sloc_Matcher : Sloc_Matcher_Acc;
    end record;
 

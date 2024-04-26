@@ -18,6 +18,11 @@ package body Stable_Sloc is
    --  Check wether Prefix is a prefix of Text. An empty string prefix is a
    --  prefix of anything.
 
+   function Pad_And_Compile
+     (Pattern : Unbounded_String) return GNAT.Regexp.Regexp;
+   --  Append '*' at the beginning and the end of Pattern if there isn't
+   --  already a wildcard, and compile that string as a globbing pattern.
+
    ------------
    -- Adjust --
    ------------
@@ -64,6 +69,7 @@ package body Stable_Sloc is
    begin
       while Src_Cur /= No_Element loop
          Into.Map.Insert (Key (Src_Cur), Element (Src_Cur), Dst_Cur, Dummy);
+         Next (Src_Cur);
       end loop;
    end Import_DB;
 
@@ -114,8 +120,11 @@ package body Stable_Sloc is
                        & TOML.TOML_String'Image & " but got "
                        & Purpose.Kind'Image));
             Parsed_Entry.Annotation := Get (Spec, "annotation");
+            Parsed_Entry.Kind := Get (Spec, "kind");
             Parsed_Entry.Sloc_Matcher :=
-              new Sloc_Matcher_T'Class'(Instantiate_Matcher (Spec));
+              new Sloc_Matcher_T'Class'
+                (Instantiate_Matcher (Spec.Get("matcher"),
+                                      Kind => +Parsed_Entry.Kind));
             Parsed_Entry.File_Pattern :=
               (if not File_Matcher.Is_Null
                  and then (File_Matcher.Kind in TOML.TOML_String
@@ -125,19 +134,8 @@ package body Stable_Sloc is
                              & File_Matcher.Kind'Image)
                then File_Matcher.As_Unbounded_String
                else Null_Unbounded_String);
-            File_Pat := Parsed_Entry.File_Pattern;
-
-            -- Pad the pattern with a * on each side as a GNAT.Regexp needs to
-            -- match the whole string.
-
-            if Length (File_Pat) = 0 or else Element (File_Pat, 1) /= '*' then
-               File_Pat := "*" & File_Pat;
-            end if;
-            if Element (File_Pat, Length (File_Pat)) /= '*' then
-               Append (File_Pat, '*');
-            end if;
             Parsed_Entry.File_Regexp :=
-              GNAT.Regexp.Compile (Pattern => +File_Pat, Glob => True);
+              Pad_And_Compile (Parsed_Entry.File_Pattern);
             Local_Entries.Map.Insert (Entr.Key, Parsed_Entry);
          exception
             when Exc : GNAT.Regexp.Error_In_Regexp =>
@@ -211,47 +209,93 @@ package body Stable_Sloc is
       for File of Files loop
          Cur := DB.Map.First;
          while Cur /= No_Element loop
-            if Element (Cur).Purpose /= Null_Unbounded_String
-              and then not Is_Prefix (Purpose_Prefix, Element (Cur).Purpose)
-            then
-               goto Continue;
-            end if;
-            if not GNAT.Regexp.Match
-                     (GNATCOLL.VFS."+" (File.Full_Name),
-                      Element (Cur).File_Regexp)
-            then
-               goto Continue;
-            end if;
             declare
-               Local_Res : constant Sloc_Match_Vec :=
-                 Element (Cur).Sloc_Matcher.Match (File);
+               Entr      : constant Constant_Reference_Type :=
+                 DB.Map.Constant_Reference (Cur);
+               Local_Res : Sloc_Match_Vec;
             begin
+               if Entr.Purpose /= Null_Unbounded_String
+                 and then not Is_Prefix (Purpose_Prefix, Entr.Purpose)
+               then
+                  goto Continue;
+               end if;
+               if not GNAT.Regexp.Match
+                        (GNATCOLL.VFS."+" (File.Full_Name), Entr.File_Regexp)
+               then
+                  goto Continue;
+               end if;
+               Local_Res := Entr.Sloc_Matcher.Match (File);
                for Match of Local_Res loop
                   if Match.Success then
                      Res.Append (Match_Result'
                        (Success    => True,
                         Identifier => Key (Cur),
-                        Purpose    => Element (Cur).Purpose,
-                        Annotation => Element (Cur).Annotation,
+                        Purpose    => Entr.Purpose,
+                        Annotation => Entr.Annotation,
                         File       => File,
                         Location   => Match.Span));
                   else
                      Res.Append (Match_Result'
                        (Success    => False,
                         Identifier => Key (Cur),
-                        Purpose    => Element (Cur).Purpose,
-                        Annotation => Element (Cur).Annotation,
+                        Purpose    => Entr.Purpose,
+                        Annotation => Entr.Annotation,
                         File       => File,
                         Diagnostic => Match.Reason));
                   end if;
                end loop;
             end;
             <<Continue>>
-            Cur := Next (Cur);
+            Next (Cur);
          end loop;
       end loop;
       return Res;
    end Match_Entries;
+
+   -------------------------
+   -- Add_Or_Update_Entry --
+   -------------------------
+
+   function Add_Or_Update_Entry
+     (DB         : in out Entry_DB;
+      Identifier : Unbounded_String;
+      Purpose    : Unbounded_String;
+      Annotation : Unbounded_String;
+      Kind       : Unbounded_String;
+      File       : GNATCOLL.VFS.Virtual_File;
+      Span       : Sloc_Span;
+      Replace    : Boolean := True) return Load_Diagnostic_Arr
+   is
+      use Entry_Maps;
+      Cur       : Cursor := DB.Map.Find (Identifier);
+      New_Entry : SS_Entry;
+   begin
+      if not Replace and then Cur /= No_Element then
+         return
+           [Load_Diagnostic'
+              (File       => File,
+               Location   => No_Sloc,
+               Diagnostic =>
+                 "Identifier """ & Identifier
+                  & """ already in entry database")];
+      end if;
+      New_Entry.Sloc_Matcher := new Sloc_Matcher_T'Class'
+        (Instantiate_Matcher (File, Span, +Kind));
+      New_Entry.Annotation := Annotation;
+      New_Entry.Purpose := Purpose;
+      New_Entry.Kind := Kind;
+      New_Entry.File_Pattern := +(GNATCOLL.VFS."+" (File.Full_Name));
+      New_Entry.File_Regexp := Pad_And_Compile (New_Entry.File_Pattern);
+      DB.Map.Include (Identifier, New_Entry);
+      return [];
+      exception
+         when Exc : Unknown_Matcher_Error =>
+            return
+               [Load_Diagnostic'
+                  (File       => File,
+                   Location   => No_Sloc,
+                   Diagnostic => +"No such matcher kind: " & Kind)];
+   end Add_Or_Update_Entry;
 
    ------------------
    -- Dump_Entries --
@@ -270,11 +314,55 @@ package body Stable_Sloc is
          Put_Line (+("Entry " & Key (Cur) & ":"));
          Put_Line ("   Purpose     : " & (+Element (Cur).Purpose));
          Put_Line ("   Annotation  : " & (+Element (Cur).Annotation));
-         Put_Line ("   File Matcher: " & (+Element (Cur).File_Pattern));
-         Put_Line ("   Sloc_Matcher: " & (+Element (Cur).Sloc_Matcher.Image));
-         cur := Next (Cur);
+         Put_Line ("   File matcher: " & (+Element (Cur).File_Pattern));
+         Put_Line ("   Matcher kind: " & (+Element (Cur).Kind));
+         Put_Line ("   Sloc matcher: " & (+Element (Cur).Sloc_Matcher.Image));
+         Next (Cur);
       end loop;
    end Dump_Entries;
+
+   -------------------
+   -- Write_Entries --
+   -------------------
+
+   procedure Write_Entries
+     (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File)
+   is
+      use Ada.Text_IO;
+      use Entry_Maps;
+      use TOML;
+      Res    : TOML_Value := Create_Table;
+      Cur    : Cursor := DB.Map.First;
+      File_T : File_Type;
+   begin
+      Create (File_T, Out_File, Name => GNATCOLL.VFS."+" (File.Full_Name));
+      while Cur /= No_Element loop
+         declare
+            Entr : constant Constant_Reference_Type :=
+              DB.Map.Constant_Reference (Cur);
+            Entry_Value   : TOML_Value := Create_Table;
+         begin
+            Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
+            Entry_Value.Set ("purpose", Create_String (Entr.Purpose));
+            Entry_Value.Set ("annotation", Create_String (Entr.Annotation));
+            Entry_Value.Set ("kind", Create_String (Entr.Kind));
+            Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
+            Res.Set (Key (Cur), Entry_Value);
+         end;
+         Next (Cur);
+      end loop;
+      TOML.File_IO.Dump_To_File (Res, File_T);
+      Close (File_T);
+      exception
+         when Exc : others =>
+            Put_Line
+              (Standard_Error,
+               "Error while writing entries to file:"
+               & Ada.Exceptions.Exception_Information (Exc));
+            if Is_Open (File_T) then
+               Close (File_T);
+            end if;
+   end Write_Entries;
 
    -----------
    -- Image --
@@ -307,5 +395,26 @@ package body Stable_Sloc is
         (for all I in Prefix'First .. Prefix'Last =>
          Prefix (I) = Element (Text, I));
    end Is_Prefix;
+
+   ---------------------
+   -- Pad_And_Compile --
+   ---------------------
+
+   function Pad_And_Compile
+     (Pattern : Unbounded_String) return GNAT.Regexp.Regexp
+   is
+      File_Pat : Unbounded_String := Pattern;
+   begin
+      -- Pad the pattern with a * on each side as a GNAT.Regexp needs to
+      -- match the whole string.
+
+      if Length (File_Pat) = 0 or else Element (File_Pat, 1) /= '*' then
+         File_Pat := "*" & File_Pat;
+      end if;
+      if Element (File_Pat, Length (File_Pat)) /= '*' then
+         Append (File_Pat, '*');
+      end if;
+      return GNAT.Regexp.Compile (Pattern => +File_Pat, Glob => True);
+   end Pad_And_Compile;
 
 end Stable_Sloc;
