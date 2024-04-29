@@ -80,24 +80,8 @@ package body Stable_Sloc.Matchers.Absolute is
    ---------------
 
    overriding function Dump_Spec
-     (Self : Absolute_Matcher) return TOML.TOML_Value
-   is
-   begin
-      return Res : TOML.TOML_Value := TOML.Create_Table do
-         Res.Set
-           ("start_line", TOML.Create_Integer
-                            (TOML.Any_Integer (Self.Span.Start_Sloc.Line)));
-         Res.Set
-           ("start_col", TOML.Create_Integer
-                           (TOML.Any_Integer (Self.Span.Start_Sloc.Column)));
-         Res.Set
-           ("end_line", TOML.Create_Integer
-                          (TOML.Any_Integer (Self.Span.End_Sloc.Line)));
-         Res.Set
-           ("end_col", TOML.Create_Integer
-                         (TOML.Any_Integer (Self.Span.End_Sloc.Column)));
-      end return;
-   end Dump_Spec;
+     (Self : Absolute_Matcher) return TOML.TOML_Value is
+     (Stable_Sloc.TOML_Utils.Write_Span (Self.Span));
 
    -----------
    -- Image --
@@ -114,27 +98,15 @@ package body Stable_Sloc.Matchers.Absolute is
    ------------
 
    function Create
-     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class
-   is
-      use Stable_Sloc.TOML_Utils;
-      SL : constant Natural := Get (Spec, "start_line");
-      SC : constant Natural := Get (Spec, "start_column");
-      EL : constant Natural := Get (Spec, "end_line");
-      EC : constant Natural := Get (Spec, "end_column");
-   begin
-      return Absolute_Matcher'
-        (Span => (Start_Sloc => (SL, SC), End_Sloc => (EL, EC)));
-   end Create;
+     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class is
+     (Absolute_Matcher'(Span => Stable_Sloc.TOML_Utils.Read_Span (Spec)));
 
    ------------
    -- Create --
    ------------
 
    function Create
-     (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class
-   is
-   begin
-      return Absolute_Matcher'(Span => Span);
-   end Create;
+     (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class is
+     (Absolute_Matcher'(Span => Span));
 
 end Stable_Sloc.Matchers.Absolute;

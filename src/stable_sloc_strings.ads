@@ -1,7 +1,10 @@
 with Ada.Containers.Vectors;
+with Ada.Text_IO;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded.Hash;
 with Ada.Strings.Unbounded;
+
+limited with Stable_Sloc;
 
 package Stable_Sloc_Strings is
 
@@ -24,7 +27,16 @@ package Stable_Sloc_Strings is
       begin Str (Str'First + 1 .. Str'Last));
    --  Returns X'Image without the leading space
 
-   function Hash (S : Unbounded_String) return Ada.Containers.Hash_Type renames
-     Ada.Strings.Unbounded.Hash;
+   function To_Ada (Vec : US_Vector) return Unbounded_String;
+   --  Collate the various strings in Vec with a '.' between each element
+
+   package Hash_IO is new Ada.Text_IO.Modular_IO (Ada.Containers.Hash_Type);
+
+   function Split_Sloc_Prefix
+     (S : String; Loc : out Stable_Sloc.Sloc) return String;
+   --  Extract the source location encoded as LINE:COLUMN:<rest_of_string> in
+   --  S, or No_Location if no such location was found. The return value if the
+   --  remainder of the string, it will be the full string if no source
+   --  location was extracted.
 
 end Stable_Sloc_Strings;

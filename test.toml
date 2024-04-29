@@ -1,0 +1,16 @@
+[test]
+annotation = "some_justif"
+file = "examples/pkg.adb"
+kind = "lal_context"
+purpose = "some.purpose"
+[test.matcher]
+context_hash = "16#B91BD669#"
+end_col = 3
+end_line = 4
+sem_parents = [
+"pkg",
+"bar",
+]
+start_col = 3
+start_line = 2
+

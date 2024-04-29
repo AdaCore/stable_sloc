@@ -1,6 +1,7 @@
 with Ada.Containers.Hashed_Maps;
 with Ada.Containers.Vectors;
 with Ada.Finalization;
+with Ada.Strings.Unbounded.Hash;
 
 with GNAT.Regexp;
 
@@ -149,7 +150,7 @@ private
    package Entry_Maps is new Ada.Containers.Hashed_Maps
      (Key_Type        => Unbounded_Strings.Unbounded_String,
       Element_Type    => SS_Entry,
-      Hash            => Hash,
+      Hash            => Ada.Strings.Unbounded.Hash,
       Equivalent_Keys => Unbounded_Strings."=");
    subtype Entry_Map is Entry_Maps.Map;
 

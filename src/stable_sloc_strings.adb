@@ -1,0 +1,58 @@
+with Interfaces;
+
+with Stable_Sloc;
+
+package body Stable_Sloc_Strings is
+
+   ------------
+   -- To_Ada --
+   ------------
+
+   function To_Ada (Vec : US_Vector) return Unbounded_String is
+      use US_Vectors;
+      Res : Unbounded_String := Null_Unbounded_String;
+      Cur : Cursor := Vec.First;
+   begin
+      while Has_Element (Cur) loop
+         Res := Res & Element (Cur);
+         Next (Cur);
+         if Has_Element (Cur) then
+            Res := Res & ".";
+         end if;
+      end loop;
+      return Res;
+   end To_Ada;
+
+   ---------------------
+   -- Get_Sloc_Prefix --
+   ---------------------
+
+   function Split_Sloc_Prefix
+     (S : String; Loc: out Stable_Sloc.Sloc) return String
+   is
+      use Ada.Strings.Fixed;
+      Line, Col : Natural;
+      Last_L : Positive;
+      Last_C : Positive;
+   begin
+      Last_L := Index (S, ":");
+      if Last_L /= 0 then
+         Line := Integer'Value (S (S'First .. Last_L - 1));
+      else
+         raise Constraint_Error;
+      end if;
+      Last_C := Index (S, ":", Last_L + 1);
+      if Last_C /= 0 then
+         Col := Integer'Value (S (Last_L + 1 .. Last_C - 1));
+      else
+         raise Constraint_Error;
+      end if;
+      Loc := Stable_Sloc.Sloc'(Line, Col);
+      return S (Last_C + 1 .. S'Last);
+   exception
+      when others =>
+         Loc := Stable_Sloc.No_Sloc;
+         return S;
+   end Split_Sloc_Prefix;
+
+end Stable_Sloc_Strings;

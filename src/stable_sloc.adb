@@ -116,7 +116,8 @@ package body Stable_Sloc is
                else (if Purpose.Kind in TOML.TOML_String
                      then Purpose.As_Unbounded_String
                      else raise Parse_Error with
-                       "unexpected type for ""purpose"": expected "
+                       TOML.Format_Location (Purpose.Location)
+                       & ":unexpected type for ""purpose"": expected "
                        & TOML.TOML_String'Image & " but got "
                        & Purpose.Kind'Image));
             Parsed_Entry.Annotation := Get (Spec, "annotation");
@@ -129,7 +130,8 @@ package body Stable_Sloc is
               (if not File_Matcher.Is_Null
                  and then (File_Matcher.Kind in TOML.TOML_String
                            or else raise Parse_Error with
-                             "unexpected type for ""files"": expected "
+                             TOML.Format_Location (File_Matcher.Location)
+                             & ":unexpected type for ""files"": expected "
                              & TOML.TOML_String'Image & " but got "
                              & File_Matcher.Kind'Image)
                then File_Matcher.As_Unbounded_String
@@ -142,7 +144,8 @@ package body Stable_Sloc is
                Diags.Append
                  (Load_Diagnostic'
                     (File       => Spec_File,
-                     Location   => No_Sloc,
+                     Location   =>
+                       (Entr.Value.Location.Line, Entr.Value.Location.Column),
                      Diagnostic =>
                        +"Error while parsing entry" & Entr.Key & ": "
                        & "Could not compile file pattern. "
@@ -152,19 +155,27 @@ package body Stable_Sloc is
                   Diags.Append
                     (Load_Diagnostic'
                        (File       => Spec_File,
-                        Location   => No_Sloc,
+                        Location   =>
+                          (Entr.Value.Location.Line,
+                           Entr.Value.Location.Column),
                         Diagnostic =>
                         +"Error while parsing entry" & Entr.Key & ": "
                         & Ada.Exceptions.Exception_Message (Exc)));
                end if;
             when Exc : Parse_Error =>
-               Diags.Append
-                 (Load_Diagnostic'
-                    (File       => Spec_File,
-                     Location   => No_Sloc,
-                     Diagnostic =>
-                       +"Error while parsing entry" & Entr.Key & ": "
-                       & Ada.Exceptions.Exception_Message (Exc)));
+               declare
+                  Loc : Sloc;
+                  Msg : constant String :=
+                     Split_Sloc_Prefix
+                        (Ada.Exceptions.Exception_Message (Exc), Loc);
+               begin
+                  Diags.Append
+                  (Load_Diagnostic'
+                     (File       => Spec_File,
+                      Location   => Loc,
+                      Diagnostic =>
+                        +"Error while parsing entry" & Entr.Key & ": " & Msg));
+               end;
          end;
       end loop;
       if not Diags.Is_Empty and then Strict then
