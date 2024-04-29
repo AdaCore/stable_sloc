@@ -7,7 +7,7 @@ Build using gprbuild.
 ## Building and dependencies
 
 Stable_Sloc currently only depends on
-[Ada-toml](https://github.com/pmderodat/ada-toml) and GNATCOLL-core.
+[Ada-toml (master)](https://github.com/pmderodat/ada-toml) and GNATCOLL-core.
 
 Build using gprbuild, Stable_Sloc is written in Ada 2022.
 
@@ -94,6 +94,7 @@ Entry fields:
   Default to `false` if not present.
 
 - `single_line`, optional, boolean.
+
   If `true`, treat the file content as a single line.
   This means that `^` and `$` will ignore `\n` (unless `multi_line` is also `true`),
   and that `'.'` will match `\n`.
@@ -105,6 +106,40 @@ Entry fields:
   This means that `^` and `$` will also match on internal newlines (`ASCII.LF`),
   in addition to the beginning and end of the string.
   Defaults to `false` if not present.
+
+### Libadalang-context matcher
+
+This matcher recognizes the code region from a Libadalang node designating the
+inner-most named declaration fully containing the designated location range, a
+context hash ensuring the contents of the declaration has not changed, and a
+relative source location to that declaration. It is thus stable to any
+modification of the sources, provided the identified declaration does not change
+package or nesting level, and that the local contents of the declaration do not
+change (trivia included).
+
+This matcher is not indented to be written by humans, but instead to be
+generated using the library or cli.
+
+Entry Fields:
+
+- `kind=lal_context`
+
+- `sem_parents`, required, array of strings.
+  
+  Contains the list of lower-cased named entities containing the declaration
+  used as context, in increasing depth order. The last element is the defining
+  name of the context declaration. Concatenated with '.' it would spell the
+  context declaration's fully qualified name.
+
+- `content_hash`, required, string.
+
+  Hash of the text content of the context declaration node. It must be formatted
+  It must be formatted as a 32 bit hexadecimal number, in Ada numerical syntax:
+  `16#ABCDEF12#`
+
+- The same fields as in an [absolute matcher](#absolute-matcher), which
+  represent the relative location range to the beginning of the context
+  declaration.
 
 ## Adding your own matcher
 

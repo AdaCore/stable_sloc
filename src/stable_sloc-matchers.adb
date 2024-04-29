@@ -3,6 +3,7 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
 
 with Stable_Sloc.Matchers.Absolute;
+with Stable_Sloc.Matchers.LAL_Ctx;
 with Stable_Sloc.Matchers.Regexp;
 with Stable_Sloc.TOML_Utils;        use Stable_Sloc.TOML_Utils;
 
@@ -93,6 +94,10 @@ begin
    Source_Backend_Map.Clear;
    Register_Matcher ("absolute", Stable_Sloc.Matchers.Absolute.Create'Access);
    Register_Matcher ("regexp", Stable_Sloc.Matchers.Regexp.Create'Access);
+   Register_Matcher
+     ("lal_context", Stable_Sloc.Matchers.LAL_Ctx.Create'Access);
    Register_Source_Matcher
      ("absolute", Stable_Sloc.Matchers.Absolute.Create'Access);
+   Register_Source_Matcher
+     ("lal_context", Stable_Sloc.Matchers.LAL_Ctx.Create'Access);
 end Stable_Sloc.Matchers;

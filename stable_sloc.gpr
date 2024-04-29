@@ -1,6 +1,6 @@
 with "gnatcoll.gpr";
-
 with "ada_toml.gpr";
+with "libadalang.gpr";
 
 with "./config.gpr";
 
