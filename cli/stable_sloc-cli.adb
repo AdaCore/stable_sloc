@@ -65,9 +65,6 @@ begin
             end if;
          end;
       end loop;
-      if Cmd.Verbose.Get then
-         Dump_Entries (DB);
-      end if;
 
       --  Process update requests
 
@@ -82,6 +79,7 @@ begin
                  Update_Req.Kind,
                  Update_Req.File,
                  Update_Req.Span,
+                 File_Prefix           => Cmd.Prefix.Get,
                  Replace               => not Cmd.Strict.Get);
          begin
             if Diags'Length /= 0 then
@@ -93,6 +91,10 @@ begin
             end if;
          end;
       end loop;
+
+      if Cmd.Verbose.Get then
+         Dump_Entries (DB);
+      end if;
 
       --  Match the entries on the passed files
 

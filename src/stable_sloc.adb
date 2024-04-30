@@ -82,6 +82,12 @@ package body Stable_Sloc is
       end loop;
    end Import_DB;
 
+   --------------
+   -- Is_Empty --
+   --------------
+
+   function Is_Empty (DB : Entry_DB) return Boolean is (DB.Map.Is_Empty);
+
    ------------------
    -- Load_Entries --
    ------------------
@@ -277,18 +283,29 @@ package body Stable_Sloc is
    -------------------------
 
    function Add_Or_Update_Entry
-     (DB         : in out Entry_DB;
-      Identifier : Unbounded_String;
-      Purpose    : Unbounded_String;
-      Annotation : Unbounded_String;
-      Kind       : Unbounded_String;
-      File       : GNATCOLL.VFS.Virtual_File;
-      Span       : Sloc_Span;
-      Replace    : Boolean := True) return Load_Diagnostic_Arr
+     (DB          : in out Entry_DB;
+      Identifier  : Unbounded_String;
+      Purpose     : Unbounded_String;
+      Annotation  : Unbounded_String;
+      Kind        : Unbounded_String;
+      File        : GNATCOLL.VFS.Virtual_File;
+      Span        : Sloc_Span;
+      File_Prefix : Unbounded_String := Null_Unbounded_String;
+      Replace     : Boolean := True) return Load_Diagnostic_Arr
    is
       use Entry_Maps;
-      Cur       : Cursor := DB.Map.Find (Identifier);
-      New_Entry : SS_Entry;
+      Cur        : constant Cursor := DB.Map.Find (Identifier);
+      New_Entry  : SS_Entry;
+      Filename   : constant Unbounded_String :=
+        +(GNATCOLL.VFS."+" (File.Full_Name));
+      Actual_Pat : constant Unbounded_String :=
+        (if File_Prefix /= Null_Unbounded_String
+           and then Is_Prefix (File_Prefix, Filename)
+         then Unbounded_Slice
+                (Source => Filename,
+                 Low    => Length (File_Prefix) + 1,
+                 High   => Length (Filename))
+         else Filename);
    begin
       if not Replace and then Cur /= No_Element then
          return
@@ -304,7 +321,7 @@ package body Stable_Sloc is
       New_Entry.Annotation := Annotation;
       New_Entry.Purpose := Purpose;
       New_Entry.Kind := Kind;
-      New_Entry.File_Pattern := +(GNATCOLL.VFS."+" (File.Full_Name));
+      New_Entry.File_Pattern := Actual_Pat;
       New_Entry.File_Regexp := Pad_And_Compile (New_Entry.File_Pattern);
       DB.Map.Include (Identifier, New_Entry);
       return [];

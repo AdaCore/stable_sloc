@@ -82,6 +82,9 @@ package Stable_Sloc is
    function Create_DB return Entry_DB;
    --  Create an empty DB.
 
+   function Is_Empty (DB : Entry_DB) return Boolean;
+   --  Return whether there are any entries in DB or not
+
    procedure Import_DB (Into : in out Entry_DB; From : Entry_DB);
    --  Copy the entries from From into Into. If there is clash in entry
    --  identifiers, the one from From is discarded.
@@ -118,17 +121,21 @@ package Stable_Sloc is
      Stable_Sloc.Matchers.Sloc_Matcher_T'Class;
 
    function Add_Or_Update_Entry
-     (DB         : in out Entry_DB;
-      Identifier : Unbounded_String;
-      Purpose    : Unbounded_String;
-      Annotation : Unbounded_String;
-      Kind       : Unbounded_String;
-      File       : GNATCOLL.VFS.Virtual_File;
-      Span       : Sloc_Span;
-      Replace    : Boolean := True) return Load_Diagnostic_Arr;
+     (DB          : in out Entry_DB;
+      Identifier  : Unbounded_String;
+      Purpose     : Unbounded_String;
+      Annotation  : Unbounded_String;
+      Kind        : Unbounded_String;
+      File        : GNATCOLL.VFS.Virtual_File;
+      Span        : Sloc_Span;
+      File_Prefix : Unbounded_String := Null_Unbounded_String;
+      Replace     : Boolean := True) return Load_Diagnostic_Arr;
    --  Add or update the entry designated by Identifier for the given Purpose,
    --  and Annotation. The new entry shall use the specified matcher Kind, and
    --  return a positive match on File for the given location Span.
+   --
+   --  If File_Prefix is not null, it is removed from the filename when
+   --  creating the file matcher to be used in the entry.
    --
    --  If Replace is False and there already is an entry with the same
    --  Identifier in DB, then the new entry is not added to DB.

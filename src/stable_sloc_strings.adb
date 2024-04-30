@@ -4,6 +4,19 @@ with Stable_Sloc;
 
 package body Stable_Sloc_Strings is
 
+   ---------------
+   -- Is_Prefix --
+   ---------------
+
+   function Is_Prefix (Prefix, Content : Unbounded_String) return Boolean is
+   begin
+      if Length (Prefix) > Length (Content) then
+         return False;
+      end if;
+      return (for all I in 1 .. Length (Prefix) =>
+                Element (Prefix, I) = Element (Content, I));
+   end Is_Prefix;
+
    ---------
    -- Img --
    ---------

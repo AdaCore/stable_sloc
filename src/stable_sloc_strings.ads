@@ -22,6 +22,9 @@ package Stable_Sloc_Strings is
    function "+" (S : String) return Unbounded_String
      renames Unbounded_Strings.To_Unbounded_String;
 
+   function Is_Prefix (Prefix, Content : Unbounded_String) return Boolean;
+   --  Return Whether Prefix is indeed a prefix of Content.
+
    function Img (X : Natural) return String;
    --  Returns X'Image without the leading space
 

@@ -41,6 +41,15 @@ package Stable_Sloc.Cmd_Parser is
       Convert     => GNATCOLL.Opt_Parse.Convert,
       Default_Val => Unbounded_Strings.Null_Unbounded_String);
 
+   package Prefix is new Parse_Option
+     (Parser,
+      Long        => "--prefix",
+      Help        => "Prefix to be removed from the filenames when creating"
+                     & " entries' file matchers",
+      Arg_Type    => US,
+      Convert     => GNATCOLL.Opt_Parse.Convert,
+      Default_Val => Unbounded_Strings.Null_Unbounded_String);
+
    package Output is new Parse_Option
      (Parser,
       Short       => "-o",
