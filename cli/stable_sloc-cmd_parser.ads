@@ -56,8 +56,8 @@ package Stable_Sloc.Cmd_Parser is
      (Parser,
       Short      => "-u",
       Long       => "--update",
-      Usage_Text => "IDENTIFIER:PURPOSE:KIND:FILENAME:START_LINE:START_COL:"
-                    & "END_LINE:END_COL[:ANNOTATION]",
+      Usage_Text => "[--update|-u IDENTIFIER:PURPOSE:KIND:FILENAME:START_LINE"
+                    & ":START_COL:END_LINE:END_COL[:ANNOTATION]]",
       Help       =>
         "Create or update the entry with the given IDENTIFIER, for the given"
         & " PURPOSE and optional ANNOTATION." & ASCII.LF

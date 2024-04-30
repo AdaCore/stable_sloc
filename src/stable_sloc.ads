@@ -41,6 +41,9 @@ package Stable_Sloc is
    --  Represents a diagnostic as to why a specification file or entry was not
    --  able to be loaded.
 
+   function Format_Diagnostic (D : Load_Diagnostic) return String;
+   --  Format D as FILENAME:[SLOC:]DIAGNOSTIC
+
    type Load_Diagnostic_Arr is array (Positive range <>) of Load_Diagnostic;
 
    type Match_Result (Success : Boolean := True) is record

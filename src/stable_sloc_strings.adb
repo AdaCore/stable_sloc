@@ -4,6 +4,14 @@ with Stable_Sloc;
 
 package body Stable_Sloc_Strings is
 
+   ---------
+   -- Img --
+   ---------
+
+   function Img (X : Natural) return String is
+     (declare Str : constant String := X'Image;
+      begin Str (Str'First + 1 .. Str'Last));
+
    ------------
    -- To_Ada --
    ------------

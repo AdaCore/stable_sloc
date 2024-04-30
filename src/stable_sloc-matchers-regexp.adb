@@ -1,4 +1,5 @@
 with Ada.Exceptions;
+with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
 with GNAT.OS_Lib; use GNAT.OS_Lib;
@@ -48,7 +49,7 @@ package body Stable_Sloc.Matchers.Regexp is
          exit when Match_Arr (0) = No_Match;
          declare
             Start_Line : constant Natural :=
-              Count_LF (Content, From, Match_Arr (0).First) + 1;
+              Count_LF (Content, Content.all'First, Match_Arr (0).First) + 1;
             Start_Col  : constant Natural :=
               Prev_LF (Content, Match_Arr (0).First);
             End_Line   : constant Natural :=

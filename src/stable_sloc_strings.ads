@@ -22,9 +22,7 @@ package Stable_Sloc_Strings is
    function "+" (S : String) return Unbounded_String
      renames Unbounded_Strings.To_Unbounded_String;
 
-   function Img (X : Natural) return String is
-     (declare Str : constant String := X'Image;
-      begin Str (Str'First + 1 .. Str'Last));
+   function Img (X : Natural) return String;
    --  Returns X'Image without the leading space
 
    function To_Ada (Vec : US_Vector) return Unbounded_String;

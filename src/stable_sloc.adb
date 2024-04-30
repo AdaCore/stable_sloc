@@ -23,6 +23,15 @@ package body Stable_Sloc is
    --  Append '*' at the beginning and the end of Pattern if there isn't
    --  already a wildcard, and compile that string as a globbing pattern.
 
+   -----------------------
+   -- Format_Diagnostic --
+   -----------------------
+
+   function Format_Diagnostic (D : Load_Diagnostic) return String is
+     (D.File.Display_Full_Name & ":" & Image (D.Location)
+      & (if D.Location = No_Sloc then " " else ": ")
+      & (+D.Diagnostic));
+
    ------------
    -- Adjust --
    ------------

@@ -104,7 +104,7 @@ Entry fields:
 
   If `true`, treat the file content as multiple lines.
   This means that `^` and `$` will also match on internal newlines (`ASCII.LF`),
-  in addition to the beginning and end of the string.
+  in addition to the beginning and end of the file.
   Defaults to `false` if not present.
 
 ### Libadalang-context matcher
