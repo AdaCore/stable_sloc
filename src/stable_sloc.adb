@@ -315,6 +315,21 @@ package body Stable_Sloc is
                   (File       => File,
                    Location   => No_Sloc,
                    Diagnostic => +"No such matcher kind: " & Kind)];
+         when Exc : Parse_Error =>
+            declare
+               Loc : Sloc;
+               Msg : constant String :=
+                 Split_Sloc_Prefix
+                   (Ada.Exceptions.Exception_Message (Exc), Loc);
+            begin
+               return
+                 [Load_Diagnostic'
+                    (File       => File,
+                     Location   => Loc,
+                     Diagnostic =>
+                       +"Error while creating entry """ & Identifier & """: "
+                       & Msg)];
+            end;
    end Add_Or_Update_Entry;
 
    ------------------
