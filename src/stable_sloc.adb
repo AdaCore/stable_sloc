@@ -125,17 +125,22 @@ package body Stable_Sloc is
               Spec.Get_Or_Null ("purpose");
             File_Pat     : US;
          begin
-            Parsed_Entry.Purpose :=
-              (if Purpose.Is_Null
-               then Null_Unbounded_String
-               else (if Purpose.Kind in TOML.TOML_String
-                     then Purpose.As_Unbounded_String
-                     else raise Parse_Error with
-                       TOML.Format_Location (Purpose.Location)
-                       & ":unexpected type for ""purpose"": expected "
-                       & TOML.TOML_String'Image & " but got "
-                       & Purpose.Kind'Image));
-            Parsed_Entry.Annotation := Get (Spec, "annotation");
+            Parsed_Entry.Annotations :=
+              Get (Spec, "annotations", TOML.TOML_Array);
+            for J in 1 .. Parsed_Entry.Annotations.Length loop
+               declare Annot : constant TOML.TOML_Value :=
+                 Parsed_Entry.Annotations.Item (J);
+               begin
+                  if Annot.Kind not in TOML.TOML_Table
+                  then
+                     raise Parse_Error with
+                       TOML.Format_Location (Annot.Location)
+                       & ":Wrong type for an annotation, expected "
+                       & TOML.TOML_Table'Image & " but got "
+                       & Annot.Kind'Image;
+                  end if;
+               end;
+            end loop;
             Parsed_Entry.Kind := Get (Spec, "kind");
             Parsed_Entry.Sloc_Matcher :=
               new Sloc_Matcher_T'Class'
@@ -236,13 +241,27 @@ package body Stable_Sloc is
          Cur := DB.Map.First;
          while Cur /= No_Element loop
             declare
-               Entr      : constant Constant_Reference_Type :=
+               Entr                 : constant Constant_Reference_Type :=
                  DB.Map.Constant_Reference (Cur);
-               Local_Res : Sloc_Match_Vec;
+               Local_Res            : Sloc_Match_Vec;
+               Relevant_Annotations : TOML.TOML_Value := TOML.Create_Array;
             begin
-               if Entr.Purpose /= Null_Unbounded_String
-                 and then not Is_Prefix (Purpose_Prefix, Entr.Purpose)
-               then
+               for J in 1 .. Entr.Annotations.Length loop
+                  declare
+                     use TOML;
+                     Annot   : constant TOML_Value :=
+                       Entr.Annotations.Item (J);
+                     Purpose : constant Unbounded_String :=
+                       Get_Or_Null (Annot, "purpose");
+                  begin
+                     if Purpose = Null_Unbounded_String
+                       or else Is_Prefix (Purpose_Prefix, Purpose)
+                     then
+                        Relevant_Annotations.Append (Annot);
+                     end if;
+                  end;
+               end loop;
+               if Relevant_Annotations.Length = 0 then
                   goto Continue;
                end if;
                if not GNAT.Regexp.Match
@@ -252,23 +271,29 @@ package body Stable_Sloc is
                end if;
                Local_Res := Entr.Sloc_Matcher.Match (File);
                for Match of Local_Res loop
-                  if Match.Success then
-                     Res.Append (Match_Result'
-                       (Success    => True,
-                        Identifier => Key (Cur),
-                        Purpose    => Entr.Purpose,
-                        Annotation => Entr.Annotation,
-                        File       => File,
-                        Location   => Match.Span));
-                  else
-                     Res.Append (Match_Result'
-                       (Success    => False,
-                        Identifier => Key (Cur),
-                        Purpose    => Entr.Purpose,
-                        Annotation => Entr.Annotation,
-                        File       => File,
-                        Diagnostic => Match.Reason));
-                  end if;
+                  for J in 1 .. Relevant_Annotations.Length loop
+                  declare
+                     Annot : constant TOML.TOML_Value :=
+                       Relevant_Annotations.Item (J);
+                  begin
+                     if Match.Success then
+                        Res.Append (Match_Result'
+                          (Success    => True,
+                           Identifier => Key (Cur),
+                           Annotation => Annot,
+                           File       => File,
+                           Location   => Match.Span));
+                     else
+                        Res.Append (Match_Result'
+                          (Success    => False,
+                           Identifier => Key (Cur),
+                           Annotation => Annot,
+                           File       => File,
+                           Diagnostic => Match.Reason));
+                     end if;
+                  end;
+                     <<Skip_Annotation>>
+                  end loop;
                end loop;
             end;
             <<Continue>>
@@ -285,8 +310,7 @@ package body Stable_Sloc is
    function Add_Or_Update_Entry
      (DB          : in out Entry_DB;
       Identifier  : Unbounded_String;
-      Purpose     : Unbounded_String;
-      Annotation  : Unbounded_String;
+      Annotation  : TOML.TOML_Value;
       Kind        : Unbounded_String;
       File        : GNATCOLL.VFS.Virtual_File;
       Span        : Sloc_Span;
@@ -318,8 +342,8 @@ package body Stable_Sloc is
       end if;
       New_Entry.Sloc_Matcher := new Sloc_Matcher_T'Class'
         (Instantiate_Matcher (File, Span, +Kind));
-      New_Entry.Annotation := Annotation;
-      New_Entry.Purpose := Purpose;
+      New_Entry.Annotations := TOML.Create_Array;
+      New_Entry.Annotations.Append (Annotation);
       New_Entry.Kind := Kind;
       New_Entry.File_Pattern := Actual_Pat;
       New_Entry.File_Regexp := Pad_And_Compile (New_Entry.File_Pattern);
@@ -364,8 +388,9 @@ package body Stable_Sloc is
       Cur := DB.Map.First;
       while Cur /= No_Element loop
          Put_Line (+("Entry " & Key (Cur) & ":"));
-         Put_Line ("   Purpose     : " & (+Element (Cur).Purpose));
-         Put_Line ("   Annotation  : " & (+Element (Cur).Annotation));
+         Put_Line
+           ("   Annotation  : "
+            & (+To_String (Element (Cur).Annotations)));
          Put_Line ("   File matcher: " & (+Element (Cur).File_Pattern));
          Put_Line ("   Matcher kind: " & (+Element (Cur).Kind));
          Put_Line ("   Sloc matcher: " & (+Element (Cur).Sloc_Matcher.Image));
@@ -395,8 +420,7 @@ package body Stable_Sloc is
             Entry_Value   : TOML_Value := Create_Table;
          begin
             Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
-            Entry_Value.Set ("purpose", Create_String (Entr.Purpose));
-            Entry_Value.Set ("annotation", Create_String (Entr.Annotation));
+            Entry_Value.Set ("annotation", Entr.Annotations);
             Entry_Value.Set ("kind", Create_String (Entr.Kind));
             Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
             Res.Set (Key (Cur), Entry_Value);

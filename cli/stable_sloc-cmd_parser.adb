@@ -16,9 +16,10 @@ package body Stable_Sloc.Cmd_Parser is
 
       use Ada.Strings.Fixed;
       use Ada.Strings.Maps;
-      Col   : constant Character_Set := To_Set (':');
-      Low  : Natural := Arg'First;
-      Res  : Update_Request;
+      Col        : constant Character_Set := To_Set (':');
+      Low        : Natural := Arg'First;
+      Res        : Update_Request;
+      Annotation : TOML.Read_Result;
 
       ---------------
       -- Get_Field --
@@ -45,13 +46,12 @@ package body Stable_Sloc.Cmd_Parser is
    begin
       --  The argument should formatted as
       --
-      --  IDENTIFIER:PURPOSE:KIND:FILENAME:START_LINE:START_COL:
-      --  END_LINE:END_COL[:ANNOTATION]
+      --  IDENTIFIER:KIND:FILENAME:START_LINE:START_COL:
+      --  END_LINE:END_COL:ANNOTATION
       --
       --  with no ':' in either of the fields.
 
       Res.Identifier := +Get_Field (Low, "IDENTIFIER");
-      Res.Purpose := +Get_Field (Low, "PURPOSE");
       Res.Kind := +Get_Field (Low, "KIND");
       Res.File := Str_To_File (Get_Field (Low, "FILENAME"));
       declare
@@ -86,7 +86,11 @@ package body Stable_Sloc.Cmd_Parser is
          when Exc : Constraint_Error =>
             raise Opt_Parse_Error with "END_COL must be a positive integer";
       end;
-      Res.Annotation := +(Arg (Low .. Arg'Last));
+      Annotation := TOML.Load_String ("a=" & Get_Field (Low, "ANNOTATION"));
+      if not Annotation.Success then
+         raise Opt_Parse_Error with TOML.Format_Error (Annotation);
+      end if;
+      Res.Annotation := Annotation.Value.Get ("a");
       return Res;
    exception
       when Exc : Constraint_Error =>

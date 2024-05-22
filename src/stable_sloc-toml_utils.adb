@@ -44,6 +44,24 @@ package body Stable_Sloc.TOML_Utils is
       return Val.Get (Key);
    end Get;
 
+   -----------------
+   -- Get_Or_Null --
+   -----------------
+
+   function Get_Or_Null
+     (Val : TOML.TOML_Value; Key : String) return Unbounded_String
+   is
+   begin
+      if Val.Kind /= TOML_Table
+        or else not Val.Has (Key)
+        or else Val.Get (Key).Kind /= TOML_String
+      then
+         return Null_Unbounded_String;
+      else
+         return Val.Get (Key).As_Unbounded_String;
+      end if;
+   end Get_Or_Null;
+
    ---------------
    -- Read_Span --
    ---------------
@@ -78,5 +96,10 @@ package body Stable_Sloc.TOML_Utils is
                          (TOML.Any_Integer (Span.End_Sloc.Column)));
       end return;
    end Write_Span;
+
+   function To_String (Val : TOML_Value) return Unbounded_String is
+   begin
+      return Val.Dump_As_Unbounded;
+   end To_String;
 
 end Stable_Sloc.TOML_Utils;

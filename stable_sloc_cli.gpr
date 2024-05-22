@@ -1,3 +1,5 @@
+with "ada_toml.gpr";
+
 with "./stable_sloc.gpr";
 with "./config.gpr";
 

@@ -12,7 +12,7 @@ package Stable_Sloc.Cmd_Parser is
       Kind       : Unbounded_String;
       Identifier : Unbounded_String;
       Purpose    : Unbounded_String;
-      Annotation : Unbounded_String;
+      Annotation : TOML.TOML_Value;
       File       : GNATCOLL.VFS.Virtual_File;
       Span       : Sloc_Span;
    end record;
@@ -65,11 +65,11 @@ package Stable_Sloc.Cmd_Parser is
      (Parser,
       Short      => "-u",
       Long       => "--update",
-      Usage_Text => "[--update|-u IDENTIFIER:PURPOSE:KIND:FILENAME:START_LINE"
-                    & ":START_COL:END_LINE:END_COL[:ANNOTATION]]",
+      Usage_Text => "[--update|-u IDENTIFIER:KIND:FILENAME:START_LINE"
+                    & ":START_COL:END_LINE:END_COL:ANNOTATION]",
       Help       =>
         "Create or update the entry with the given IDENTIFIER, for the given"
-        & " PURPOSE and optional ANNOTATION." & ASCII.LF
+        & " ANNOTATION (as an inline TOML array)." & ASCII.LF
         & " The entry will use a matcher of specified KIND, which shall match"
         & " the given location in file FILENAME.",
       Accumulate => True,

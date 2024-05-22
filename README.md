@@ -22,8 +22,13 @@ identifier. Each entry consist of the following fields
   and purposes in a single file. It is optional, and if not present the
   entry will always be active.
 
-- `annotation`, a string. Can be used to provide context for the entry. The
-  interpretation is left to the tool.
+- `annotations`, an array of tables. Used to provide context for the entry.
+  Interpretation is left to the tool.
+
+  Each table in the array may contain a `purpose` field, which can be used to
+  filter which entry should be matched or not using the `purpose_prefix`
+  parameter in the `Match_Entries` function, or the `--filter` switch on the
+  CLI.
 
 - `file`, a string containing a globing pattern of files on which this entry
   should be searched for.
@@ -50,11 +55,11 @@ Entry fields:
 
 - `kind="absolute"`
 - `start_line`, required, integer.
-  
+
   Line of the beginning of the location range.
 
 - `start_col`, required, integer.
-  
+
   Column of the beginning of the location range.
 
 - `end_line`, required, integer.
@@ -81,13 +86,13 @@ Entry fields:
 
 - `kind="regexp"`
 - `regexp`, required, string.
-  
+
   Regular expression to be matched. Uses the
   `GNAT.Regpat` package as a regular expression matching backend, see the
   specification of that package for the recognized grammar.
 
 - `case_insensitive`, optional, boolean.
-  
+
   If `true`, The automaton is optimized
   so that the matching is done in a case insensitive manner (upper case
   characters and lower case characters are all treated the same way).
@@ -125,7 +130,7 @@ Entry Fields:
 - `kind=lal_context`
 
 - `sem_parents`, required, array of strings.
-  
+
   Contains the list of lower-cased named entities containing the declaration
   used as context, in increasing depth order. The last element is the defining
   name of the context declaration. Concatenated with '.' it would spell the
@@ -150,4 +155,4 @@ A Matcher must simply implement the `Stable_Sloc.Matchers.Sloc_Matcher`
 interface, and you must provide a callback to parse a TOML entry to produce a
 matcher object for that specific entry. The callback can be registered through
 the `Stable_Sloc.Matchers.Register_Matcher` procedure, and proceed to use the
-library as if your matcher was a bultin one.
+library as if your matcher was a builtin one.

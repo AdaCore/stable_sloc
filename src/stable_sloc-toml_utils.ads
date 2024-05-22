@@ -9,13 +9,19 @@ package Stable_Sloc.TOML_Utils is
      (Val : TOML.TOML_Value; Key : String) return Unbounded_UTF8_String;
    --  Various shortcuts for Val.Get (Key).As_<type>. Raise Parse_Error if
    --  Val is not a table, if it doesn't have a Key filed and if the type of
-   --  the Key filed is not what's expected.
+   --  the Key field is not what's expected.
 
    function Get
      (Val : TOML.TOML_Value; Key : String; Kind : Any_Value_Kind)
       return TOML_Value;
    --  Same as above, but instead of .As_<type>ing the Get result, simply check
    --  that the result is indeed of kind Kind.
+
+   function Get_Or_Null
+     (Val : TOML.TOML_Value; Key : String) return Unbounded_String;
+   --  Return the string field at Key in Val. If anything prevents the
+   --  operation from succeeding, (Val is not a table, Key is not a string or
+   --  absent, etc), return Null_Unbounded_String.
 
    function Read_Span (Val : TOML_Value) return Sloc_Span with
      Pre => Val.Kind = TOML_Table;
@@ -29,5 +35,8 @@ package Stable_Sloc.TOML_Utils is
 
    function Write_Span (Span : Sloc_Span) return TOML_Value;
    --  Reverse of the above function
+
+   function To_String (Val : TOML_Value) return Unbounded_String;
+   --  Return the inline representation of Val
 
 end Stable_Sloc.TOML_Utils;

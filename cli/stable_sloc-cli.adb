@@ -2,6 +2,8 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Text_IO; use Ada.Text_IO;
 
+with TOML;
+
 with Stable_Sloc.Cmd_Parser;
 with Stable_Sloc_Strings;    use Stable_Sloc_Strings;
 
@@ -74,7 +76,6 @@ begin
               Add_Or_Update_Entry
                 (DB,
                  Update_Req.Identifier,
-                 Update_Req.Purpose,
                  Update_Req.Annotation,
                  Update_Req.Kind,
                  Update_Req.File,
@@ -127,9 +128,8 @@ begin
                Put_Line ("   Reason: " & (+Match.Diagnostic));
             end if;
             Put_Line
-               ("   Purpose: " & (+Match.Purpose));
-            Put_Line
-               ("   Annotation: " & (+Match.Annotation));
+               ("   Annotation: " & ASCII.LF
+                & (TOML.Dump_As_String (Match.Annotation)));
          end loop;
       end;
 

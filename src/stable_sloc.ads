@@ -50,10 +50,7 @@ package Stable_Sloc is
       Identifier : Unbounded_String;
       --  Identifier of the entry that matched
 
-      Purpose    : Unbounded_String;
-      --  Purpose of the entry, may be null if not specified
-
-      Annotation : Unbounded_String;
+      Annotation : TOML.TOML_Value;
       --  Annotation attached to the entry
 
       File       : GNATCOLL.VFS.Virtual_File;
@@ -123,8 +120,7 @@ package Stable_Sloc is
    function Add_Or_Update_Entry
      (DB          : in out Entry_DB;
       Identifier  : Unbounded_String;
-      Purpose     : Unbounded_String;
-      Annotation  : Unbounded_String;
+      Annotation  : TOML.TOML_Value;
       Kind        : Unbounded_String;
       File        : GNATCOLL.VFS.Virtual_File;
       Span        : Sloc_Span;
@@ -145,8 +141,7 @@ package Stable_Sloc is
 private
 
    type SS_Entry is new Ada.Finalization.Controlled with record
-      Purpose      : Unbounded_String;
-      Annotation   : Unbounded_String;
+      Annotations  : TOML.TOML_Value;
       File_Pattern : Unbounded_String;
       File_Regexp  : GNAT.Regexp.Regexp;
       Kind         : Unbounded_String;
