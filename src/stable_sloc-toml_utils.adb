@@ -62,6 +62,24 @@ package body Stable_Sloc.TOML_Utils is
       end if;
    end Get_Or_Null;
 
+   --------------------
+   -- Get_Or_Default --
+   --------------------
+
+   function Get_Or_Default
+     (Val : TOML.TOML_Value; Key : String; Default : Boolean) return Boolean
+   is
+   begin
+      if Val.Kind /= TOML_Table
+        or else not Val.Has (Key)
+        or else Val.Get (Key).Kind /= TOML_Boolean
+      then
+         return Default;
+      else
+         return Val.Get (Key).As_Boolean;
+      end if;
+   end Get_Or_Default;
+
    ---------------
    -- Read_Span --
    ---------------

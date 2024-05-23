@@ -33,6 +33,12 @@ identifier. Each entry consist of the following fields
 - `file`, a string containing a globing pattern of files on which this entry
   should be searched for.
 
+- `at_most_once`, a boolean specifying wether the entry is expected to match
+  more than once. If `True`, once the entry is loaded, it will return a failed
+  Match_Result upon every match once a successful match has been found.
+
+  This is optional and defaults to `False`
+
 - `kind`, a string, defining which source location matcher will be used to
   interpret this entry.
 

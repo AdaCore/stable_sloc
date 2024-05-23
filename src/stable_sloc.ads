@@ -102,10 +102,16 @@ package Stable_Sloc is
 
    function Match_Entries
      (Files          : GNATCOLL.VFS.File_Array;
-      DB             : Entry_DB;
+      DB             : in out Entry_DB;
       Purpose_Prefix : String := "") return Match_Result_Vec;
    --  Run the loaded entries on the specified Files. Only run the matchers
-   --  with and Purpose beginning with Purpose_Prefix.
+   --  with a Purpose beginning with Purpose_Prefix. An empty prefix matches
+   --  everything, and an entry with a non-specified purpose is considered as
+   --  always active.
+
+   procedure Reset_Match_Count (DB : in out Entry_DB);
+   --  Reset the match count for all entries. All entries meant to match only
+   --  once will successfully match again once.
 
    procedure Dump_Entries (DB : Entry_DB);
    --  Dump the entries in DB to standard output.
@@ -142,10 +148,27 @@ private
 
    type SS_Entry is new Ada.Finalization.Controlled with record
       Annotations  : TOML.TOML_Value;
+      --  Annotations to return in case of successful match
+
       File_Pattern : Unbounded_String;
+      --  Textual globbing pattern used to determine relevant files
+
       File_Regexp  : GNAT.Regexp.Regexp;
+      --  Compiled globbing pattern to determine relevant files
+
       Kind         : Unbounded_String;
+      --  Name of the matcher kind to be used
+
       Sloc_Matcher : Sloc_Matcher_Acc;
+      --  Matcher backend to be used
+
+      At_Most_Once : Boolean;
+      --  Wether this entry is only expected to match once. If True, this entry
+      --  must return a failed match result upon each subsequent successful
+      --  match.
+
+      Has_Matched  : Boolean;
+      --  Wether this entry has already matched
    end record;
 
    overriding procedure Adjust (Self : in out SS_Entry);

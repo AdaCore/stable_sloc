@@ -23,6 +23,11 @@ package Stable_Sloc.TOML_Utils is
    --  operation from succeeding, (Val is not a table, Key is not a string or
    --  absent, etc), return Null_Unbounded_String.
 
+   function Get_Or_Default
+     (Val : TOML.TOML_Value; Key : String; Default : Boolean) return Boolean;
+   --  Get the boolean value of the Key field, in the TOML_Value Val, If
+   --  anything prevents the operation from succeeding, return Default.
+
    function Read_Span (Val : TOML_Value) return Sloc_Span with
      Pre => Val.Kind = TOML_Table;
    --  Read a sloc Span from Val. The various locations are expected to be laid
