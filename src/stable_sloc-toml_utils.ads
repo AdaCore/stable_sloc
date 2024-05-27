@@ -1,3 +1,5 @@
+with GNATCOLL.JSON; use GNATCOLL.JSON;
+
 with TOML; use TOML;
 
 package Stable_Sloc.TOML_Utils is
@@ -43,5 +45,19 @@ package Stable_Sloc.TOML_Utils is
 
    function To_String (Val : TOML_Value) return Unbounded_String;
    --  Return the inline representation of Val
+
+   function To_JSON (Val : TOML_Value) return JSON_Value;
+   --  Convert Val to a GNATCOLL.JSON value. This does not preserve location
+   --  information.
+   --  Date-time fields are represented as strings, NaNs and infinities are
+   --  represented as null JSON values.
+
+   function To_TOML (Val : JSON_Value) return TOML_Value;
+   --  Convert Val to a TOML.TOML_Value. This does not create any location
+   --  information, and will not attempt to parse any date that may be present
+   --  in a string field.
+   --
+   --  Null JSON values are returned as No_TOML_Value, so the end result may
+   --  not be a valid TOML (partial) document.
 
 end Stable_Sloc.TOML_Utils;

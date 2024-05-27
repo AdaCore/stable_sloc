@@ -2,9 +2,12 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Text_IO; use Ada.Text_IO;
 
+with GNATCOLL.JSON;
+
 with TOML;
 
 with Stable_Sloc.Cmd_Parser;
+with Stable_Sloc.TOML_Utils;
 with Stable_Sloc_Strings;    use Stable_Sloc_Strings;
 
 procedure Stable_Sloc.CLI is
@@ -113,24 +116,32 @@ begin
            Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
       begin
          if Res.Is_Empty then
-            Put_Line ("No match.");
-         end if;
-         for Match of Res loop
-            Put (+Match.Identifier & ": ");
-            if Match.Success then
-               Put_Line ("match SUCCESS");
-               Put_Line
-                 ("   " & Match.File.Display_Full_Name & ":"
-                  & Image (Match.Location));
+            if Cmd.JSON_Results.Get then
+               Put_Line ("[]");
             else
-               Put_Line ("match FAILED");
-               Put_Line ("   " & Match.File.Display_Full_Name);
-               Put_Line ("   Reason: " & (+Match.Diagnostic));
+               Put_Line ("No match.");
             end if;
-            Put_Line
-               ("   Annotation: " & ASCII.LF
-                & (TOML.Dump_As_String (Match.Annotation)));
-         end loop;
+         end if;
+         if Cmd.JSON_Results.Get then
+            Put_Line (GNATCOLL.JSON.Write (To_JSON (Res), Compact => False));
+         else
+            for Match of Res loop
+               Put (+Match.Identifier & ": ");
+               if Match.Success then
+                  Put_Line ("match SUCCESS");
+                  Put_Line
+                    ("   " & Match.File.Display_Full_Name & ":"
+                     & Image (Match.Location));
+               else
+                  Put_Line ("match FAILED");
+                  Put_Line ("   " & Match.File.Display_Full_Name);
+                  Put_Line ("   Reason: " & (+Match.Diagnostic));
+               end if;
+               Put_Line
+                 ("   Annotation: " & ASCII.LF
+                  & (Stable_Sloc.TOML_Utils.To_JSON (Match.Annotation).Write));
+            end loop;
+         end if;
       end;
 
       --  Dump the entries to file

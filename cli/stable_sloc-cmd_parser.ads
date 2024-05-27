@@ -101,4 +101,9 @@ package Stable_Sloc.Cmd_Parser is
       Long => "--strict",
       Help => "Stop processing at the first parse or match error.");
 
+   package JSON_Results is new Parse_Flag
+     (Parser,
+      Long => "--json-results",
+      Help => "Output the match results in JSON format");
+
 end Stable_Sloc.Cmd_Parser;

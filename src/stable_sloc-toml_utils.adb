@@ -1,4 +1,5 @@
 with Stable_Sloc.Matchers;
+with Stable_Sloc_Strings;  use Stable_Sloc_Strings;
 
 package body Stable_Sloc.TOML_Utils is
 
@@ -119,5 +120,105 @@ package body Stable_Sloc.TOML_Utils is
    begin
       return Val.Dump_As_Unbounded;
    end To_String;
+
+   -------------
+   -- To_JSON --
+   -------------
+
+   function To_JSON (Val : TOML_Value) return JSON_Value is
+   begin
+      case Kind (Val) is
+         when TOML_String =>
+            return Create (Val.As_String);
+         when TOML_Integer =>
+            return Create (Long_Long_Integer (Val.As_Integer));
+         when TOML_Float =>
+            if Val.As_Float.Kind = Regular then
+               return Create (Long_Float (Val.As_Float.Value));
+            else
+               -- NaN is not supported in JSON, we should return a null
+               -- instead.
+
+               return JSON_Null;
+            end if;
+         when TOML_Boolean =>
+            return Create (Val.As_Boolean);
+         when TOML_Offset_Datetime .. TOML_Local_Time =>
+            declare
+               --  There is no way to dump a partial TOML document to string at
+               --  the moment, so create a table with the value, dump it to
+               --  string and strip the "key = " prefix.
+
+               Dummy_Table : TOML_Value := Create_Table;
+               Res         : Unbounded_String;
+            begin
+               Dummy_Table.Set ("key", Val);
+               Res := Dump_As_Unbounded (Dummy_Table);
+               return Create
+                 (Unbounded_Slice
+                    (Res,
+                     String'("key = ")'Last + 1,
+                     Length (Res)));
+            end;
+         when TOML_Array =>
+            declare
+               Res : JSON_Array := Empty_Array;
+            begin
+               for J in 1 .. Val.Length loop
+                  Append (Res, To_JSON (Val.Item (J)));
+               end loop;
+               return Create (Res);
+            end;
+         when TOML_Table =>
+            return Res : constant JSON_Value := Create_Object do
+               for Assoc of Val.Iterate_On_Table loop
+                  Res.Set_Field (+Assoc.Key, To_JSON (Assoc.Value));
+               end loop;
+            end return;
+      end case;
+   end To_JSON;
+
+   -------------
+   -- To_TOML --
+   -------------
+
+   function To_TOML (Val : JSON_Value) return TOML_Value is
+   begin
+      case Val.Kind is
+         when JSON_Int_Type =>
+            return Create_Integer (Any_Integer (Long_Integer'(Val.Get)));
+         when JSON_Float_Type =>
+            return
+              Create_Float
+                (Any_Float' (Regular, Valid_Float (Val.Get_Long_Float)));
+         when JSON_String_Type =>
+            return Create_String (String'(Val.Get));
+         when JSON_Boolean_Type =>
+            return Create_Boolean (Val.Get);
+         when JSON_Array_Type =>
+            return Res : TOML_Value := Create_Array do
+               for Item of JSON_Array'(Val.Get) loop
+                  Res.Append (To_TOML (Item));
+               end loop;
+            end return;
+         when JSON_Object_Type =>
+            declare
+               Res : constant TOML_Value := Create_Table;
+               procedure Append_CB (Name : UTF8_String; Element : JSON_Value);
+               --  Add the Name:Element association in Res
+
+               procedure Append_CB (Name : UTF8_String; Element : JSON_Value)
+               is
+               begin
+                  Res.Set (Name, To_TOML (Element));
+               end Append_CB;
+            begin
+               Val.Map_JSON_Object (Append_CB'Access);
+               return Res;
+            end;
+         when JSON_Null_Type =>
+            return No_TOML_Value;
+         end case;
+   end To_TOML;
 
 end Stable_Sloc.TOML_Utils;

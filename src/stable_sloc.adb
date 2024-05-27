@@ -60,6 +60,46 @@ package body Stable_Sloc is
      (Index_Type => Positive, Element_Type => Load_Diagnostic);
    subtype Diag_Vector is Diag_Vecs.Vector;
 
+   -------------
+   -- To_JSON --
+   -------------
+
+   function To_JSON
+     (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value
+   is
+      use GNATCOLL.JSON;
+      Arr : JSON_Array := Empty_Array;
+      Local_Res : JSON_Value;
+   begin
+      for Match_Res of Results loop
+         Local_Res := Create_Object;
+         Local_Res.Set_Field ("annotation", To_JSON (Match_Res.Annotation));
+         Local_Res.Set_Field ("identifier", Match_Res.Identifier);
+         Local_Res.Set_Field ("file", Match_Res.File.Display_Full_Name);
+         Local_Res.Set_Field ("success", Match_Res.Success);
+         case Match_Res.Success is
+            when True =>
+               declare
+                  Loc : constant JSON_Value := Create_Object;
+               begin
+                  Loc.Set_Field
+                    ("start_line", Match_Res.Location.Start_Sloc.Line);
+                  Loc.Set_Field
+                    ("start_column", Match_Res.Location.Start_Sloc.Column);
+                  Loc.Set_Field
+                    ("end_line", Match_Res.Location.End_Sloc.Line);
+                  Loc.Set_Field
+                    ("end_column", Match_Res.Location.End_Sloc.Column);
+                  Local_Res.Set_Field ("location", Loc);
+               end;
+            when False =>
+               Local_Res.Set_Field ("diagnostic", Match_Res.Diagnostic);
+         end case;
+         Append (Arr, Local_Res);
+      end loop;
+      return Create (Arr);
+   end To_JSON;
+
    ---------------
    -- Create_DB --
    ---------------
@@ -240,6 +280,13 @@ package body Stable_Sloc is
       Res : Match_Result_Vec;
       Cur : Cursor;
    begin
+   --  TODO??? This currently iterates over each file, then over each entry,
+   --  which may not be the most efficient way of doing things. Namely, we
+   --  could imagine in the future to batch process all entries for the same
+   --  backend for the same file to avoid reading the same file multiple times.
+   --  This would require some API modification in the Stable_Sloc.Matchers
+   --  interface.
+
       for File of Files loop
          Cur := DB.Map.First;
          while Cur /= No_Element loop
@@ -417,7 +464,7 @@ package body Stable_Sloc is
          Put_Line (+("Entry " & Key (Cur) & ":"));
          Put_Line
            ("   Annotation  : "
-            & (+To_String (Element (Cur).Annotations)));
+            & To_JSON (Element (Cur).Annotations).Write (Compact => True));
          Put_Line ("   File matcher: " & (+Element (Cur).File_Pattern));
          Put_Line ("   Matcher kind: " & (+Element (Cur).Kind));
          Put_Line ("   Sloc matcher: " & (+Element (Cur).Sloc_Matcher.Image));

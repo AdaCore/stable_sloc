@@ -5,6 +5,7 @@ with Ada.Strings.Unbounded.Hash;
 
 with GNAT.Regexp;
 
+with GNATCOLL.JSON;
 with GNATCOLL.VFS;
 
 with TOML;
@@ -73,6 +74,11 @@ package Stable_Sloc is
    package Match_Result_Vectors is new Ada.Containers.Vectors
      (Index_Type => Positive, Element_Type => Match_Result);
    subtype Match_Result_Vec is Match_Result_Vectors.Vector;
+
+   function To_JSON
+     (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value;
+   --  Convert the match result vector into a JSON value. This can be used to
+   --  export match results to external consumers.
 
    type Entry_DB is limited private;
 
