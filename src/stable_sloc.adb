@@ -13,6 +13,9 @@ package body Stable_Sloc is
    function "+" (Loc : TOML.Source_Location) return Sloc is
      ((Loc.Line, Loc.Column));
 
+   function To_JSON (Loc : Sloc_Span) return GNATCOLL.JSON.JSON_Value;
+   --  Return an object JSON_Value representing the location range.
+
    function Is_Prefix
      (Prefix : String; Text : Unbounded_String) return Boolean;
    --  Check wether Prefix is a prefix of Text. An empty string prefix is a
@@ -64,6 +67,47 @@ package body Stable_Sloc is
    -- To_JSON --
    -------------
 
+   function To_JSON (Loc : Sloc_Span) return GNATCOLL.JSON.JSON_Value is
+      use GNATCOLL.JSON;
+   begin
+      return Res : constant JSON_Value := Create_Object do
+         Res.Set_Field ("start_line", Loc.Start_Sloc.Line);
+         Res.Set_Field ("start_column", Loc.Start_Sloc.Column);
+         Res.Set_Field ("end_line", Loc.End_Sloc.Line);
+         Res.Set_Field ("end_column", Loc.End_Sloc.Column);
+      end return;
+   end To_JSON;
+
+   -------------
+   -- To_JSON --
+   -------------
+
+   function To_JSON
+     (Diags : Load_Diagnostic_Arr) return GNATCOLL.JSON.JSON_Value
+   is
+      use GNATCOLL.JSON;
+      Arr          : JSON_Array := Empty_Array;
+   begin
+      for Diag of Diags loop
+         declare
+            New_Diag : constant JSON_Value := Create_Object;
+            Loc      : constant JSON_Value := Create_Object;
+         begin
+            New_Diag.Set_Field ("file", Create(Diag.File.Display_Full_Name));
+            Loc.Set_Field ("line", Diag.Location.Line);
+            Loc.Set_Field ("column", Diag.Location.Column);
+            New_Diag.Set_Field ("location", Loc);
+            New_Diag.Set_Field ("diagnostic", Create (Diag.Diagnostic));
+            Append (Arr, New_Diag);
+         end;
+      end loop;
+      return Create (Arr);
+   end To_JSON;
+
+   -------------
+   -- To_JSON --
+   -------------
+
    function To_JSON
      (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value
    is
@@ -79,19 +123,7 @@ package body Stable_Sloc is
          Local_Res.Set_Field ("success", Match_Res.Success);
          case Match_Res.Success is
             when True =>
-               declare
-                  Loc : constant JSON_Value := Create_Object;
-               begin
-                  Loc.Set_Field
-                    ("start_line", Match_Res.Location.Start_Sloc.Line);
-                  Loc.Set_Field
-                    ("start_column", Match_Res.Location.Start_Sloc.Column);
-                  Loc.Set_Field
-                    ("end_line", Match_Res.Location.End_Sloc.Line);
-                  Loc.Set_Field
-                    ("end_column", Match_Res.Location.End_Sloc.Column);
-                  Local_Res.Set_Field ("location", Loc);
-               end;
+               Local_Res.Set_Field ("location", To_JSON (Match_Res.Location));
             when False =>
                Local_Res.Set_Field ("diagnostic", Match_Res.Diagnostic);
          end case;

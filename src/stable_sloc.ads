@@ -47,6 +47,11 @@ package Stable_Sloc is
 
    type Load_Diagnostic_Arr is array (Positive range <>) of Load_Diagnostic;
 
+   function To_JSON
+     (Diags : Load_Diagnostic_Arr) return GNATCOLL.JSON.JSON_Value;
+   --  Convert the load diagnostic array into a JSON array. This can be used to
+   --  expose the diagnostics in a structured format to external tools.
+
    type Match_Result (Success : Boolean := True) is record
       Identifier : Unbounded_String;
       --  Identifier of the entry that matched

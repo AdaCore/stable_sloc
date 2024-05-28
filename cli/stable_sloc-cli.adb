@@ -1,5 +1,6 @@
 with Ada.Command_Line;
 with Ada.Directories;
+with Ada.Finalization;
 with Ada.Text_IO; use Ada.Text_IO;
 
 with GNATCOLL.JSON;
@@ -7,26 +8,13 @@ with GNATCOLL.JSON;
 with TOML;
 
 with Stable_Sloc.Cmd_Parser;
+with Stable_Sloc.Reporters.JSON;
+with Stable_Sloc.Reporters.Text;
 with Stable_Sloc.TOML_Utils;
 with Stable_Sloc_Strings;    use Stable_Sloc_Strings;
 
 procedure Stable_Sloc.CLI is
    package Cmd renames Cmd_Parser;
-
-   procedure Put_Err (Err : Load_Diagnostic);
-   --  Output Err to Standard Error
-
-   -------------
-   -- Put_Err --
-   -------------
-
-   procedure Put_Err (Err : Load_Diagnostic) is
-   begin
-      Put_Line
-        (Standard_Error,
-         Err.File.Display_Base_Name & ":" & Image (Err.Location)
-         & " " & (+Err.Diagnostic));
-   end Put_Err;
 
 begin
    if not Cmd.Parser.Parse then
@@ -36,21 +24,30 @@ begin
 
    declare
       use GNATCOLL.VFS;
-      Specs   : constant Cmd.Specs.Result_Array := Cmd.Specs.Get;
-      Files   : constant Cmd.Files.Result_Array := Cmd.Files.Get;
-      Updates : constant Cmd.Update_Requests.Result_Array :=
+      Specs    : constant Cmd.Specs.Result_Array := Cmd.Specs.Get;
+      Files    : constant Cmd.Files.Result_Array := Cmd.Files.Get;
+      Updates  : constant Cmd.Update_Requests.Result_Array :=
         Cmd.Update_Requests.Get;
-      Output  : Virtual_File := Cmd.Output.Get;
-      DB      : Entry_DB := Create_DB;
+      Output   : Virtual_File := Cmd.Output.Get;
+      DB       : Entry_DB := Create_DB;
+      Reporter : Stable_Sloc.Reporters.Reporter'Class :=
+        (if Cmd.JSON_Results.Get
+         then Stable_Sloc.Reporters.JSON.New_Reporter
+         else Stable_Sloc.Reporters.Text.New_Reporter);
    begin
-      --  Parse Spec files
+      --  Parse Spec files. Allow to not have any spec file on the command line
+      --  if we have at least one entry update request.
 
       if Specs'Length = 0
         and then not Cmd.Quiet.Get
         and then Updates'Length = 0
       then
-         Put_Line
-           ("No specs passed on command line (-s or --spec), nothing to do.");
+         Reporter.Report_Load_Diagnostics(
+            (1 => Load_Diagnostic'
+                    (File => GNATCOLL.VFS.Create (""),
+                     Location => No_Sloc,
+                     Diagnostic => +("No specs passed on command line (-s or"
+                                     & " --spec), nothing to do."))));
          return;
       end if;
       for Spec of Specs loop
@@ -61,9 +58,7 @@ begin
             Parse_Errors : constant Load_Diagnostic_Arr :=
               Load_Entries (Spec, DB, Strict => Cmd.Strict.Get);
          begin
-            for Err of Parse_Errors loop
-               Put_Err (Err);
-            end loop;
+            Reporter.Report_Load_Diagnostics (Parse_Errors);
             if Parse_Errors'Length > 0 and then Cmd.Strict.Get then
                Ada.Command_Line.Set_Exit_Status (1);
                return;
@@ -87,7 +82,7 @@ begin
                  Replace               => not Cmd.Strict.Get);
          begin
             if Diags'Length /= 0 then
-               Put_Err (Diags (Diags'First));
+               Reporter.Report_Load_Diagnostics (Diags);
                if Cmd.Strict.Get then
                   Ada.Command_Line.Set_Exit_Status (1);
                   return;
@@ -103,10 +98,11 @@ begin
       --  Match the entries on the passed files
 
       if Files'Length = 0
-        and then not Cmd.Quiet.Get
         and then Output = No_File
       then
-         Put_Line ("Not files to process, nothing to do.");
+         if Cmd.Verbose.Get then
+            Put_Line ("Not files to process, nothing to do.");
+         end if;
          return;
       end if;
       declare
@@ -115,33 +111,7 @@ begin
          Res    : constant Match_Result_Vec :=
            Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
       begin
-         if Res.Is_Empty then
-            if Cmd.JSON_Results.Get then
-               Put_Line ("[]");
-            else
-               Put_Line ("No match.");
-            end if;
-         end if;
-         if Cmd.JSON_Results.Get then
-            Put_Line (GNATCOLL.JSON.Write (To_JSON (Res), Compact => False));
-         else
-            for Match of Res loop
-               Put (+Match.Identifier & ": ");
-               if Match.Success then
-                  Put_Line ("match SUCCESS");
-                  Put_Line
-                    ("   " & Match.File.Display_Full_Name & ":"
-                     & Image (Match.Location));
-               else
-                  Put_Line ("match FAILED");
-                  Put_Line ("   " & Match.File.Display_Full_Name);
-                  Put_Line ("   Reason: " & (+Match.Diagnostic));
-               end if;
-               Put_Line
-                 ("   Annotation: " & ASCII.LF
-                  & (Stable_Sloc.TOML_Utils.To_JSON (Match.Annotation).Write));
-            end loop;
-         end if;
+         Reporter.Report_Match_Results (Res);
       end;
 
       --  Dump the entries to file

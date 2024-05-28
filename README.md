@@ -17,11 +17,6 @@ Annotations are described in TOML files. Each element of the
 root table is considered to be an entry, the key being its unique
 identifier. Each entry consist of the following fields
 
-- `purpose` (optional), a string defining the purpose of the entry.
-  This allows grouping multiple entries, for various tools
-  and purposes in a single file. It is optional, and if not present the
-  entry will always be active.
-
 - `annotations`, an array of tables. Used to provide context for the entry.
   Interpretation is left to the tool.
 
