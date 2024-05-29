@@ -1,3 +1,1 @@
-This output should never change!
 Do not modify this unless working on the testsuite infrastructure please
-

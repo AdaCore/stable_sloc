@@ -1,0 +1,139 @@
+# All these entries are meant to fail in one way or another
+
+[missing_file]
+file="inexistent.txt"
+kind="absolute"
+annotations=[{message="This entry should fails to match due to missing file"}]
+matcher.start_line=3
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col=45
+
+[missing_sl]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to missing start_line field"}
+]
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col=45
+
+[missing_sc]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to missing start_col field"}
+]
+matcher.start_line=39
+matcher.end_line=5
+matcher.end_col=45
+
+[missing_el]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to missing end_line field"}
+]
+matcher.start_line=5
+matcher.start_col=39
+matcher.end_col=45
+
+[missing_ec]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to missing end_col field"}
+]
+matcher.start_line=3
+matcher.start_col=39
+matcher.end_line=5
+
+[wrong_sl]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to wrong start_line type"}
+]
+matcher.start_line=true
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col=45
+
+[wrong_sc]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to wrong start_col type"}
+]
+matcher.start_line=39
+matcher.start_col="foo"
+matcher.end_line=5
+matcher.end_col=45
+
+[wrong_el]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to wrong end_line type"}
+]
+matcher.start_line=5
+matcher.start_col=39
+matcher.end_line=["foo", "bar"]
+matcher.end_col=45
+
+[wrong_ec]
+file="inexistent.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to load due to wrong end_col type"}
+]
+matcher.start_line=3
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col={foo="bar"}
+
+[out_of_bounds_line_start]
+file="content.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to match due to out of bound sloc range"}
+]
+matcher.start_line=1000
+matcher.start_col=1
+matcher.end_line=1001
+matcher.end_col=1
+
+[out_of_bounds_line_end]
+file="content.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to match due to out of bound sloc range"}
+]
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=1001
+matcher.end_col=1
+
+[out_of_bounds_cols_start]
+file="content.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to match due to out of bound sloc range"}
+]
+matcher.start_line=1
+matcher.start_col=1000
+matcher.end_line=8
+matcher.end_col=1
+
+[out_of_bounds_cols_end]
+file="content.txt"
+kind="absolute"
+annotations=[
+    {message="This entry should fail to match due to out of bound sloc range"}
+]
+matcher.start_line=1
+matcher.start_col=10
+matcher.end_line=8
+matcher.end_col=100
+

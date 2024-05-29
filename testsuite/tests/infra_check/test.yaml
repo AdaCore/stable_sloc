@@ -1,4 +1,7 @@
 description: Simple sanity check on the correct setup of the testsuite
   infrastructure
 
+resources:
+  infra_check: .
+
 driver: python

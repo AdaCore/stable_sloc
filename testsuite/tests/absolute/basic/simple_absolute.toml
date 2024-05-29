@@ -1,0 +1,8 @@
+[simple_absolute]
+file="*.txt"
+kind="absolute"
+annotations=[{purpose="testing", message="This entry matched"}]
+matcher.start_line=3
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col=45

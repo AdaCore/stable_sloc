@@ -1,0 +1,148 @@
+annotations.toml:48:1 Error while parsing entry "missing_ec": Missing "end_col" field
+annotations.toml:38:1 Error while parsing entry "missing_el": Missing "end_line" field
+annotations.toml:28:1 Error while parsing entry "missing_sc": Missing "start_col" field
+annotations.toml:18:1 Error while parsing entry "missing_sl": Missing "start_line" field
+annotations.toml:94:17 Error while parsing entry "wrong_ec": Unexpected type for "end_col": expected TOML_INTEGER but got TOML_TABLE
+annotations.toml:82:18 Error while parsing entry "wrong_el": Unexpected type for "end_line": expected TOML_INTEGER but got TOML_ARRAY
+annotations.toml:70:19 Error while parsing entry "wrong_sc": Unexpected type for "start_col": expected TOML_INTEGER but got TOML_STRING
+annotations.toml:58:20 Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
+missing_file: match FAILED
+   inexistent.txt
+   Reason: Error while reading inexistent.txt: inexistent.txt: No such file or directory
+   Annotation:
+      {"message":"This entry should fails to match due to missing file"}
+out_of_bounds_line_start: match FAILED
+   content.txt
+   Reason: Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1
+   Annotation:
+      {"message":"This entry should fail to match due to out of bound sloc range"}
+out_of_bounds_cols_start: match FAILED
+   content.txt
+   Reason: Line 1 of content.txt is not long enough. Required 1000 characters but got 38.
+   Annotation:
+      {"message":"This entry should fail to match due to out of bound sloc range"}
+out_of_bounds_cols_end: match FAILED
+   content.txt
+   Reason: Line 8 of content.txt is not long enough. Required 100 characters but got 40.
+   Annotation:
+      {"message":"This entry should fail to match due to out of bound sloc range"}
+out_of_bounds_line_end: match FAILED
+   content.txt
+   Reason: Not enough lines in content.txt to contain the sloc range 1:1 - 1001:1
+   Annotation:
+      {"message":"This entry should fail to match due to out of bound sloc range"}
+{
+  "load_diagnostics": [
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 48,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 38,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 28,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 18,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 94,
+        "column": 17
+      },
+      "diagnostic": "Error while parsing entry \"wrong_ec\": Unexpected type for \"end_col\": expected TOML_INTEGER but got TOML_TABLE"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 82,
+        "column": 18
+      },
+      "diagnostic": "Error while parsing entry \"wrong_el\": Unexpected type for \"end_line\": expected TOML_INTEGER but got TOML_ARRAY"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 70,
+        "column": 19
+      },
+      "diagnostic": "Error while parsing entry \"wrong_sc\": Unexpected type for \"start_col\": expected TOML_INTEGER but got TOML_STRING"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 58,
+        "column": 20
+      },
+      "diagnostic": "Error while parsing entry \"wrong_sl\": Unexpected type for \"start_line\": expected TOML_INTEGER but got TOML_BOOLEAN"
+    }
+  ],
+  "match_results": [
+    {
+      "annotation": {
+        "message": "This entry should fails to match due to missing file"
+      },
+      "identifier": "missing_file",
+      "file": "inexistent.txt",
+      "success": false,
+      "diagnostic": "Error while reading inexistent.txt: inexistent.txt: No such file or directory"
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail to match due to out of bound sloc range"
+      },
+      "identifier": "out_of_bounds_line_start",
+      "file": "content.txt",
+      "success": false,
+      "diagnostic": "Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1"
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail to match due to out of bound sloc range"
+      },
+      "identifier": "out_of_bounds_cols_start",
+      "file": "content.txt",
+      "success": false,
+      "diagnostic": "Line 1 of content.txt is not long enough. Required 1000 characters but got 38."
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail to match due to out of bound sloc range"
+      },
+      "identifier": "out_of_bounds_cols_end",
+      "file": "content.txt",
+      "success": false,
+      "diagnostic": "Line 8 of content.txt is not long enough. Required 100 characters but got 40."
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail to match due to out of bound sloc range"
+      },
+      "identifier": "out_of_bounds_line_end",
+      "file": "content.txt",
+      "success": false,
+      "diagnostic": "Not enough lines in content.txt to contain the sloc range 1:1 - 1001:1"
+    }
+  ]
+}

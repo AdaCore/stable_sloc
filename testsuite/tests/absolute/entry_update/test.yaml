@@ -1,0 +1,6 @@
+description: Test basic lal-context based entry generation
+
+resources:
+  dummy_text_content: .
+
+driver: python

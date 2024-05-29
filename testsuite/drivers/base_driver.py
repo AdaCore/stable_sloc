@@ -15,25 +15,12 @@ class BaseDriver(ClassicTestDriver):
     Base class to provide common test driver helpers.
     """
 
-    RESOURCES: Dict[str, str] = {}
-
     def shared_dir(self, *name: str) -> str:
         """Get full path to a resource.
 
         :param name: Parameters as passed to `os.path.join`.
         """
         return os.path.join(self.env.root_dir, "shared", *name)
-
-    def check_file(self, filename: str) -> None:
-        """Check file presence.
-
-        If the file does not exist test is aborted.
-        """
-        if not os.path.isfile(filename):
-            import traceback
-
-            traceback.print_stack()
-            raise TestAbortWithError("missing file: %s" % filename)
 
     def sync_res(self, name: str, dest: Optional[str] = None) -> None:
         """Sync resources to working directory.
@@ -59,6 +46,7 @@ class BaseDriver(ClassicTestDriver):
     def set_up(self) -> None:
         super().set_up()
 
-        # Synchronize all resources declared in the RESOURCES class variable
-        for resource, dest in self.RESOURCES.items():
-            self.sync_res(resource, dest)
+        # Sync the required resources for the test
+        if "resources" in self.test_env:
+            for src_dir, dest_dir in self.test_env["resources"].items():
+                self.sync_res(src_dir, dest_dir)

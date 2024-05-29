@@ -1,0 +1,9 @@
+Entry 'my_spec:
+   Annotations : [{"message":"sample text"}]
+   File matcher: content.txt
+   Matcher kind: absolute
+   Sloc matcher: absolute matcher for 5:7 - 7:3
+'my_spec: match SUCCESS
+   content.txt:5:7 - 7:3
+   Annotation:
+      {"message":"sample text"}
