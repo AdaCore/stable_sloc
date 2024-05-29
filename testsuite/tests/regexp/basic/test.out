@@ -1,0 +1,10 @@
+Loading entries from simple_regexp.toml
+Entry simple_regexp:
+   Annotation  : [{"message":"This entry matched","purpose":"testing"}]
+   File matcher: *.txt
+   Matcher kind: regexp
+   Sloc matcher: Regexp matcher searching: regexp matcher.*period\.
+simple_regexp: match SUCCESS
+   content.txt:4:48 - 7:61
+   Annotation:
+      {"message":"This entry matched","purpose":"testing"}

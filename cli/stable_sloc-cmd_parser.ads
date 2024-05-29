@@ -103,7 +103,7 @@ package Stable_Sloc.Cmd_Parser is
 
    package JSON_Results is new Parse_Flag
      (Parser,
-      Long => "--json-results",
-      Help => "Output the match results in JSON format");
+      Long => "--json-output",
+      Help => "Output the match results and diagnostics in JSON format");
 
 end Stable_Sloc.Cmd_Parser;

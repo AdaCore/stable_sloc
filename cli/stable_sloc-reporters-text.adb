@@ -46,7 +46,7 @@ package body Stable_Sloc.Reporters.Text is
                   Put_Line ("   Reason: " & (+Match.Diagnostic));
                end if;
                Put_Line
-                 ("   Annotation: " & ASCII.LF
+                 ("   Annotation:" & ASCII.LF &"      "
                   & (Stable_Sloc.TOML_Utils.To_JSON (Match.Annotation).Write));
             end loop;
          end if;

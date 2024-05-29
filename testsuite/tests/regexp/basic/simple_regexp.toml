@@ -1,0 +1,6 @@
+[simple_regexp]
+file="*.txt"
+kind="regexp"
+annotations=[{purpose="testing", message="This entry matched"}]
+matcher.regexp='regexp matcher.*period\.'
+matcher.single_line=true

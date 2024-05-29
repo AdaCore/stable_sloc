@@ -1,0 +1,8 @@
+This is a text file with some content.
+It has multiple lines, which is useful to test multi-line regular expressions
+let us add a few more lines to ensure we have enough content to work with
+This file has no other purpose but to test the regexp matcher
+It might be useful in other contexts, but this is what it was originally
+intended to be used for.
+Would you look at that: not all sentences end with a period.
+All right, this truly is the final line.

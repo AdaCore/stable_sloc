@@ -1,0 +1,4 @@
+description: Test that the backend emits correct diagnostics in case an entry
+  is ill formed, or there is an error while attempting to match a file.
+
+driver: python

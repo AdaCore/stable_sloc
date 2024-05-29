@@ -1,0 +1,74 @@
+annotations.toml:7:16 Error while parsing entry "failed_compilation": Failed to compile regular expression: unmatched ()
+annotations.toml:16:1 Error while parsing entry "missing_regexp": Missing "regexp" field
+annotations.toml:47:26 Error while parsing entry "wrong_case_insensitive_type": Unexpected type for "case_insensitive": expected TOML_BOOLEAN but got TOML_ARRAY
+annotations.toml:31:20 Error while parsing entry "wrong_multi_line_type": Unexpected type for "multi_line": expected TOML_BOOLEAN but got TOML_STRING
+annotations.toml:23:16 Error while parsing entry "wrong_regexp_type": Unexpected type for "regexp": expected TOML_STRING but got TOML_BOOLEAN
+annotations.toml:39:21 Error while parsing entry "wrong_single_line_type": Unexpected type for "single_line": expected TOML_BOOLEAN but got TOML_INTEGER
+valid_entry: match FAILED
+   non_existent.txt
+   Reason: Could not read from file non_existent.txt
+   Annotation:
+      {"message":"Valid entry, to test missing file"}
+{
+  "load_diagnostics": [
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 7,
+        "column": 16
+      },
+      "diagnostic": "Error while parsing entry \"failed_compilation\": Failed to compile regular expression: unmatched ()"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 16,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_regexp\": Missing \"regexp\" field"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 47,
+        "column": 26
+      },
+      "diagnostic": "Error while parsing entry \"wrong_case_insensitive_type\": Unexpected type for \"case_insensitive\": expected TOML_BOOLEAN but got TOML_ARRAY"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 31,
+        "column": 20
+      },
+      "diagnostic": "Error while parsing entry \"wrong_multi_line_type\": Unexpected type for \"multi_line\": expected TOML_BOOLEAN but got TOML_STRING"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 23,
+        "column": 16
+      },
+      "diagnostic": "Error while parsing entry \"wrong_regexp_type\": Unexpected type for \"regexp\": expected TOML_STRING but got TOML_BOOLEAN"
+    },
+    {
+      "file": "annotations.toml",
+      "location": {
+        "line": 39,
+        "column": 21
+      },
+      "diagnostic": "Error while parsing entry \"wrong_single_line_type\": Unexpected type for \"single_line\": expected TOML_BOOLEAN but got TOML_INTEGER"
+    }
+  ],
+  "match_results": [
+    {
+      "annotation": {
+        "message": "Valid entry, to test missing file"
+      },
+      "identifier": "valid_entry",
+      "file": "non_existent.txt",
+      "success": false,
+      "diagnostic": "Could not read from file non_existent.txt"
+    }
+  ]
+}

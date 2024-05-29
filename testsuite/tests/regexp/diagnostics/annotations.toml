@@ -1,0 +1,55 @@
+[failed_compilation]
+kind="regexp"
+annotations=[
+    {message="This entry should fail to compile"}
+]
+file="*.txt"
+matcher.regexp='(unclosed left bracket'
+
+[missing_regexp]
+kind="regexp"
+annotations=[
+    {message='This entry lacks a "regexp" field'}
+]
+file="*.txt"
+# Add a case_insensitive field so that the matcher table isn't empty
+matcher.case_insensitive=true
+
+[wrong_regexp_type]
+kind="regexp"
+annotations=[
+    {message="This entry has a regexp of the wrong type"}
+]
+matcher.regexp=true
+
+[wrong_multi_line_type]
+kind="regexp"
+annotations=[
+    {message="This entry has a 'multi_line' of the wrong type"}
+]
+matcher.regexp=".*"
+matcher.multi_line="foo"
+
+[wrong_single_line_type]
+kind="regexp"
+annotations=[
+    {message="This entry has a 'single_line' of the wrong type"}
+]
+matcher.regexp=".*"
+matcher.single_line=3
+
+[wrong_case_insensitive_type]
+kind="regexp"
+annotations=[
+    {message="This entry has a 'case_insensitive' of the wrong type"}
+]
+matcher.regexp=".*"
+matcher.case_insensitive=[]
+
+[valid_entry]
+kind="regexp"
+annotations=[
+    {message="Valid entry, to test missing file"}
+]
+file="*.txt"
+matcher.regexp=".*"

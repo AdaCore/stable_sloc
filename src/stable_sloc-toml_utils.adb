@@ -28,12 +28,12 @@ package body Stable_Sloc.TOML_Utils is
    begin
       if Val.Kind /= TOML_Table then
          raise Stable_Sloc.Matchers.Parse_Error with
-           Format_Location (Val.Location) & ":Can't get " & Key & " from a "
-           & Val.Kind'Image;
+           Format_Location (Val.Location) & ":Can't get """ & Key
+           & """ from a " & Val.Kind'Image;
       end if;
       if not Val.Has (Key) then
          raise Stable_Sloc.Matchers.Parse_Error with
-           Format_Location (Val.Location) & ":Missing " & Key & " field";
+           Format_Location (Val.Location) & ":Missing """ & Key & """ field";
       end if;
       if Val.Get (Key).Kind /= Kind then
          raise Stable_Sloc.Matchers.Parse_Error with

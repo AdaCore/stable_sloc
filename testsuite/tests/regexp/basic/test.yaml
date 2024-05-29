@@ -1,0 +1,4 @@
+description: Test that loading a regexp matcher entry
+  works as expected and matches the intended target
+
+driver: python

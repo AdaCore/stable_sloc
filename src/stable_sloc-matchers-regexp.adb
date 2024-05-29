@@ -40,7 +40,7 @@ package body Stable_Sloc.Matchers.Regexp is
          return
            [1 => (Success => False,
                   Reason  =>
-                    (+"Could not read from file")
+                    (+"Could not read from file ")
                      & GNATCOLL.VFS."+" (File.Full_Name))];
       end if;
       From := Content.all'First;
@@ -108,7 +108,8 @@ package body Stable_Sloc.Matchers.Regexp is
          raise;
       when Exc : Expression_Error =>
          raise Parse_Error with
-            "Failed to compile regular expression:" & ASCII.LF
+            TOML.Format_Location (Spec.Get ("regexp").Location)
+            & ":Failed to compile regular expression: "
             & Ada.Exceptions.Exception_Message (Exc);
       when Exc : others =>
          raise Parse_Error with

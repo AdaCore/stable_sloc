@@ -216,7 +216,7 @@ package body Stable_Sloc is
             Parsed_Entry.Kind := Get (Spec, "kind");
             Parsed_Entry.Sloc_Matcher :=
               new Sloc_Matcher_T'Class'
-                (Instantiate_Matcher (Spec.Get("matcher"),
+                (Instantiate_Matcher (Get (Spec, "matcher", TOML.TOML_Table),
                                       Kind => +Parsed_Entry.Kind));
             Parsed_Entry.File_Pattern :=
               (if not File_Matcher.Is_Null
@@ -242,7 +242,7 @@ package body Stable_Sloc is
                      Location   =>
                        (Entr.Value.Location.Line, Entr.Value.Location.Column),
                      Diagnostic =>
-                       +"Error while parsing entry" & Entr.Key & ": "
+                       +"Error while parsing entry """ & Entr.Key & """: "
                        & "Could not compile file pattern. "
                        & Ada.Exceptions.Exception_Message (Exc)));
             when Exc : Unknown_Matcher_Error =>
@@ -254,7 +254,7 @@ package body Stable_Sloc is
                           (Entr.Value.Location.Line,
                            Entr.Value.Location.Column),
                         Diagnostic =>
-                        +"Error while parsing entry" & Entr.Key & ": "
+                        +"Error while parsing entry """ & Entr.Key & """: "
                         & Ada.Exceptions.Exception_Message (Exc)));
                end if;
             when Exc : Parse_Error =>
@@ -269,7 +269,8 @@ package body Stable_Sloc is
                      (File       => Spec_File,
                       Location   => Loc,
                       Diagnostic =>
-                        +"Error while parsing entry" & Entr.Key & ": " & Msg));
+                        +"Error while parsing entry """ & Entr.Key & """: "
+                        & Msg));
                end;
          end;
       end loop;
