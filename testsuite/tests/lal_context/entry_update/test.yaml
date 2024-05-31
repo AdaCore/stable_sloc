@@ -1,0 +1,6 @@
+description: Test basic lal-context based entry generation
+
+resources:
+  simple_ada_prj: .
+
+driver: python

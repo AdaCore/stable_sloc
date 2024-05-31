@@ -3,14 +3,12 @@ with Ada.Strings.Hash;
 
 with Stable_Sloc.TOML_Utils;
 
-with Libadalang.Common;     use Libadalang.Common;
+with Libadalang.Common;           use Libadalang.Common;
+with Langkit_Support.Diagnostics;
 with Langkit_Support.Text;
-with Langkit_Support.Slocs; use Langkit_Support.Slocs;
+with Langkit_Support.Slocs;       use Langkit_Support.Slocs;
 
 package body Stable_Sloc.Matchers.LAL_Ctx is
-
-   function Join_NL (L, R : String) return String;
-   --  Join two strings with a new line in between them
 
    function Get_From_File (File : Virtual_File) return LAL.Analysis_Unit;
    --  Wrapper around LAL.Get_From_File that takes care of initializing the
@@ -35,11 +33,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
    is
       use LAL;
       Unit  : constant Analysis_Unit := Get_From_File (File);
-      Diags : constant Unbounded_String :=
-        +(if Unit.Has_Diagnostics
-          then [for Diag of Unit.Diagnostics
-                  => Unit.Format_GNU_Diagnostic (Diag)]'Reduce (Join_NL, "")
-          else "");
+      Diags : Unbounded_String;
 
       Res         : Sloc_Match :=
         (Success => False, Reason => Null_Unbounded_String);
@@ -104,11 +98,13 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
 
    --  Start of processing for Match
    begin
+      if Unit.Has_Diagnostics then
+         for Diag of Unit.Diagnostics loop
+            Diags := (Unit.Format_GNU_Diagnostic (Diag) & ASCII.LF) & Diags;
+         end loop;
+      end if;
       if Unit.Root.Is_Null then
-         Res.Reason :=
-           Unbounded_String'
-             (+"Could not get analysis tree for " & File.Display_Full_Name)
-           & Diags;
+         Res.Reason := Diags;
          return [Res];
       end if;
       Unit.Root.Traverse (Filter_Nodes'Access);
@@ -188,7 +184,8 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          begin
             if Name.Kind /= TOML_String then
                raise Parse_Error with
-                 "Expected a " & TOML_String'Image & " for a sem_parent, but"
+                 Format_Location(Name.Location) & ":Expected a "
+                 & TOML_String'Image & " for a sem_parent, but"
                  & " got a " & Name.Kind'Image;
             end if;
             Res.Sem_Parent_Names.Append (Name.As_Unbounded_String);
@@ -208,7 +205,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
      (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class
    is
       use LAL;
-      Unit       : Analysis_Unit := Get_From_File (File);
+      Unit            : Analysis_Unit := Get_From_File (File);
       Start_Sloc_Node : Ada_Node;
       End_Sloc_Node   : Ada_Node;
       Ctx_Basic_Decl  : Basic_Decl;
@@ -245,7 +242,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       if Start_Sloc_Node.Kind not in Ada_Basic_Decl then
          Start_Sloc_Node := Start_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
-      if Start_Sloc_Node.Is_Null then
+      if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
          raise Parse_Error with
            "Did not find enclosing basic decl for " & Image (Span.Start_Sloc);
       end if;
@@ -253,7 +250,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       if End_Sloc_Node.Kind not in Ada_Basic_Decl then
          End_Sloc_Node := End_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
-      if End_Sloc_Node.Is_Null then
+      if End_Sloc_Node.Is_Null or else End_Sloc_Node.Unit /= Unit then
          raise Parse_Error with
            "Did not find enclosing basic decl for " & Image (Span.End_Sloc);
       end if;
@@ -264,7 +261,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       if Start_Sloc_Node.Kind not in Ada_Basic_Decl then
          Start_Sloc_Node := Start_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
-      if Start_Sloc_Node.Is_Null then
+      if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
          raise Parse_Error with
            "Did not find enclosing basic decl for " & Image (Span);
       end if;
@@ -305,23 +302,20 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       return Ctx.Get_From_File (+File.Full_Name);
    end Get_From_File;
 
-   -------------
-   -- Join_NL --
-   -------------
-
-   function Join_NL (L, R : String) return String is (L & ASCII.LF & R);
-
    ---------------------------------
    -- Get_Basic_Decl_Parent_Names --
    ---------------------------------
 
    function Get_Basic_Decl_Parent_Names (N : LAL.Basic_Decl) return US_Vector
    is
-      Cur : LAL.Basic_Decl := N;
+      use LAL;
+      Cur : Basic_Decl := N;
+      Top : constant Basic_Decl := N.P_Top_Level_Decl (N.Unit);
       Res : US_Vector;
    begin
-      while not Cur.Is_Null loop
+      loop
          Res.Append (Unbounded_String'(Get_Canonical_Name (Cur)));
+         exit when Cur = Top;
          Cur := Cur.P_Parent_Basic_Decl;
       end loop;
       Res.Reverse_Elements;

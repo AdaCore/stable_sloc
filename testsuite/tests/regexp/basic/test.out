@@ -1,6 +1,6 @@
 Loading entries from simple_regexp.toml
 Entry simple_regexp:
-   Annotation  : [{"message":"This entry matched","purpose":"testing"}]
+   Annotations : [{"message":"This entry matched","purpose":"testing"}]
    File matcher: *.txt
    Matcher kind: regexp
    Sloc matcher: Regexp matcher searching: regexp matcher.*period\.

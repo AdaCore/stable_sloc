@@ -1,0 +1,16 @@
+[lal_demo]
+annotations = [
+  {purpose="xcov.exempt", justification="not used"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[lal_demo.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8

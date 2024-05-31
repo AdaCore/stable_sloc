@@ -16,4 +16,6 @@ package body Pkg is
       return X.all = 3;
    end Foo;
 
+   procedure Bar (X : Integer_Access; Res : out Integer) is null;
+
 end Pkg;

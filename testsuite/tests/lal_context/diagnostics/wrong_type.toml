@@ -1,0 +1,118 @@
+# All these annotations should fail to load due to a matcher.* filed that is
+# of the incorrect type.
+
+[wrong_sl]
+annotations = [
+  {message="This entry should fail due to a wrong 'start_line' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_sl.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = true
+
+[wrong_sc]
+annotations = [
+  {message="This entry should fail due to a wrong 'start_col' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_sc.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = true
+start_line = 8
+
+[wrong_el]
+annotations = [
+  {message="This entry should fail due to a wrong 'end_line' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_el.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = true
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[wrong_ec]
+annotations = [
+  {message="This entry should fail due to a wrong 'end_col' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_ec.matcher]
+context_hash = "16#64BB2695#"
+end_col = true
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[wrong_context_hash]
+annotations = [
+  {message="This entry should fail due to a wrong 'context_hash' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_context_hash.matcher]
+context_hash = true
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[wrong_sem_parents]
+annotations = [
+  {message="This entry should fail due to a wrong 'sem_parents' type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_sem_parents.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = true
+start_col = 6
+start_line = 8
+
+[wrong_sem_parent_item]
+annotations = [
+  {message="This entry should fail due to a wrong 'sem_parents' item type"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[wrong_sem_parent_item.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+true,
+false,
+]
+start_col = 6
+start_line = 8

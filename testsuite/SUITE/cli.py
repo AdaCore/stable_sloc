@@ -4,7 +4,7 @@ Various utilities abstracting the use of the stable sloc CLI
 
 import sys
 
-from e3.os.process import Run
+from e3.os.process import Run, command_line_image
 from e3.testsuite.driver.classic import TestAbortWithFailure
 
 

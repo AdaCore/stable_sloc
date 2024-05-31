@@ -25,6 +25,10 @@ package Stable_Sloc is
    --  Return "<Line>:<Column>" if Self is not No_Sloc, return the empty string
    --  otherwise.
 
+   function "<" (L, R : Sloc) return Boolean;
+   --  Returns whether L precedes R. This is a lexicographical order on
+   --  Line, Column.
+
    type Sloc_Span is record
       Start_Sloc, End_Sloc : Sloc;
    end record;

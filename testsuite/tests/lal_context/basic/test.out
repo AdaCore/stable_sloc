@@ -1,0 +1,27 @@
+Loading entries from lal_test.toml
+Entry lal_demo:
+   Annotations : [{"justification":"not used","purpose":"xcov.exempt"}]
+   File matcher: pkg-child.adb
+   Matcher kind: lal_context
+   Sloc matcher: LAL context based matcher, matching pkg.child.bar + 8:6 - 8:19
+{
+  "load_diagnostics": [
+  ],
+  "match_results": [
+    {
+      "annotation": {
+        "justification": "not used",
+        "purpose": "xcov.exempt"
+      },
+      "identifier": "lal_demo",
+      "file": "pkg-child.adb",
+      "success": true,
+      "location": {
+        "start_line": 11,
+        "start_column": 10,
+        "end_line": 11,
+        "end_column": 23
+      }
+    }
+  ]
+}

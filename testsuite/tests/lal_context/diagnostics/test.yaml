@@ -1,0 +1,7 @@
+description: Test that the backends emits appropriate diagnostics in case
+  an entry isn't well formed, or some error happens during matching.
+
+resources:
+  simple_ada_prj: .
+
+driver: python

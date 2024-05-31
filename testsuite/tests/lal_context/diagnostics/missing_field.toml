@@ -1,0 +1,95 @@
+# All these entries should fail to load due to a missing field in the
+# "matcher" table.
+
+[missing_hash]
+annotations = [
+  {message="This entry should fail due to a missing 'contex_hash' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_hash.matcher]
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[missing_sem_parents]
+annotations = [
+  {message="This entry should fail due to a missing 'sem_parents' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_sem_parents.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+start_col = 6
+start_line = 8
+
+[missing_sl]
+annotations = [
+  {message="This entry should fail due to a missing 'start_line' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_sl.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+
+[missing_sc]
+annotations = [
+  {message="This entry should fail due to a missing 'start_col' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_sc.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_line = 8
+
+[missing_el]
+annotations = [
+  {message="This entry should fail due to a missing 'end_line' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_el.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[missing_ec]
+annotations = [
+  {message="This entry should fail due to a missing 'end_col' field"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[missing_ec.matcher]
+context_hash = "16#64BB2695#"
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8

@@ -95,25 +95,6 @@ begin
          Dump_Entries (DB);
       end if;
 
-      --  Match the entries on the passed files
-
-      if Files'Length = 0
-        and then Output = No_File
-      then
-         if Cmd.Verbose.Get then
-            Put_Line ("Not files to process, nothing to do.");
-         end if;
-         return;
-      end if;
-      declare
-         VF_Arr : constant File_Array :=
-           [for File of Files => File];
-         Res    : constant Match_Result_Vec :=
-           Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
-      begin
-         Reporter.Report_Match_Results (Res);
-      end;
-
       --  Dump the entries to file
 
       if Output /= No_File and then not Output.Is_Absolute_Path
@@ -128,6 +109,23 @@ begin
          end if;
          Write_Entries (DB, Output);
       end if;
+
+      --  Match the entries on the passed files
+
+      if Files'Length = 0 then
+         if Cmd.Verbose.Get and then Output = No_File then
+            Put_Line ("No files to process, nothing to do.");
+         end if;
+         return;
+      end if;
+      declare
+         VF_Arr : constant File_Array :=
+           [for File of Files => File];
+         Res    : constant Match_Result_Vec :=
+           Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
+      begin
+         Reporter.Report_Match_Results (Res);
+      end;
    end;
 
 end Stable_Sloc.CLI;

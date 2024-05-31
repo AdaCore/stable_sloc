@@ -496,7 +496,7 @@ package body Stable_Sloc is
       while Cur /= No_Element loop
          Put_Line (+("Entry " & Key (Cur) & ":"));
          Put_Line
-           ("   Annotation  : "
+           ("   Annotations : "
             & To_JSON (Element (Cur).Annotations).Write (Compact => True));
          Put_Line ("   File matcher: " & (+Element (Cur).File_Pattern));
          Put_Line ("   Matcher kind: " & (+Element (Cur).Kind));
@@ -527,7 +527,7 @@ package body Stable_Sloc is
             Entry_Value   : TOML_Value := Create_Table;
          begin
             Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
-            Entry_Value.Set ("annotation", Entr.Annotations);
+            Entry_Value.Set ("annotations", Entr.Annotations);
             Entry_Value.Set ("kind", Create_String (Entr.Kind));
             Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
             Res.Set (Key (Cur), Entry_Value);
@@ -546,6 +546,13 @@ package body Stable_Sloc is
                Close (File_T);
             end if;
    end Write_Entries;
+
+   ---------
+   -- "<" --
+   ---------
+
+   function "<" (L, R : Sloc) return Boolean is
+     (if L.Line = R.Line then L.Column < R.Column else L.Line < R.Line);
 
    -----------
    -- Image --

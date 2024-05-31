@@ -1,0 +1,6 @@
+description: Simple test for a LAL context based matcher.
+
+resources:
+  simple_ada_prj: .
+
+driver: python

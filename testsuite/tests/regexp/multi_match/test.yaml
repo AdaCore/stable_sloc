@@ -1,4 +1,7 @@
 description: Test that a regexp based entry can match multiple times, both in
   the same file and across multiple files.
 
+resources:
+  simple_ada_prj: .
+
 driver: python

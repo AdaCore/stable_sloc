@@ -1,4 +1,3 @@
-import os
 import sys
 
 from e3.testsuite.driver.diff import DiffTestDriver

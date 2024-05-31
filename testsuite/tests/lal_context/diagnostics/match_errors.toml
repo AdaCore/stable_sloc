@@ -1,0 +1,52 @@
+# All these entries should properly load, but fail to match
+
+[missing_file]
+annotations = [
+  {message="This entry should fail due to a missing file"}
+]
+file = "inexistent.adb"
+kind = "lal_context"
+[missing_file.matcher]
+context_hash = "16#64BB2695#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[mismatched_hash]
+annotations = [
+  {message="This entry should fail due to a mismatch in the decl hash"}
+]
+file = "pkg-child.adb"
+kind = "lal_context"
+[mismatched_hash.matcher]
+context_hash = "16#FFFFFFFF#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
+
+[mismatched_parents]
+annotations = [
+  {message="This entry should fail due to a difference in parent names"}
+]
+file = "pkg.adb"
+kind = "lal_context"
+[mismatched_parents.matcher]
+context_hash = "16#FFFFFFFF#"
+end_col = 19
+end_line = 8
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 6
+start_line = 8
