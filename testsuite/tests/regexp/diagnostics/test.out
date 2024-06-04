@@ -1,9 +1,9 @@
-annotations.toml:7:16 Error while parsing entry "failed_compilation": Failed to compile regular expression: unmatched ()
-annotations.toml:16:1 Error while parsing entry "missing_regexp": Missing "regexp" field
-annotations.toml:47:26 Error while parsing entry "wrong_case_insensitive_type": Unexpected type for "case_insensitive": expected TOML_BOOLEAN but got TOML_ARRAY
-annotations.toml:31:20 Error while parsing entry "wrong_multi_line_type": Unexpected type for "multi_line": expected TOML_BOOLEAN but got TOML_STRING
-annotations.toml:23:16 Error while parsing entry "wrong_regexp_type": Unexpected type for "regexp": expected TOML_STRING but got TOML_BOOLEAN
-annotations.toml:39:21 Error while parsing entry "wrong_single_line_type": Unexpected type for "single_line": expected TOML_BOOLEAN but got TOML_INTEGER
+annotations.toml:7:16: Error while parsing entry "failed_compilation": Failed to compile regular expression: unmatched ()
+annotations.toml:16:1: Error while parsing entry "missing_regexp": Missing "regexp" field
+annotations.toml:47:26: Error while parsing entry "wrong_case_insensitive_type": Unexpected type for "case_insensitive": expected TOML_BOOLEAN but got TOML_ARRAY
+annotations.toml:31:20: Error while parsing entry "wrong_multi_line_type": Unexpected type for "multi_line": expected TOML_BOOLEAN but got TOML_STRING
+annotations.toml:23:16: Error while parsing entry "wrong_regexp_type": Unexpected type for "regexp": expected TOML_STRING but got TOML_BOOLEAN
+annotations.toml:39:21: Error while parsing entry "wrong_single_line_type": Unexpected type for "single_line": expected TOML_BOOLEAN but got TOML_INTEGER
 valid_entry: match FAILED
    non_existent.txt
    Reason: Could not read from file non_existent.txt

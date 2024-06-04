@@ -16,10 +16,7 @@ package body Stable_Sloc.Reporters.Text is
    is
    begin
       for Diag of Diags loop
-         Put_Line
-           (Standard_Error,
-            Diag.File.Display_Base_Name & ":" & Image (Diag.Location)
-            & " " & (+Diag.Diagnostic));
+         Put_Line (Standard_Error, Format_Diagnostic (Diag));
       end loop;
    end Report_Load_Diagnostics;
 

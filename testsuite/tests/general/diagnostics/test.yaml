@@ -1,0 +1,8 @@
+description: Test that the proper diagnostics are emitted when some part
+  of an entry is missing or ill-formatted. This test focuses on the common
+  entry fields, which are not matcher specific.
+
+resources:
+  dummy_text_content: .
+
+driver: python

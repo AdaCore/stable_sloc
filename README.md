@@ -28,6 +28,9 @@ identifier. Each entry consist of the following fields
 - `file`, a string containing a globing pattern of files on which this entry
   should be searched for.
 
+  This field is optional, if not specified or if it is equal to the empty
+  string, the entry will be active on all files.
+
 - `at_most_once`, a boolean specifying wether the entry is expected to match
   more than once. If `True`, once the entry is loaded, it will return a failed
   Match_Result upon every match once a successful match has been found.
@@ -55,6 +58,7 @@ frozen code bases.
 Entry fields:
 
 - `kind="absolute"`
+
 - `start_line`, required, integer.
 
   Line of the beginning of the location range.
@@ -86,6 +90,7 @@ the newline characters, and not line by line.
 Entry fields:
 
 - `kind="regexp"`
+
 - `regexp`, required, string.
 
   Regular expression to be matched. Uses the

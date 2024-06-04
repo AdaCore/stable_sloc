@@ -1,11 +1,11 @@
-annotations.toml:48:1 Error while parsing entry "missing_ec": Missing "end_col" field
-annotations.toml:38:1 Error while parsing entry "missing_el": Missing "end_line" field
-annotations.toml:28:1 Error while parsing entry "missing_sc": Missing "start_col" field
-annotations.toml:18:1 Error while parsing entry "missing_sl": Missing "start_line" field
-annotations.toml:94:17 Error while parsing entry "wrong_ec": Unexpected type for "end_col": expected TOML_INTEGER but got TOML_TABLE
-annotations.toml:82:18 Error while parsing entry "wrong_el": Unexpected type for "end_line": expected TOML_INTEGER but got TOML_ARRAY
-annotations.toml:70:19 Error while parsing entry "wrong_sc": Unexpected type for "start_col": expected TOML_INTEGER but got TOML_STRING
-annotations.toml:58:20 Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
+annotations.toml:48:1: Error while parsing entry "missing_ec": Missing "end_col" field
+annotations.toml:38:1: Error while parsing entry "missing_el": Missing "end_line" field
+annotations.toml:28:1: Error while parsing entry "missing_sc": Missing "start_col" field
+annotations.toml:18:1: Error while parsing entry "missing_sl": Missing "start_line" field
+annotations.toml:94:17: Error while parsing entry "wrong_ec": Unexpected type for "end_col": expected TOML_INTEGER but got TOML_TABLE
+annotations.toml:82:18: Error while parsing entry "wrong_el": Unexpected type for "end_line": expected TOML_INTEGER but got TOML_ARRAY
+annotations.toml:70:19: Error while parsing entry "wrong_sc": Unexpected type for "start_col": expected TOML_INTEGER but got TOML_STRING
+annotations.toml:58:20: Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
 missing_file: match FAILED
    inexistent.txt
    Reason: Error while reading inexistent.txt: inexistent.txt: No such file or directory

@@ -199,6 +199,12 @@ package body Stable_Sloc is
          begin
             Parsed_Entry.Annotations :=
               Get (Spec, "annotations", TOML.TOML_Array);
+            if Parsed_Entry.Annotations.Length = 0 then
+               raise Parse_Error with
+               TOML.Format_Location (Parsed_Entry.Annotations.Location)
+               & ":Empty annotations array";
+            end if;
+
             for J in 1 .. Parsed_Entry.Annotations.Length loop
                declare Annot : constant TOML.TOML_Value :=
                  Parsed_Entry.Annotations.Item (J);
@@ -207,12 +213,22 @@ package body Stable_Sloc is
                   then
                      raise Parse_Error with
                        TOML.Format_Location (Annot.Location)
-                       & ":Wrong type for an annotation, expected "
+                       & ":Wrong type for an annotation: expected "
                        & TOML.TOML_Table'Image & " but got "
                        & Annot.Kind'Image;
                   end if;
+                  if Annot.Has ("purpose")
+                    and then Annot.Get ("purpose").Kind not in TOML.TOML_String
+                  then
+                     raise Parse_Error with
+                       TOML.Format_Location (Annot.Get ("purpose").Location)
+                       & ":Wrong type for ""purpose"": expected "
+                       & TOML.TOML_String'Image & "but got "
+                       & Annot.Get ("purpose").Kind'Image;
+                  end if;
                end;
             end loop;
+
             Parsed_Entry.Kind := Get (Spec, "kind");
             Parsed_Entry.Sloc_Matcher :=
               new Sloc_Matcher_T'Class'
@@ -234,6 +250,7 @@ package body Stable_Sloc is
               Get_Or_Default (Spec, "at_most_once", False);
             Parsed_Entry.Has_Matched := False;
             Local_Entries.Map.Insert (Entr.Key, Parsed_Entry);
+
          exception
             when Exc : GNAT.Regexp.Error_In_Regexp =>
                Diags.Append
@@ -245,6 +262,7 @@ package body Stable_Sloc is
                        +"Error while parsing entry """ & Entr.Key & """: "
                        & "Could not compile file pattern. "
                        & Ada.Exceptions.Exception_Message (Exc)));
+
             when Exc : Unknown_Matcher_Error =>
                if not Ignore_Unknown then
                   Diags.Append
@@ -257,6 +275,7 @@ package body Stable_Sloc is
                         +"Error while parsing entry """ & Entr.Key & """: "
                         & Ada.Exceptions.Exception_Message (Exc)));
                end if;
+
             when Exc : Parse_Error =>
                declare
                   Loc : Sloc;
@@ -274,6 +293,7 @@ package body Stable_Sloc is
                end;
          end;
       end loop;
+
       if not Diags.Is_Empty and then Strict then
          Local_Entries.Map.Clear;
       else
@@ -293,10 +313,12 @@ package body Stable_Sloc is
             end if;
             Cur := Next (Cur);
          end loop;
+
          if Diags.Is_Empty or else not Strict then
             Import_DB (DB, Local_Entries);
          end if;
       end if;
+
       return [for Diag of Diags => Diag];
    end Load_Entries;
 
@@ -572,18 +594,17 @@ package body Stable_Sloc is
       then ""
       else Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
 
+   ---------------
+   -- Is_Prefix --
+   ---------------
+
    function Is_Prefix (Prefix : String; Text : Unbounded_String) return Boolean
    is
    begin
       if Prefix'Length = 0 then
          return True;
       end if;
-      if Prefix'Length > Length (Text) then
-         return False;
-      end if;
-      return
-        (for all I in Prefix'First .. Prefix'Last =>
-         Prefix (I) = Element (Text, I));
+      return Is_Prefix (+Prefix, Text);
    end Is_Prefix;
 
    ---------------------

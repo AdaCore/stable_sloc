@@ -1,0 +1,9 @@
+description: Test that the purpose filter works as intended, i.e. that
+  the only entries that are processed are the ones with at least one
+  annotation with no purpose field, or one annotation with a purpose
+  field that begins with the argument --filter passed to the cli.
+
+resources:
+  dummy_text_content: .
+
+driver: python

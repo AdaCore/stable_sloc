@@ -56,7 +56,11 @@ begin
          end if;
          declare
             Parse_Errors : constant Load_Diagnostic_Arr :=
-              Load_Entries (Spec, DB, Strict => Cmd.Strict.Get);
+              Load_Entries
+                (Spec,
+                 DB,
+                 Ignore_Unknown => not Cmd.Unknown_Matcher.Get,
+                 Strict         => Cmd.Strict.Get);
          begin
             Reporter.Report_Load_Diagnostics (Parse_Errors);
             if Parse_Errors'Length > 0 and then Cmd.Strict.Get then

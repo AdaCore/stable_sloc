@@ -1,0 +1,39 @@
+[no_purpose]
+annotations=[
+    {message="should always be active"}
+]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=1
+matcher.end_col=2
+
+[purpose_abcdef]
+annotations=[
+    {purpose="abcdef"}
+]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=1
+matcher.end_col=2
+
+[purpose_abcfed]
+annotations=[
+    {purpose="abcfed"}
+]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=1
+matcher.end_col=2
+
+[purpose_fedcba]
+annotations=[
+    {purpose="fedcba"}
+]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=1
+matcher.end_col=2

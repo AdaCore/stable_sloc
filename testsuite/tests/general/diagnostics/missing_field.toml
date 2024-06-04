@@ -1,0 +1,35 @@
+# All the entries in this file should fail to load due to a missing field
+
+[missing_kind]
+file="content.txt"
+annotations=[
+    {message="This entry should fail due to a missing kind field"}
+]
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[missing_matcher]
+file="content.txt"
+annotations=[
+    {message="This entry should fail due to a missing matcher field"}
+]
+kind="absolute"
+
+[missing_annotations]
+file="content.txt"
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[empty_annotations]
+file="content.txt"
+annotations=[]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2

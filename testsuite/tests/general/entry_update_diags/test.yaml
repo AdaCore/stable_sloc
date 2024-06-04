@@ -1,0 +1,7 @@
+description: Test that the proper diagnostics are emitted when trying to add
+  or update an entry in an incorrect way.
+
+resources:
+  dummy_text_content: .
+
+driver: python

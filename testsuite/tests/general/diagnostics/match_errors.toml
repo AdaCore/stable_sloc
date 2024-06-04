@@ -1,0 +1,13 @@
+# All these entries should be parsed correclty but should also
+# produce some failed match results
+
+[double_match]
+file="content.txt"
+at_most_once=true
+kind="regexp"
+matcher.regexp="lines"
+[[double_match.annotations]]
+message="""
+  This entry will should produce one sucessfull match and one or more \
+  failed matches as the entry has the 'at_most_one' flag set to true\
+  """

@@ -70,15 +70,18 @@ package body Stable_Sloc.TOML_Utils is
    function Get_Or_Default
      (Val : TOML.TOML_Value; Key : String; Default : Boolean) return Boolean
    is
+      Bool : constant TOML_Value := Get_Or_Null (Val, Key);
    begin
-      if Val.Kind /= TOML_Table
-        or else not Val.Has (Key)
-        or else Val.Get (Key).Kind /= TOML_Boolean
-      then
+      if Bool.Is_Null then
          return Default;
-      else
-         return Val.Get (Key).As_Boolean;
       end if;
+      if Bool.Kind /= TOML_Boolean then
+         raise Stable_Sloc.Matchers.Parse_Error with
+         Format_Location (Bool.Location) & ":Wrong type for """ & Key
+         & """: expected " & TOML_Boolean'Image & " but got "
+         & Bool.Kind'Image;
+      end if;
+      return Bool.As_Boolean;
    end Get_Or_Default;
 
    ---------------

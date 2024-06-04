@@ -106,4 +106,9 @@ package Stable_Sloc.Cmd_Parser is
       Long => "--json-output",
       Help => "Output the match results and diagnostics in JSON format");
 
+   package Unknown_Matcher is new Parse_Flag
+     (Parser,
+      Long => "--warn-unknown-matcher",
+      Help => "Do not silently ignore entries for an unknown matcher kind");
+
 end Stable_Sloc.Cmd_Parser;

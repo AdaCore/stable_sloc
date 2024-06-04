@@ -27,8 +27,9 @@ package Stable_Sloc.TOML_Utils is
 
    function Get_Or_Default
      (Val : TOML.TOML_Value; Key : String; Default : Boolean) return Boolean;
-   --  Get the boolean value of the Key field, in the TOML_Value Val, If
-   --  anything prevents the operation from succeeding, return Default.
+   --  Get the boolean value of the Key field, in the TOML_Value Val, or return
+   --  Default if Val does not have Key field. If there is a Key field in val
+   --  but it is of the wrong type, raise Parse_Error.
 
    function Read_Span (Val : TOML_Value) return Sloc_Span with
      Pre => Val.Kind = TOML_Table;

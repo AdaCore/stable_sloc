@@ -1,0 +1,112 @@
+# All these entries should fial to load du to a field of the wrong type
+
+[wrong_file]
+file=true
+annotations=[
+    {message="This entry should fail due to a wrong file type"}
+]
+kind="absolute"
+at_most_once=true
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[wrong_annotations]
+file="content.txt"
+annotations={message="This entry should fail due to a wrong annotations type"}
+kind="absolute"
+at_most_once=true
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[wrong_kind]
+file="content.txt"
+annotations=[
+    {message="This entry should fail due to a wrong kind type"}
+]
+kind=true
+at_most_once=true
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[wrong_at_most_once]
+file="content.txt"
+annotations=[
+    {message="This entry should fail due to a wrong at_most_once type"}
+]
+kind="absolute"
+at_most_once="true"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[wrong_matcher]
+file="content.txt"
+annotations=[
+    {message="This entry should fail due to a wrong matcher type"}
+]
+kind="absolute"
+at_most_once=true
+matcher=[1, 2, 3, 4]
+
+[wrong_purpose]
+file="content.txt"
+annotations=[
+    {purpose=true, message="This entry should fail due to a wrong file type"}
+]
+kind="absolute"
+at_most_once=true
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[wrong_annotation_item]
+file="content.txt"
+annotations=[1, 2]
+kind="absolute"
+at_most_once=true
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[file_wont_compile]
+file="{test, more"
+annotations=[
+    {message="This entry should fail due to an illegal file glob pattern"}
+]
+kind="absolute"
+matcher.start_line=1
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
+
+[unknown_matcher]
+file="content.txt"
+annotations=[
+    {message="This entry should fail to load due to an unknown matcher kind"}
+]
+kind="nonexistant"
+matcher.foo="bar"
+
+# This entry is a special case to check that loading a new entry with the same
+# identifier as one that was already loaded emits a diagnostic. We must create
+# a homonym for an entry that has already been succesfully loaded as otherwise
+# it is not registered in the DB entry. This is a duplicate of double_math in
+# match_errors.toml. For the test to work, this spec file should thus be passed
+# after match_error.toml on the command line.
+[double_match]
+file="content.txt"
+annotations=[
+    {message="This entry should not load as it is duplicated"}
+]
+at_most_once=true
+kind="regexp"
+matcher.regexp="is"
