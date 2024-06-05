@@ -4,3 +4,11 @@ kind="regexp"
 annotations=[{purpose="testing", message="This entry matched"}]
 matcher.regexp='regexp matcher.*period\.'
 matcher.single_line=true
+
+[first_char]
+file="*.txt"
+kind="regexp"
+annotations=[
+    {message="maximize coverage"}
+]
+matcher.regexp="This is a"

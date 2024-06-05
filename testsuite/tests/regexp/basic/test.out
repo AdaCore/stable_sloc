@@ -1,10 +1,20 @@
 Loading entries from simple_regexp.toml
+Entry first_char:
+   Annotations : [{"message":"maximize coverage"}]
+   File matcher: *.txt
+   At_Most_Once: FALSE
+   Matcher kind: regexp
+   Sloc matcher: Regexp matcher searching: This is a
 Entry simple_regexp:
    Annotations : [{"message":"This entry matched","purpose":"testing"}]
    File matcher: *.txt
    At_Most_Once: FALSE
    Matcher kind: regexp
    Sloc matcher: Regexp matcher searching: regexp matcher.*period\.
+first_char: match SUCCESS
+   content.txt:1:1 - 1:10
+   Annotation:
+      {"message":"maximize coverage"}
 simple_regexp: match SUCCESS
    content.txt:4:48 - 7:61
    Annotation:
