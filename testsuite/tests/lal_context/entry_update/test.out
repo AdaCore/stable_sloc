@@ -1,6 +1,7 @@
 Entry my_spec:
    Annotations : [{"message":"sample text"}]
    File matcher: pkg.adb
+   At_Most_Once: TRUE
    Matcher kind: lal_context
    Sloc matcher: LAL context based matcher, matching pkg.foo + 5:3 - 5:20
 my_spec: match SUCCESS

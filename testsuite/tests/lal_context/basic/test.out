@@ -2,6 +2,7 @@ Loading entries from lal_test.toml
 Entry lal_demo:
    Annotations : [{"justification":"not used","purpose":"xcov.exempt"}]
    File matcher: pkg-child.adb
+   At_Most_Once: FALSE
    Matcher kind: lal_context
    Sloc matcher: LAL context based matcher, matching pkg.child.bar + 8:6 - 8:19
 {

@@ -516,14 +516,19 @@ package body Stable_Sloc is
       end if;
       Cur := DB.Map.First;
       while Cur /= No_Element loop
-         Put_Line (+("Entry " & Key (Cur) & ":"));
-         Put_Line
-           ("   Annotations : "
-            & To_JSON (Element (Cur).Annotations).Write (Compact => True));
-         Put_Line ("   File matcher: " & (+Element (Cur).File_Pattern));
-         Put_Line ("   Matcher kind: " & (+Element (Cur).Kind));
-         Put_Line ("   Sloc matcher: " & (+Element (Cur).Sloc_Matcher.Image));
-         Next (Cur);
+         declare
+            Entr : Constant_Reference_Type := DB.Map.Constant_Reference (Cur);
+         begin
+            Put_Line (+("Entry " & Key (Cur) & ":"));
+            Put_Line
+            ("   Annotations : "
+               & To_JSON (Entr.Annotations).Write (Compact => True));
+            Put_Line ("   File matcher: " & (+Entr.File_Pattern));
+            Put_Line ("   At_Most_Once: " & Entr.At_Most_Once'Image);
+            Put_Line ("   Matcher kind: " & (+Entr.Kind));
+            Put_Line ("   Sloc matcher: " & (+Entr.Sloc_Matcher.Image));
+            Next (Cur);
+         end;
       end loop;
    end Dump_Entries;
 
@@ -551,6 +556,8 @@ package body Stable_Sloc is
             Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
             Entry_Value.Set ("annotations", Entr.Annotations);
             Entry_Value.Set ("kind", Create_String (Entr.Kind));
+            Entry_Value.Set
+              ("at_most_once", Create_Boolean (Entr.At_Most_Once));
             Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
             Res.Set (Key (Cur), Entry_Value);
          end;

@@ -2,6 +2,7 @@ Loading entries from simple_absolute.toml
 Entry simple_absolute:
    Annotations : [{"message":"This entry matched","purpose":"testing"}]
    File matcher: *.txt
+   At_Most_Once: FALSE
    Matcher kind: absolute
    Sloc matcher: absolute matcher for 3:39 - 5:45
 simple_absolute: match SUCCESS

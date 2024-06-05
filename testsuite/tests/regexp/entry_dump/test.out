@@ -1,0 +1,15 @@
+Loading entries from new_annotations.toml
+Entry all_explicit:
+   Annotations : [{"bool":true,"int":1,"message":"all types in the annotation"}]
+   File matcher: content.txt
+   At_Most_Once: TRUE
+   Matcher kind: regexp
+   Sloc matcher: Regexp matcher searching: foo.*bar(baz?)
+Entry all_default:
+   Annotations : [{"message":"all fields default"}]
+   File matcher: content.txt
+   At_Most_Once: FALSE
+   Matcher kind: regexp
+   Sloc matcher: Regexp matcher searching: foo.bar[a-z]?
+No files to process, nothing to do.
+ok

@@ -1,0 +1,19 @@
+[all_default]
+file="content.txt"
+annotations=[
+    {message="all fields default"}
+]
+kind="regexp"
+matcher.regexp="foo.bar[a-z]?"
+
+[all_explicit]
+file="content.txt"
+annotations=[
+    {message="all types in the annotation", bool=true, int=1}
+]
+kind="regexp"
+at_most_once=true
+matcher.regexp="foo.*bar(baz?)"
+matcher.case_insensitive=true
+matcher.single_line=true
+matcher.multi_line=true

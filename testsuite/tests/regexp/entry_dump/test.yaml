@@ -1,0 +1,4 @@
+description: Test that dumping a regexp entry to file produces a spec
+  that is equivalent.
+
+driver: python
