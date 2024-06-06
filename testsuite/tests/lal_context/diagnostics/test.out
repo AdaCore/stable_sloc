@@ -1,3 +1,9 @@
+missing_field.toml:87:1: Error while parsing entry "missing_ec": Missing "end_col" field
+missing_field.toml:71:1: Error while parsing entry "missing_el": Missing "end_line" field
+missing_field.toml:10:1: Error while parsing entry "missing_hash": Missing "context_hash" field
+missing_field.toml:55:1: Error while parsing entry "missing_sc": Missing "start_col" field
+missing_field.toml:26:1: Error while parsing entry "missing_sem_parents": Missing "sem_parents" field
+missing_field.toml:39:1: Error while parsing entry "missing_sl": Missing "start_line" field
 wrong_type.toml:79:16: Error while parsing entry "wrong_context_hash": Unexpected type for "context_hash": expected TOML_STRING but got TOML_BOOLEAN
 wrong_type.toml:63:11: Error while parsing entry "wrong_ec": Unexpected type for "end_col": expected TOML_INTEGER but got TOML_BOOLEAN
 wrong_type.toml:47:12: Error while parsing entry "wrong_el": Unexpected type for "end_line": expected TOML_INTEGER but got TOML_BOOLEAN
@@ -5,12 +11,6 @@ wrong_type.toml:35:13: Error while parsing entry "wrong_sc": Unexpected type for
 wrong_type.toml:114:1: Error while parsing entry "wrong_sem_parent_item": Expected a TOML_STRING for a sem_parent, but got a TOML_BOOLEAN
 wrong_type.toml:99:15: Error while parsing entry "wrong_sem_parents": Unexpected type for "sem_parents": expected TOML_ARRAY but got TOML_BOOLEAN
 wrong_type.toml:19:14: Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
-missing_field.toml:87:1: Error while parsing entry "missing_ec": Missing "end_col" field
-missing_field.toml:71:1: Error while parsing entry "missing_el": Missing "end_line" field
-missing_field.toml:10:1: Error while parsing entry "missing_hash": Missing "context_hash" field
-missing_field.toml:55:1: Error while parsing entry "missing_sc": Missing "start_col" field
-missing_field.toml:26:1: Error while parsing entry "missing_sem_parents": Missing "sem_parents" field
-missing_field.toml:39:1: Error while parsing entry "missing_sl": Missing "start_line" field
 missing_file: match FAILED
    inexistent.adb
    Reason: inexistent.adb: Cannot read inexistent.adb
@@ -31,6 +31,54 @@ but got: pkg.bar
       {"message":"This entry should fail due to a difference in parent names"}
 {
   "load_diagnostics": [
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 87,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field"
+    },
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 71,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field"
+    },
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 10,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_hash\": Missing \"context_hash\" field"
+    },
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 55,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field"
+    },
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 26,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_sem_parents\": Missing \"sem_parents\" field"
+    },
+    {
+      "file": "missing_field.toml",
+      "location": {
+        "line": 39,
+        "column": 1
+      },
+      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field"
+    },
     {
       "file": "wrong_type.toml",
       "location": {
@@ -86,54 +134,6 @@ but got: pkg.bar
         "column": 14
       },
       "diagnostic": "Error while parsing entry \"wrong_sl\": Unexpected type for \"start_line\": expected TOML_INTEGER but got TOML_BOOLEAN"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 87,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 71,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 10,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_hash\": Missing \"context_hash\" field"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 55,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 26,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sem_parents\": Missing \"sem_parents\" field"
-    },
-    {
-      "file": "missing_field.toml",
-      "location": {
-        "line": 39,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field"
     }
   ],
   "match_results": [

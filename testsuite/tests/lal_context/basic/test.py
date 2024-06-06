@@ -8,5 +8,5 @@ import glob
 from SUITE.cli import run_cli
 
 run_cli(
-    ["-slal_test.toml", "--json-output", "-v"] + glob.glob("*.ad*")
+    ["-slal_test.toml", "--json-output", "-v"] + sorted(glob.glob("*.ad*"))
 )
