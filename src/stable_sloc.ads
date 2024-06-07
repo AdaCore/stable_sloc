@@ -1,3 +1,12 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Main entry point to the library. Includes utility to load, dump, and match
+--  Stable_Sloc specification files and entries.
+
 with Ada.Containers.Hashed_Maps;
 with Ada.Containers.Vectors;
 with Ada.Finalization;

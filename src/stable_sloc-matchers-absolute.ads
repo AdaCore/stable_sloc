@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Simple backend representing an absolute source location range
+
 package Stable_Sloc.Matchers.Absolute is
 
    type Absolute_Matcher is new Sloc_Matcher_T with private;

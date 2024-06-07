@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Reporter output JSON diagnostics and results to standard output
+
 with GNATCOLL.JSON;
 
 package Stable_Sloc.Reporters.JSON is

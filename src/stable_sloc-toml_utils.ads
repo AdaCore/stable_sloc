@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Various utilities to manipulate and convert TOML values
+
 with GNATCOLL.JSON; use GNATCOLL.JSON;
 
 with TOML; use TOML;

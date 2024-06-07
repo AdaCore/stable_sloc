@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Interface definition for the Stable_Sloc backends
+
 with Ada.Containers.Vectors;
 with Ada.Unchecked_Deallocation;
 

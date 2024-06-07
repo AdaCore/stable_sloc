@@ -1,3 +1,12 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Stable_Sloc backend leveraging a simple LAL context to identify code
+--  regions.
+
 with Libadalang.Analysis;
 
 package Stable_Sloc.Matchers.LAL_Ctx is

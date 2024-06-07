@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Standard output / Standard error based text reporter
+
 package Stable_Sloc.Reporters.Text is
 
    type Text_Reporter is new Reporter with null record;

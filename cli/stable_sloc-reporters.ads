@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Simple reporter interface
+
 with Ada.Finalization;
 
 package Stable_Sloc.Reporters is

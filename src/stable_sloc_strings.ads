@@ -1,3 +1,11 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Various string utilities
+
 with Ada.Containers.Vectors;
 with Ada.Text_IO;
 with Ada.Strings.Fixed;

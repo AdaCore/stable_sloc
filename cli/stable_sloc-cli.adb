@@ -1,3 +1,12 @@
+--
+--  Copyright (C) 2024, AdaCore
+--
+--  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+--
+
+--  Simple CLI tool exposing most of the library functionality
+--  (except custom backends).
+
 with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Finalization;
