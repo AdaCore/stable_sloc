@@ -1,9 +1,26 @@
 abstract project Config is
+
+   type Any_Build_Mode is ("dev", "prod");
+   Build_Mode : Any_Build_Mode := external("STABLE_SLOC_BUILD_MODE", "dev");
+
+   --  Use -gnatX instead of -gnat2022 to be compatible with the fsf gnat
+   Ada_Switches := ("-gnatX");
+
+   case Build_Mode is
+      when "dev" =>
+         Ada_Switches := Ada_Switches & ("-g", "-O0", "-gnata");
+      when "prod" =>
+         Ada_Switches := Ada_Switches & ("-g", "-O2");
+   end case;
     package Compiler is
-      for Default_Switches ("Ada") use ("-g", "-O0", "-gnata", "-gnat2022");
+      for Default_Switches ("Ada") use Ada_Switches;
    end Compiler;
 
    package Binder is
-      for Default_Switches ("Ada") use ("-Es");
+      case Build_Mode is
+         when "dev" =>
+            for Default_Switches ("Ada") use ("-Es");
+         when "prod" => null;
+      end case;
    end Binder;
 end Config;

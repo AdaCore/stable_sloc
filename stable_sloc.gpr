@@ -7,11 +7,11 @@ with "./config.gpr";
 library project Stable_Sloc is
 
    type Any_Lib_Kind is ("static", "static-pic", "relocatable");
-   Lib_Kind : Any_Lib_Kind := external ("STABLE_SLOC_LIBRARY_KIND", "static");
+   Lib_Kind : Any_Lib_Kind := external ("LIBRARY_TYPE", "static");
    for Library_Name use "stable_sloc";
    for Library_Kind use Lib_Kind;
-   for Library_Dir use "lib";
-   for Object_Dir use "obj";
+   for Library_Dir use "lib-" & Lib_Kind;
+   for Object_Dir use "obj-" & Lib_Kind;
    for Source_Dirs use ("src");
    
    package Compiler renames Config.Compiler;
