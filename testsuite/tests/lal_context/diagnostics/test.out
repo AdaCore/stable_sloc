@@ -32,108 +32,108 @@ but got: pkg.bar
 {
   "load_diagnostics": [
     {
+      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 87,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field"
+        "column": 1,
+        "line": 87
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 71,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field"
+        "column": 1,
+        "line": 71
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_hash\": Missing \"context_hash\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 10,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_hash\": Missing \"context_hash\" field"
+        "column": 1,
+        "line": 10
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 55,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field"
+        "column": 1,
+        "line": 55
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_sem_parents\": Missing \"sem_parents\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 26,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sem_parents\": Missing \"sem_parents\" field"
+        "column": 1,
+        "line": 26
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 39,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field"
+        "column": 1,
+        "line": 39
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_context_hash\": Unexpected type for \"context_hash\": expected TOML_STRING but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 79,
-        "column": 16
-      },
-      "diagnostic": "Error while parsing entry \"wrong_context_hash\": Unexpected type for \"context_hash\": expected TOML_STRING but got TOML_BOOLEAN"
+        "column": 16,
+        "line": 79
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_ec\": Unexpected type for \"end_col\": expected TOML_INTEGER but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 63,
-        "column": 11
-      },
-      "diagnostic": "Error while parsing entry \"wrong_ec\": Unexpected type for \"end_col\": expected TOML_INTEGER but got TOML_BOOLEAN"
+        "column": 11,
+        "line": 63
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_el\": Unexpected type for \"end_line\": expected TOML_INTEGER but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 47,
-        "column": 12
-      },
-      "diagnostic": "Error while parsing entry \"wrong_el\": Unexpected type for \"end_line\": expected TOML_INTEGER but got TOML_BOOLEAN"
+        "column": 12,
+        "line": 47
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_sc\": Unexpected type for \"start_col\": expected TOML_INTEGER but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 35,
-        "column": 13
-      },
-      "diagnostic": "Error while parsing entry \"wrong_sc\": Unexpected type for \"start_col\": expected TOML_INTEGER but got TOML_BOOLEAN"
+        "column": 13,
+        "line": 35
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_sem_parent_item\": Expected a TOML_STRING for a sem_parent, but got a TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 114,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"wrong_sem_parent_item\": Expected a TOML_STRING for a sem_parent, but got a TOML_BOOLEAN"
+        "column": 1,
+        "line": 114
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_sem_parents\": Unexpected type for \"sem_parents\": expected TOML_ARRAY but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 99,
-        "column": 15
-      },
-      "diagnostic": "Error while parsing entry \"wrong_sem_parents\": Unexpected type for \"sem_parents\": expected TOML_ARRAY but got TOML_BOOLEAN"
+        "column": 15,
+        "line": 99
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_sl\": Unexpected type for \"start_line\": expected TOML_INTEGER but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 19,
-        "column": 14
-      },
-      "diagnostic": "Error while parsing entry \"wrong_sl\": Unexpected type for \"start_line\": expected TOML_INTEGER but got TOML_BOOLEAN"
+        "column": 14,
+        "line": 19
+      }
     }
   ],
   "match_results": [
@@ -141,28 +141,28 @@ but got: pkg.bar
       "annotation": {
         "message": "This entry should fail due to a missing file"
       },
-      "identifier": "missing_file",
+      "diagnostic": "inexistent.adb: Cannot read inexistent.adb\n",
       "file": "inexistent.adb",
-      "success": false,
-      "diagnostic": "inexistent.adb: Cannot read inexistent.adb\n"
+      "identifier": "missing_file",
+      "success": false
     },
     {
       "annotation": {
         "message": "This entry should fail due to a mismatch in the decl hash"
       },
-      "identifier": "mismatched_hash",
+      "diagnostic": "Contents of <SubpBody [\"Bar\"] pkg-child.adb:3:4-13:12> changed",
       "file": "pkg-child.adb",
-      "success": false,
-      "diagnostic": "Contents of <SubpBody [\"Bar\"] pkg-child.adb:3:4-13:12> changed"
+      "identifier": "mismatched_hash",
+      "success": false
     },
     {
       "annotation": {
         "message": "This entry should fail due to a difference in parent names"
       },
-      "identifier": "mismatched_parents",
+      "diagnostic": "Mismatched parent basic decl names:\nexpected: pkg.child.bar\nbut got: pkg.bar",
       "file": "pkg.adb",
-      "success": false,
-      "diagnostic": "Mismatched parent basic decl names:\nexpected: pkg.child.bar\nbut got: pkg.bar"
+      "identifier": "mismatched_parents",
+      "success": false
     }
   ]
 }

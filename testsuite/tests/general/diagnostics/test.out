@@ -1,124 +1,124 @@
 {
   "load_diagnostics": [
     {
+      "diagnostic": "Error while parsing entry \"empty_annotations\": Empty annotations array",
       "file": "missing_field.toml",
       "location": {
-        "line": 30,
-        "column": 13
-      },
-      "diagnostic": "Error while parsing entry \"empty_annotations\": Empty annotations array"
+        "column": 13,
+        "line": 30
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_annotations\": Missing \"annotations\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 20,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_annotations\": Missing \"annotations\" field"
+        "column": 1,
+        "line": 20
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_kind\": Missing \"kind\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 3,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_kind\": Missing \"kind\" field"
+        "column": 1,
+        "line": 3
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"missing_matcher\": Missing \"matcher\" field",
       "file": "missing_field.toml",
       "location": {
-        "line": 13,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"missing_matcher\": Missing \"matcher\" field"
+        "column": 1,
+        "line": 13
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"file_wont_compile\": Could not compile file pattern. '{' must always be associated with a '}' at offset 14",
       "file": "wrong_type.toml",
       "location": {
-        "line": 80,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"file_wont_compile\": Could not compile file pattern. '{' must always be associated with a '}' at offset 14"
+        "column": 1,
+        "line": 80
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"unknown_matcher\": No such kind of matcher: nonexistant",
       "file": "wrong_type.toml",
       "location": {
-        "line": 91,
-        "column": 1
-      },
-      "diagnostic": "Error while parsing entry \"unknown_matcher\": No such kind of matcher: nonexistant"
+        "column": 1,
+        "line": 91
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_annotation_item\": Wrong type for an annotation: expected TOML_TABLE but got TOML_INTEGER",
       "file": "wrong_type.toml",
       "location": {
-        "line": 72,
-        "column": 15
-      },
-      "diagnostic": "Error while parsing entry \"wrong_annotation_item\": Wrong type for an annotation: expected TOML_TABLE but got TOML_INTEGER"
+        "column": 15,
+        "line": 72
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_annotations\": Unexpected type for \"annotations\": expected TOML_ARRAY but got TOML_TABLE",
       "file": "wrong_type.toml",
       "location": {
-        "line": 17,
-        "column": 13
-      },
-      "diagnostic": "Error while parsing entry \"wrong_annotations\": Unexpected type for \"annotations\": expected TOML_ARRAY but got TOML_TABLE"
+        "column": 13,
+        "line": 17
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_at_most_once\": Wrong type for \"at_most_once\": expected TOML_BOOLEAN but got TOML_STRING",
       "file": "wrong_type.toml",
       "location": {
-        "line": 43,
-        "column": 14
-      },
-      "diagnostic": "Error while parsing entry \"wrong_at_most_once\": Wrong type for \"at_most_once\": expected TOML_BOOLEAN but got TOML_STRING"
+        "column": 14,
+        "line": 43
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_file\": unexpected type for \"files\": expected TOML_STRING but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 4,
-        "column": 6
-      },
-      "diagnostic": "Error while parsing entry \"wrong_file\": unexpected type for \"files\": expected TOML_STRING but got TOML_BOOLEAN"
+        "column": 6,
+        "line": 4
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_kind\": Unexpected type for \"kind\": expected TOML_STRING but got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 30,
-        "column": 6
-      },
-      "diagnostic": "Error while parsing entry \"wrong_kind\": Unexpected type for \"kind\": expected TOML_STRING but got TOML_BOOLEAN"
+        "column": 6,
+        "line": 30
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_matcher\": Unexpected type for \"matcher\": expected TOML_TABLE but got TOML_ARRAY",
       "file": "wrong_type.toml",
       "location": {
-        "line": 56,
-        "column": 9
-      },
-      "diagnostic": "Error while parsing entry \"wrong_matcher\": Unexpected type for \"matcher\": expected TOML_TABLE but got TOML_ARRAY"
+        "column": 9,
+        "line": 56
+      }
     },
     {
+      "diagnostic": "Error while parsing entry \"wrong_purpose\": Wrong type for \"purpose\": expected TOML_STRINGbut got TOML_BOOLEAN",
       "file": "wrong_type.toml",
       "location": {
-        "line": 61,
-        "column": 14
-      },
-      "diagnostic": "Error while parsing entry \"wrong_purpose\": Wrong type for \"purpose\": expected TOML_STRINGbut got TOML_BOOLEAN"
+        "column": 14,
+        "line": 61
+      }
     },
     {
+      "diagnostic": "double_match: an entry with the same identifier was already loaded, it will not be loaded.",
       "file": "wrong_type.toml",
       "location": {
-        "line": 0,
-        "column": 0
-      },
-      "diagnostic": "double_match: an entry with the same identifier was already loaded, it will not be loaded."
+        "column": 0,
+        "line": 0
+      }
     },
     {
+      "diagnostic": "cannot open non_existant.toml: non_existant.toml: No such file or directory",
       "file": "non_existant.toml",
       "location": {
-        "line": 0,
-        "column": 0
-      },
-      "diagnostic": "cannot open non_existant.toml: non_existant.toml: No such file or directory"
+        "column": 0,
+        "line": 0
+      }
     }
   ],
   "match_results": [
@@ -126,24 +126,24 @@
       "annotation": {
         "message": "  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"
       },
-      "identifier": "double_match",
       "file": "content.txt",
-      "success": true,
+      "identifier": "double_match",
       "location": {
-        "start_line": 2,
-        "start_column": 17,
+        "end_column": 22,
         "end_line": 2,
-        "end_column": 22
-      }
+        "start_column": 17,
+        "start_line": 2
+      },
+      "success": true
     },
     {
       "annotation": {
         "message": "  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"
       },
-      "identifier": "double_match",
+      "diagnostic": "Annotation has already matched",
       "file": "content.txt",
-      "success": false,
-      "diagnostic": "Annotation has already matched"
+      "identifier": "double_match",
+      "success": false
     }
   ]
 }

@@ -14,15 +14,15 @@ Entry lal_demo:
         "justification": "not used",
         "purpose": "xcov.exempt"
       },
-      "identifier": "lal_demo",
       "file": "pkg-child.adb",
-      "success": true,
+      "identifier": "lal_demo",
       "location": {
-        "start_line": 11,
-        "start_column": 10,
+        "end_column": 23,
         "end_line": 11,
-        "end_column": 23
-      }
+        "start_column": 10,
+        "start_line": 11
+      },
+      "success": true
     }
   ]
 }
