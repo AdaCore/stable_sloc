@@ -1,0 +1,16 @@
+[entry_name]
+at_most_once = true
+file = "pkg-child.adb"
+kind = "lal_context"
+[entry_name.matcher]
+context_hash = "16#64BB2695#"
+end_col = 10
+end_line = 9
+sem_parents = [
+"pkg.child",
+"bar",
+]
+start_col = 3
+start_line = 7
+[[entry_name.annotations]]
+message = "some text"

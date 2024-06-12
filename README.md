@@ -1,15 +1,32 @@
 # Stable_Sloc
 
-Identifying code regions in shifting tides.
+> Identifying code regions in shifting tides.
 
-Build using gprbuild.
+This is a library that interprets external annotations (in spec files) which
+identify source location ranges through descriptors (called entries) leveraging
+various backends to find the actual `line:column` absolute source locations.
+
+Some backends are more expressive and can identify all regions corresponding
+to a specific [pattern](#regexp-matcher), others are designed to only match
+a [specific region relative to an Ada declaration](#libadalang-context-matcher),
+or maybe the need is only to be able to add external annotations to a frozen
+code base, in which case an [absolute source location range](#absolute-matcher)
+may work well.
+
+The library allows attaching some form of information to the identified
+regions, the meaning of which is entirely up to the tool using the library.
 
 ## Building and dependencies
 
-Stable_Sloc currently only depends on
-[Ada-toml (master)](https://github.com/pmderodat/ada-toml) and GNATCOLL-core.
+Stable_Sloc currently depends on:
+- [Ada-toml (master)](https://github.com/pmderodat/ada-toml)
+- GNATCOLL-core
+- Libadalang (and langkit_support)
 
-Build using gprbuild, Stable_Sloc is written in Ada 2022.
+Build using either `gprbuild`, or the Makefile (a convenience wrapper around
+gprbuild and gprinstall), Stable_Sloc is written in Ada 2022.
+
+Run `make build` to build the library itself and the CLI tool
 
 ## Annotation format
 
@@ -47,7 +64,7 @@ Other fields will be ignored.
 
 ## Builtin matchers
 
-There are currently two matchers built into the library.
+There are currently three matchers built into the library, with more to come.
 
 ### `absolute` matcher
 

@@ -1,0 +1,21 @@
+[overly_long_line]
+file = "content.txt"
+kind = "absolute"
+[[overly_long_line.annotations]]
+message = "This entry will fail to match because there are not enough character in line 1"
+[overly_long_line.matcher]
+start_line = 1
+start_col = 100
+end_line = 10
+end_col = 13
+
+[non_existent_line]
+file = "content.txt"
+kind = "absolute"
+[[non_existent_line.annotations]]
+message = "This entry will fail to match because there is not enough lines in the file"
+[non_existent_line.matcher]
+start_line = 1
+start_col = 1
+end_line = 100
+end_col = 13

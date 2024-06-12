@@ -1,0 +1,13 @@
+# This exempts all ada defensive code in the form
+#
+# if <expression> then
+#    raise <Name>_Error;
+# end if;
+[ada_defensive]
+file = "*.adb"
+kind = "regexp"
+[[ada_defensive.annotations]]
+justification = "defensive code, never to be executed"
+[ada_defensive.matcher]
+regexp = 'if [^;]* then( |\n)*raise [a-z]*_error;( |\n)*end if;'
+case_insensitive = true
