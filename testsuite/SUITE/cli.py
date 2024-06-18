@@ -2,9 +2,12 @@
 Various utilities abstracting the use of the stable sloc CLI
 """
 
+from dataclasses import dataclass
+import json
+from typing import Any
 import sys
 
-from e3.os.process import Run, command_line_image
+from e3.os.process import Run, PIPE
 from e3.testsuite.driver.classic import TestAbortWithFailure
 
 
@@ -29,3 +32,156 @@ def run_cli(args, out=None, err=None, ignore_failure=False):
             "stable_sloc_cli returned a non-zero status code"
         )
     return p
+
+
+class CLIResultError (Exception):
+    pass
+
+
+def field_or_error(source: dict[str, Any], key: str, type: Any) -> Any:
+    if key not in source or not isinstance(source[key], type):
+        raise CLIResultError(
+            f'Missing or incorrect type for "{key}" field'
+        )
+    return source[key]
+
+
+@dataclass
+class Location:
+    line: int
+    col: int
+
+    @classmethod
+    def from_json_dict(cls, source: dict[str, Any]):
+        line = field_or_error(source, "line", int)
+        col = field_or_error(source, "column", int)
+        return cls(line, col)
+
+
+@dataclass
+class LocationSpan:
+    first: Location
+    last: Location
+
+    @classmethod
+    def from_json_dict(cls, source: dict[str, Any]):
+        sl = field_or_error(source, "start_line", int)
+        sc = field_or_error(source, "start_column", int)
+        el = field_or_error(source, "end_line", int)
+        ec = field_or_error(source, "end_column", int)
+        first = Location(sl, sc)
+        last = Location(el, ec)
+        return cls(first, last)
+
+
+@dataclass
+class LoadDiagnostic:
+    """
+    Class representing a entry load diagnostic
+    """
+    file: str
+    sloc: Location
+    diagnostic: str
+
+    @classmethod
+    def from_json_dict(cls, source: dict[str, Any]):
+        file = field_or_error(source, "file", str)
+        diagnostic = field_or_error(source, "diagnostic", str)
+        sloc = Location.from_json_dict(
+            field_or_error(
+                source,
+                "location",
+                dict
+            )
+        )
+        return cls(file, sloc, diagnostic)
+
+
+@dataclass
+class MatchResult:
+    """
+    Class representing a match result
+    """
+    success: bool
+    identifier: str
+    file: str
+    annotation: dict[str, Any]
+    sloc_range: LocationSpan | None
+    diagnostic: str | None
+
+    @classmethod
+    def from_json_dict(cls, source: dict[str, Any]):
+        success = field_or_error(source, "success", bool)
+        identifier = field_or_error(source, "identifier", str)
+        annotation = field_or_error(source, "annotation", dict)
+        file = field_or_error(source, "file", str)
+        if success:
+            diagnostic = None
+            sloc_range = LocationSpan.from_json_dict(field_or_error(
+                source,
+                "location",
+                dict
+            ))
+        else:
+            sloc_range = None
+            diagnostic = field_or_error(source, "diagnostic", str)
+
+        return cls(
+            success,
+            identifier,
+            file,
+            annotation,
+            sloc_range,
+            diagnostic
+        )
+
+
+@dataclass
+class CliResults:
+    """
+    Represents the results of a stable_sloc_cli invocation
+    """
+    load_diagnostics: list[LoadDiagnostic]
+    match_results: list[MatchResult]
+
+    @classmethod
+    def from_json_dict(cls, source: dict[str, Any]):
+        diags = field_or_error(source, "load_diagnostics", list)
+        matches = field_or_error(source, "match_results", list)
+        load_diagnostics = []
+        for diag in diags:
+            load_diagnostics.append(
+                LoadDiagnostic.from_json_dict(diag)
+            )
+
+        match_results = []
+        for match in matches:
+            match_results.append(
+                MatchResult.from_json_dict(match)
+            )
+
+        return cls(load_diagnostics, match_results)
+
+
+def match_annotations(
+        annotations: list[str],
+        files: list[str],
+        extra_opts: list[str] | None = None,
+        register_failure=True
+) -> CliResults:
+    """
+    Run the cli on the specified files, to match the given annotations, and
+    return the results as a CliResults. extra_args are passed to the cli
+    invocation between the annotation spec arguments and the file arguments.
+    The final command line invocation contains the --json-output switch, to
+    ensure the results can be loaded.
+    """
+    p_cli = run_cli(
+        [f"--spec={annot}" for annot in annotations]
+        + (extra_opts if extra_opts else [])
+        + files
+        + ["--json-output"],
+        out=PIPE,
+        ignore_failure=not register_failure
+    )
+    return CliResults.from_json_dict(json.loads(p_cli.out))

@@ -1,0 +1,10 @@
+[single_line]
+file = "content.txt"
+kind = "absolute"
+[single_line.matcher]
+start_line = 1
+start_col = 2
+end_line = 1
+end_col = 6
+[[single_line.annotations]]
+message = "Hooray!"

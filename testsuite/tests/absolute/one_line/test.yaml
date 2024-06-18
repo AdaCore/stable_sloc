@@ -1,0 +1,7 @@
+description: Check that the absolute matchers work correctly on sloc regions
+  that span a single line.
+
+resources:
+  dummy_text_content: .
+
+driver: python

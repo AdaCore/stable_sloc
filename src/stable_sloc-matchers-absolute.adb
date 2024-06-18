@@ -25,7 +25,9 @@ package body Stable_Sloc.Matchers.Absolute is
       Res      : Sloc_Match := (Success => True, Span => Self.Span);
    begin
       Open (File_T, In_File, +File.Full_Name);
-      Set_Line (File_T, Positive_Count (Self.Span.Start_Sloc.Line));
+      while Positive (Line (File_T)) < Self.Span.Start_Sloc.Line loop
+         Skip_Line (File_T);
+      end loop;
       declare
          Line : String := Get_Line (File_T);
       begin
@@ -39,9 +41,23 @@ package body Stable_Sloc.Matchers.Absolute is
                       & " characters but got" & Natural'Image (Line'Length)
                       & ".");
          end if;
+         if Self.Span.Start_Sloc.Line = Self.Span.End_Sloc.Line then
+            if Self.Span.End_Sloc.Column > Line'Length then
+               Res := (False,
+                       Reason =>
+                         +"Line" & Self.Span.End_Sloc.Line'Image & " of "
+                         & File.Display_Full_Name
+                         & " is not long enough. Required"
+                         & Self.Span.End_Sloc.Column'Image
+                         & " characters but got" & Natural'Image (Line'Length)
+                         & ".");
+            end if;
+         end if;
       end;
       if Res.Success then
-         Set_Line (File_T, Positive_Count (Self.Span.End_Sloc.Line));
+         while Positive (Line (File_T)) < Self.Span.End_Sloc.Line loop
+            Skip_Line (File_T);
+         end loop;
          declare
             Line : String := Get_Line (File_T);
          begin
