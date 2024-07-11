@@ -1,0 +1,4 @@
+description: Test that the verification of source locations does
+  not make off by one errors.
+
+driver: python

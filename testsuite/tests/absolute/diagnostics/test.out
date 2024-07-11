@@ -8,7 +8,7 @@ annotations.toml:70:19: Error while parsing entry "wrong_sc": Unexpected type fo
 annotations.toml:58:20: Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
 missing_file: match FAILED
    inexistent.txt
-   Reason: Error while reading inexistent.txt: inexistent.txt: No such file or directory
+   Reason: Could not read inexistent.txt
    Annotation:
       {"message":"This entry should fails to match due to missing file"}
 out_of_bounds_line_start: match FAILED
@@ -18,12 +18,12 @@ out_of_bounds_line_start: match FAILED
       {"message":"This entry should fail to match due to out of bound sloc range"}
 out_of_bounds_cols_start: match FAILED
    content.txt
-   Reason: Line 1 of content.txt is not long enough. Required 1000 characters but got 38.
+   Reason: Line 1 of content.txt is not long enough. Required 1000 characters but got 39.
    Annotation:
       {"message":"This entry should fail to match due to out of bound sloc range"}
 out_of_bounds_cols_end: match FAILED
    content.txt
-   Reason: Line 8 of content.txt is not long enough. Required 100 characters but got 40.
+   Reason: Line 8 of content.txt is not long enough. Required 100 characters but got 41.
    Annotation:
       {"message":"This entry should fail to match due to out of bound sloc range"}
 out_of_bounds_line_end: match FAILED
@@ -103,7 +103,7 @@ out_of_bounds_line_end: match FAILED
       "annotation": {
         "message": "This entry should fails to match due to missing file"
       },
-      "diagnostic": "Error while reading inexistent.txt: inexistent.txt: No such file or directory",
+      "diagnostic": "Could not read inexistent.txt",
       "file": "inexistent.txt",
       "identifier": "missing_file",
       "success": false
@@ -121,7 +121,7 @@ out_of_bounds_line_end: match FAILED
       "annotation": {
         "message": "This entry should fail to match due to out of bound sloc range"
       },
-      "diagnostic": "Line 1 of content.txt is not long enough. Required 1000 characters but got 38.",
+      "diagnostic": "Line 1 of content.txt is not long enough. Required 1000 characters but got 39.",
       "file": "content.txt",
       "identifier": "out_of_bounds_cols_start",
       "success": false
@@ -130,7 +130,7 @@ out_of_bounds_line_end: match FAILED
       "annotation": {
         "message": "This entry should fail to match due to out of bound sloc range"
       },
-      "diagnostic": "Line 8 of content.txt is not long enough. Required 100 characters but got 40.",
+      "diagnostic": "Line 8 of content.txt is not long enough. Required 100 characters but got 41.",
       "file": "content.txt",
       "identifier": "out_of_bounds_cols_end",
       "success": false

@@ -1,0 +1,17 @@
+[simple_absolute]
+file="*.txt"
+kind="absolute"
+annotations=[{purpose="testing", message="This entry matched"}]
+matcher.start_line=2
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=16
+
+[simple_absolute_fail]
+file="*.txt"
+kind="absolute"
+annotations=[{purpose="testing", message="This entry matched"}]
+matcher.start_line=2
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=17
