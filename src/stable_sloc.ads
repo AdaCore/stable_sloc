@@ -231,8 +231,9 @@ private
       --  must return a failed match result upon each subsequent successful
       --  match.
 
-      Has_Matched  : Boolean;
-      --  Wether this entry has already matched
+      Last_File  : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File;
+      Last_Range : Sloc_Span := No_Sloc_Span;
+      --  Last match location for this entry, only set if At_Most_Once is True
    end record;
 
    overriding procedure Adjust (Self : in out SS_Entry);

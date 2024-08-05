@@ -1,0 +1,11 @@
+[single_abs]
+kind="absolute"
+file="pkg"
+at_most_once=true
+[single_abs.matcher]
+start_line=1
+start_col=1
+end_line=4
+end_col=1
+[[single_abs.annotations]]
+success="yes"

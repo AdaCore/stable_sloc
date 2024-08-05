@@ -254,7 +254,6 @@ package body Stable_Sloc is
               Pad_And_Compile (Parsed_Entry.File_Pattern);
             Parsed_Entry.At_Most_Once :=
               Get_Or_Default (Spec, "at_most_once", False);
-            Parsed_Entry.Has_Matched := False;
             Local_Entries.Map.Insert (Entr.Key, Parsed_Entry);
 
          exception
@@ -338,6 +337,7 @@ package body Stable_Sloc is
       Purpose_Prefix : String := "") return Match_Result_Vec
    is
       use Entry_Maps;
+      use GNATCOLL.VFS;
       Res : Match_Result_Vec;
       Cur : Cursor;
    begin
@@ -387,24 +387,34 @@ package body Stable_Sloc is
                      Annot : constant TOML.TOML_Value :=
                        Relevant_Annotations.Item (J);
                   begin
-                     if Match.Success
-                       and then (not Entr.At_Most_Once
-                                 or else not Entr.Has_Matched)
-                     then
-                        Entr.Has_Matched := True;
-                        Res.Append (Match_Result'
-                          (Success    => True,
-                           Identifier => Key (Cur),
-                           Annotation => Annot,
-                           File       => File,
-                           Location   => Match.Span));
-                     elsif Entr.At_Most_Once and then Entr.Has_Matched then
-                        Res.Append (Match_Result'
-                          (Success    => False,
-                           Identifier => Key (Cur),
-                           Annotation => Annot,
-                           File       => File,
-                           Diagnostic => +"Annotation has already matched"));
+                     if Match.Success then
+                        if Entr.At_Most_Once
+                          and then Entr.Last_File /= No_File
+                          and then Entr.Last_Range /= No_Sloc_Span
+                          and then
+                            (Entr.Last_File /= File
+                             or else Entr.Last_Range /= Match.Span)
+                        then
+                           Res.Append (Match_Result'
+                             (Success    => False,
+                              Identifier => Key (Cur),
+                              Annotation => Annot,
+                              File       => File,
+                              Diagnostic =>
+                                +"Annotation has already matched at a"
+                                 & " different location"));
+                        else
+                           Res.Append (Match_Result'
+                             (Success    => True,
+                              Identifier => Key (Cur),
+                              Annotation => Annot,
+                              File       => File,
+                              Location   => Match.Span));
+                           if Entr.At_Most_Once then
+                              Entr.Last_File := File;
+                              Entr.Last_Range := Match.Span;
+                           end if;
+                        end if;
                      else
                         Res.Append (Match_Result'
                           (Success    => False,
@@ -470,7 +480,6 @@ package body Stable_Sloc is
       New_Entry.File_Pattern := Actual_Pat;
       New_Entry.File_Regexp := Pad_And_Compile (New_Entry.File_Pattern);
       New_Entry.At_Most_Once := True;
-      New_Entry.Has_Matched := False;
       DB.Map.Include (Identifier, New_Entry);
       return [];
       exception
@@ -504,7 +513,8 @@ package body Stable_Sloc is
    procedure Reset_Match_Count (DB : in out Entry_DB) is
    begin
       for Cur in DB.Map.Iterate loop
-         DB.Map.Reference (Cur).Has_Matched := False;
+         DB.Map.Reference (Cur).Last_File := GNATCOLL.VFS.No_File;
+         DB.Map.Reference (Cur).Last_Range := No_Sloc_Span;
       end loop;
    end Reset_Match_Count;
 

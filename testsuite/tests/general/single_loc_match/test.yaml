@@ -1,0 +1,10 @@
+description: Test that the single location match mechanism works as intended,
+  i.e. an entry with the at_most_once flag set to true should only return a
+  successful match result on the first successful match location, but not only
+  subsequent other match locations. It should still however return a successful
+  match on the first match location across multiple match calls.
+
+driver: python
+
+resources:
+  simple_ada_prj: .
