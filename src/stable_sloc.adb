@@ -582,6 +582,62 @@ package body Stable_Sloc is
             end if;
    end Write_Entries;
 
+   -----------------
+   -- Query_Entry --
+   -----------------
+
+   function Query_Entry
+     (DB : Entry_DB; Identifier : Unbounded_String) return Entry_View
+   is
+      use Entry_Maps;
+      Cur : constant Cursor := DB.Map.Find (Identifier);
+   begin
+      if not Has_Element (Cur) then
+         return No_Entry_View;
+      end if;
+      return Res : Entry_View do
+         Res.Kind := Element (Cur).Kind;
+         Res.File_Pattern := Element (Cur).File_Pattern;
+         Res.Annotations  := Element (Cur).Annotations;
+         Res.At_Most_Once := Element (Cur).At_Most_Once;
+      end return;
+   end Query_Entry;
+
+   -------------------
+   -- Replace_Entry --
+   -------------------
+
+   procedure Replace_Entry
+     (Target_DB  : in out Entry_DB;
+      Source_DB  : Entry_DB;
+      Target_Id  : Unbounded_String;
+      Source_Id  : Unbounded_String)
+   is
+      use Entry_Maps;
+      Source_Cur : constant Cursor := Source_DB.Map.Find (Source_Id);
+   begin
+      if Source_Cur = No_Element then
+         raise Constraint_Error with
+           "No entry with identifier " & (+Source_Id);
+      end if;
+      Target_DB.Map.Include (Target_Id, Element (Source_Cur));
+   end Replace_Entry;
+
+   ------------------
+   -- Delete_Entry --
+   ------------------
+
+   procedure Delete_Entry
+     (DB : in out Entry_DB; Identifier : Unbounded_String)
+   is
+      use Entry_Maps;
+      Cur : Cursor := DB.Map.Find (Identifier);
+   begin
+      if Has_Element (Cur) then
+         DB.Map.Delete (Cur);
+      end if;
+   end Delete_Entry;
+
    ---------
    -- "<" --
    ---------

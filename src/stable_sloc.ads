@@ -168,6 +168,46 @@ package Stable_Sloc is
    --
    --  Return whether the new entry was successfully added to DB or not.
 
+   type Entry_View is record
+      Kind         : Unbounded_String;
+      --  Name of the matcher kind used for this entry
+
+      Annotations  : TOML.TOML_Value;
+      --  Array of annotations attached to this entry
+
+      File_Pattern : Unbounded_String;
+      --  Globbing pattern of the files to which this entry applies
+
+      At_Most_Once : Boolean;
+      --  Whether this entry is supposed to match more than once.
+
+   end record;
+   --  Representation of a Stable_Sloc entry for viewing purposes
+
+   No_Entry_View : constant Entry_View :=
+     (Kind         => Null_Unbounded_String,
+      Annotations  => TOML.No_TOML_Value,
+      File_Pattern => Null_Unbounded_String,
+      At_Most_Once => False);
+
+   function Query_Entry
+     (DB : Entry_DB; Identifier : Unbounded_String) return Entry_View;
+   --  Return the entry vew corresponding to the entry for Identifier in DB, if
+   --  any. Return No_Entry_View if there is no entry associated to Identifier.
+
+   procedure Replace_Entry
+     (Target_DB  : in out Entry_DB;
+      Source_DB  : Entry_DB;
+      Target_Id  : Unbounded_String;
+      Source_Id  : Unbounded_String);
+   --  Replace or insert, in Target_DB the entry associated with Target_Id,
+   --  using the entry in Source_DB at Source_Id. Raises Constraint_Error if
+   --  there is not entry associated with Source_Id in Source_DB.
+
+   procedure Delete_Entry
+     (DB : in out Entry_DB; Identifier : Unbounded_String);
+   --  Remove the entry at Identifier from DB
+
 private
 
    type SS_Entry is new Ada.Finalization.Controlled with record
