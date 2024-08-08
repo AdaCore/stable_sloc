@@ -226,6 +226,14 @@ package Stable_Sloc is
      (DB : in out Entry_DB; Identifier : Unbounded_String);
    --  Remove the entry at Identifier from DB
 
+   type Entry_View_CB is access
+     procedure (Identifier : Unbounded_String; Entr : Entry_View);
+
+   procedure Iterate_Entries
+     (DB : Entry_DB;
+      CB : not null Entry_View_CB);
+   --  Call CB over all the entries in DB
+
 private
 
    type SS_Entry is new Ada.Finalization.Controlled with record

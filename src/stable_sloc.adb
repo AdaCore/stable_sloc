@@ -32,6 +32,10 @@ package body Stable_Sloc is
    --  Append '*' at the beginning and the end of Pattern if there isn't
    --  already a wildcard, and compile that string as a globbing pattern.
 
+   function View (DB : Entry_DB; Cur : Entry_Maps.Cursor) return Entry_View
+   with Pre => Entry_Maps.Has_Element (Cur);
+   --  Create an Entry_View from Cur
+
       -----------------------
    -- Format_Diagnostic --
    -----------------------
@@ -592,6 +596,26 @@ package body Stable_Sloc is
             end if;
    end Write_Entries;
 
+   ----------
+   -- View --
+   ----------
+
+   function View (DB: Entry_DB; Cur : Entry_Maps.Cursor) return Entry_View is
+      use Entry_Maps;
+      Ref : Constant_Reference_Type := DB.Map.Constant_Reference (Cur);
+   begin
+
+      return Res : Entry_View do
+         Res.Kind := Ref.Kind;
+         Res.File_Pattern := Ref.File_Pattern;
+
+         --  Clone the annotations to avoid tampering with the DB
+
+         Res.Annotations  := Ref.Annotations.Clone;
+         Res.At_Most_Once := Ref.At_Most_Once;
+      end return;
+   end View;
+
    -----------------
    -- Query_Entry --
    -----------------
@@ -605,12 +629,7 @@ package body Stable_Sloc is
       if not Has_Element (Cur) then
          return No_Entry_View;
       end if;
-      return Res : Entry_View do
-         Res.Kind := Element (Cur).Kind;
-         Res.File_Pattern := Element (Cur).File_Pattern;
-         Res.Annotations  := Element (Cur).Annotations;
-         Res.At_Most_Once := Element (Cur).At_Most_Once;
-      end return;
+      return View (DB, Cur);
    end Query_Entry;
 
    -------------------
@@ -647,6 +666,22 @@ package body Stable_Sloc is
          DB.Map.Delete (Cur);
       end if;
    end Delete_Entry;
+
+   ---------------------
+   -- Iterate_Entries --
+   ---------------------
+
+   procedure Iterate_Entries
+     (DB : Entry_DB;
+      CB : not null Entry_View_CB)
+   is
+      use Entry_Maps;
+      Cur : Cursor := DB.Map.First;
+   begin
+      while Has_Element (Cur) loop
+         CB (Key (Cur), View (DB, Cur));
+      end loop;
+   end Iterate_Entries;
 
    ---------
    -- "<" --
