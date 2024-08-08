@@ -32,7 +32,7 @@ package body Stable_Sloc is
    --  Append '*' at the beginning and the end of Pattern if there isn't
    --  already a wildcard, and compile that string as a globbing pattern.
 
-   -----------------------
+      -----------------------
    -- Format_Diagnostic --
    -----------------------
 
@@ -672,6 +672,28 @@ package body Stable_Sloc is
      (if Self = No_Sloc_Span
       then ""
       else Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
+
+   ---------
+   -- "<" --
+   ---------
+
+   function "<" (L, R : Match_Result) return Boolean is
+      use GNATCOLL.VFS;
+   begin
+      if L.File /= R.File then
+         return L.File.Display_Full_Name < R.File.Display_Full_Name;
+      end if;
+      if L.Success /= R.Success then
+         return R.Success;
+      end if;
+      if not L.Success then
+         return L.Diagnostic < R.Diagnostic;
+      end if;
+      if L.Location /= R.Location then
+         return L.Location < R.Location;
+      end if;
+      return L.Identifier < R.Identifier;
+   end "<";
 
    ---------------
    -- Is_Prefix --

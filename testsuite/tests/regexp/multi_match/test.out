@@ -6,6 +6,20 @@
       "annotation": {
         "justification": "defensive code, never to be executed"
       },
+      "file": "pkg-child.adb",
+      "identifier": "ada_defensive_code",
+      "location": {
+        "end_column": 14,
+        "end_line": 7,
+        "start_column": 7,
+        "start_line": 5
+      },
+      "success": true
+    },
+    {
+      "annotation": {
+        "justification": "defensive code, never to be executed"
+      },
       "file": "pkg.adb",
       "identifier": "ada_defensive_code",
       "location": {
@@ -27,20 +41,6 @@
         "end_line": 15,
         "start_column": 7,
         "start_line": 13
-      },
-      "success": true
-    },
-    {
-      "annotation": {
-        "justification": "defensive code, never to be executed"
-      },
-      "file": "pkg-child.adb",
-      "identifier": "ada_defensive_code",
-      "location": {
-        "end_column": 14,
-        "end_line": 7,
-        "start_column": 7,
-        "start_line": 5
       },
       "success": true
     }

@@ -11,12 +11,12 @@ Entry simple_absolute_fail:
    At_Most_Once: FALSE
    Matcher kind: absolute
    Sloc matcher: absolute matcher for 2:1 - 2:17
-simple_absolute: match SUCCESS
-   content.txt:2:1 - 2:16
-   Annotation:
-      {"message":"This entry matched","purpose":"testing"}
 simple_absolute_fail: match FAILED
    content.txt
    Reason: Line 2 of content.txt is not long enough. Required 17 characters but got 16.
+   Annotation:
+      {"message":"This entry matched","purpose":"testing"}
+simple_absolute: match SUCCESS
+   content.txt:2:1 - 2:16
    Annotation:
       {"message":"This entry matched","purpose":"testing"}

@@ -134,9 +134,10 @@ begin
       declare
          VF_Arr : constant File_Array :=
            [for File of Files => File];
-         Res    : constant Match_Result_Vec :=
+         Res    : Match_Result_Vec :=
            Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
       begin
+         Sort (Res);
          Reporter.Report_Match_Results (Res);
       end;
    end;

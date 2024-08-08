@@ -126,6 +126,15 @@
       "annotation": {
         "message": "  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"
       },
+      "diagnostic": "Annotation has already matched at a different location",
+      "file": "content.txt",
+      "identifier": "double_match",
+      "success": false
+    },
+    {
+      "annotation": {
+        "message": "  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"
+      },
       "file": "content.txt",
       "identifier": "double_match",
       "location": {
@@ -135,15 +144,6 @@
         "start_line": 2
       },
       "success": true
-    },
-    {
-      "annotation": {
-        "message": "  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"
-      },
-      "diagnostic": "Annotation has already matched at a different location",
-      "file": "content.txt",
-      "identifier": "double_match",
-      "success": false
     }
   ]
 }

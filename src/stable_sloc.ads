@@ -47,6 +47,12 @@ package Stable_Sloc is
    --  Return "<Start.Line>:<Start.Column> - <End.Line>:<End.Column>" if
    --  Self is not No_Sloc_Span, return the empty string otherwise.
 
+   function "<" (L, R : Sloc_Span) return Boolean is
+     (if L.Start_Sloc = R.Start_Sloc
+      then L.End_Sloc < R.End_Sloc
+      else L.Start_Sloc < R.Start_Sloc);
+   --  Compare L and R by lexicographical order
+
    type Load_Diagnostic is record
       File       : GNATCOLL.VFS.Virtual_File;
       Location   : Sloc;
@@ -89,9 +95,21 @@ package Stable_Sloc is
    --  supposed to produce a successful match, but some context element renders
    --  the match invalid. Otherwise, there is no match result produced.
 
+   function "<" (L, R : Match_Result) return Boolean;
+   --  Compare L and R by lexicographical order on:
+   --  - Filename
+   --  - Success (failed matches compare lower)
+   --    -Diagnostic (if L & R .Success is false)
+   --  - Location
+   --  - Identifier
+
    package Match_Result_Vectors is new Ada.Containers.Vectors
      (Index_Type => Positive, Element_Type => Match_Result);
    subtype Match_Result_Vec is Match_Result_Vectors.Vector;
+
+   package Match_Res_Sorting is new Match_Result_Vectors.Generic_Sorting ("<");
+   procedure Sort (Results : in out Match_Result_Vec)
+     renames Match_Res_Sorting.Sort;
 
    function To_JSON
      (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value;

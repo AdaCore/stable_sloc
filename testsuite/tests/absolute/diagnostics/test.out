@@ -6,16 +6,6 @@ annotations.toml:94:17: Error while parsing entry "wrong_ec": Unexpected type fo
 annotations.toml:82:18: Error while parsing entry "wrong_el": Unexpected type for "end_line": expected TOML_INTEGER but got TOML_ARRAY
 annotations.toml:70:19: Error while parsing entry "wrong_sc": Unexpected type for "start_col": expected TOML_INTEGER but got TOML_STRING
 annotations.toml:58:20: Error while parsing entry "wrong_sl": Unexpected type for "start_line": expected TOML_INTEGER but got TOML_BOOLEAN
-missing_file: match FAILED
-   inexistent.txt
-   Reason: Could not read inexistent.txt
-   Annotation:
-      {"message":"This entry should fails to match due to missing file"}
-out_of_bounds_line_start: match FAILED
-   content.txt
-   Reason: Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1
-   Annotation:
-      {"message":"This entry should fail to match due to out of bound sloc range"}
 out_of_bounds_cols_start: match FAILED
    content.txt
    Reason: Line 1 of content.txt is not long enough. Required 1000 characters but got 39.
@@ -26,11 +16,21 @@ out_of_bounds_cols_end: match FAILED
    Reason: Line 8 of content.txt is not long enough. Required 100 characters but got 41.
    Annotation:
       {"message":"This entry should fail to match due to out of bound sloc range"}
+out_of_bounds_line_start: match FAILED
+   content.txt
+   Reason: Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1
+   Annotation:
+      {"message":"This entry should fail to match due to out of bound sloc range"}
 out_of_bounds_line_end: match FAILED
    content.txt
    Reason: Not enough lines in content.txt to contain the sloc range 1:1 - 1001:1
    Annotation:
       {"message":"This entry should fail to match due to out of bound sloc range"}
+missing_file: match FAILED
+   inexistent.txt
+   Reason: Could not read inexistent.txt
+   Annotation:
+      {"message":"This entry should fails to match due to missing file"}
 {
   "load_diagnostics": [
     {
@@ -101,24 +101,6 @@ out_of_bounds_line_end: match FAILED
   "match_results": [
     {
       "annotation": {
-        "message": "This entry should fails to match due to missing file"
-      },
-      "diagnostic": "Could not read inexistent.txt",
-      "file": "inexistent.txt",
-      "identifier": "missing_file",
-      "success": false
-    },
-    {
-      "annotation": {
-        "message": "This entry should fail to match due to out of bound sloc range"
-      },
-      "diagnostic": "Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1",
-      "file": "content.txt",
-      "identifier": "out_of_bounds_line_start",
-      "success": false
-    },
-    {
-      "annotation": {
         "message": "This entry should fail to match due to out of bound sloc range"
       },
       "diagnostic": "Line 1 of content.txt is not long enough. Required 1000 characters but got 39.",
@@ -139,9 +121,27 @@ out_of_bounds_line_end: match FAILED
       "annotation": {
         "message": "This entry should fail to match due to out of bound sloc range"
       },
+      "diagnostic": "Not enough lines in content.txt to contain the sloc range 1000:1 - 1001:1",
+      "file": "content.txt",
+      "identifier": "out_of_bounds_line_start",
+      "success": false
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail to match due to out of bound sloc range"
+      },
       "diagnostic": "Not enough lines in content.txt to contain the sloc range 1:1 - 1001:1",
       "file": "content.txt",
       "identifier": "out_of_bounds_line_end",
+      "success": false
+    },
+    {
+      "annotation": {
+        "message": "This entry should fails to match due to missing file"
+      },
+      "diagnostic": "Could not read inexistent.txt",
+      "file": "inexistent.txt",
+      "identifier": "missing_file",
       "success": false
     }
   ]
