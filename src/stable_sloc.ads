@@ -128,6 +128,9 @@ package Stable_Sloc is
    --  Copy the entries from From into Into. If there is clash in entry
    --  identifiers, the one from From is discarded.
 
+   procedure Clear_DB (DB : in out Entry_DB);
+   --  Delete all entries from DB
+
    function Load_Entries
      (Spec_File      : GNATCOLL.VFS.Virtual_File;
       DB             : in out Entry_DB;

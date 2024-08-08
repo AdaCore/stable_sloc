@@ -170,6 +170,16 @@ package body Stable_Sloc is
 
    function Is_Empty (DB : Entry_DB) return Boolean is (DB.Map.Is_Empty);
 
+   --------------
+   -- Clear_DB --
+   --------------
+
+   procedure Clear_DB (DB : in out Entry_DB) is
+   begin
+      DB.Map.Clear;
+   end Clear_DB;
+
+
    ------------------
    -- Load_Entries --
    ------------------
@@ -680,6 +690,7 @@ package body Stable_Sloc is
    begin
       while Has_Element (Cur) loop
          CB (Key (Cur), View (DB, Cur));
+         Next (Cur);
       end loop;
    end Iterate_Entries;
 
