@@ -63,6 +63,12 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
             return Into;
          end if;
 
+         --  If the basic decl is not a named entity, do not consider it
+
+         if N.As_Basic_Decl.P_Defining_Name = No_Defining_Name then
+            return Into;
+         end if;
+
          --  First, check that the basic decl has the same name as the one we
          --  are ultimately looking for.
 
@@ -261,16 +267,20 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
            "Did not find enclosing basic decl for " & Image (Span.End_Sloc);
       end if;
 
-      --  Find common enclosing basic decl
+      --  Find common named enclosing basic decl
 
       Start_Sloc_Node := Start_Sloc_Node.Closest_Common_Parent (End_Sloc_Node);
-      if Start_Sloc_Node.Kind not in Ada_Basic_Decl then
+      if Start_Sloc_Node.Kind not in Ada_Basic_Decl
+        or else Start_Sloc_Node.As_Basic_Decl.P_Defining_Name.Is_Null
+      then
          Start_Sloc_Node := Start_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
       if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
          raise Parse_Error with
            "Did not find enclosing basic decl for " & Image (Span);
       end if;
+
+      --  Construct the matcher
 
       Ctx_Basic_Decl := Start_Sloc_Node.As_Basic_Decl;
       Base_Line := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Line);
@@ -320,7 +330,11 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       Res : US_Vector;
    begin
       loop
-         Res.Append (Unbounded_String'(Get_Canonical_Name (Cur)));
+         --  Skip basic decls that do not have a defining name
+
+         if not Cur.P_Defining_Name.Is_Null then
+            Res.Append (Unbounded_String'(Get_Canonical_Name (Cur)));
+         end if;
          exit when Cur = Top;
          Cur := Cur.P_Parent_Basic_Decl;
       end loop;

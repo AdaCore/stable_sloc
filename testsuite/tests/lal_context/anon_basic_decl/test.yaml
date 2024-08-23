@@ -1,0 +1,4 @@
+description: Test that generation of lal_context entries does not crash when
+  reaching a basic decl with no defining name. These should be ignored.
+
+driver: python
