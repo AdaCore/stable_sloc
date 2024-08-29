@@ -1,0 +1,9 @@
+description: Test that generating an entry with a '\' character
+  in the filename (such as on Windows with at least one directory)
+  yields an entry with a correct file pattern, i.e. with escaped
+  backslashes.
+
+driver: python
+
+resources:
+  dummy_text_content: src/

@@ -32,6 +32,10 @@ package body Stable_Sloc is
    --  Append '*' at the beginning and the end of Pattern if there isn't
    --  already a wildcard, and compile that string as a globbing pattern.
 
+   function Escape (Filename : Unbounded_String) return Unbounded_String;
+   --  Double any '\' character in Filename to ensure it can be textually
+   --  matched, without generating any undue escape sequence.
+
    function View (DB : Entry_DB; Cur : Entry_Maps.Cursor) return Entry_View
    with Pre => Entry_Maps.Has_Element (Cur);
    --  Create an Entry_View from Cur
@@ -468,7 +472,7 @@ package body Stable_Sloc is
       New_Entry  : SS_Entry;
       Filename   : constant Unbounded_String :=
         +(GNATCOLL.VFS."+" (File.Full_Name));
-      Actual_Pat : constant Unbounded_String :=
+      Actual_Pat : constant Unbounded_String := Escape
         (if File_Prefix /= Null_Unbounded_String
            and then Is_Prefix (File_Prefix, Filename)
          then Unbounded_Slice
@@ -774,5 +778,25 @@ package body Stable_Sloc is
       end if;
       return GNAT.Regexp.Compile (Pattern => +File_Pat, Glob => True);
    end Pad_And_Compile;
+
+   ------------
+   -- Escape --
+   ------------
+
+   function Escape (Filename : Unbounded_String) return Unbounded_String is
+      Res : Unbounded_String;
+   begin
+      for I in 1 .. Length (Filename) loop
+         declare
+            C : constant Character := Element (Filename, I);
+         begin
+            if C = '\' then
+               Res := Res & '\';
+            end if;
+            Res := Res & C;
+         end;
+      end loop;
+      return Res;
+   end Escape;
 
 end Stable_Sloc;
