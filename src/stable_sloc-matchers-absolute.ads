@@ -6,6 +6,8 @@
 
 --  Simple backend representing an absolute source location range
 
+with GNAT.SHA256;
+
 package Stable_Sloc.Matchers.Absolute is
 
    type Absolute_Matcher is new Sloc_Matcher_T with private;
@@ -35,7 +37,11 @@ private
 
    type Absolute_Matcher is new Sloc_Matcher_T with
    record
-      Span : Sloc_Span;
+      Span   : Sloc_Span;
+
+      SHA256 : GNAT.SHA256.Message_Digest := (others => ASCII.NUL);
+      --  Optional SHA256 digest of the file to be matched. The default value
+      --  is interpreted as no check required.
    end record;
 
 end Stable_Sloc.Matchers.Absolute;

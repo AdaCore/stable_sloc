@@ -8,6 +8,7 @@ with Ada.Exceptions;
 
 with GNAT.Strings;
 
+with GNATCOLL.OS.FSUtil;
 with GNATCOLL.Utils;
 
 with Stable_Sloc.TOML_Utils;
@@ -28,12 +29,21 @@ package body Stable_Sloc.Matchers.Absolute is
       Buffer_Acc : GNAT.Strings.String_Access :=
         GNATCOLL.VFS.Read_File (File);
 
-      Res : Sloc_Match := (Success => True, Span => Self.Span);
+      Res      : Sloc_Match := (Success => True, Span => Self.Span);
+      File_SHA : GNAT.SHA256.Message_Digest;
    begin
       if Buffer_Acc = null then
          return [Sloc_Match'
                    (Success => False,
                     Reason  => +"Could not read " & File.Display_Full_Name)];
+      end if;
+
+      if Self.SHA256 /= (1 .. Self.SHA256'Length => ASCII.NUL)
+        and then Self.SHA256 /= GNATCOLL.OS.FSUtil.SHA256 (+File.Full_Name)
+      then
+         return
+           [Sloc_Match'
+              (Success => False, Reason => +"file has been modified")];
       end if;
 
       declare
@@ -136,8 +146,15 @@ package body Stable_Sloc.Matchers.Absolute is
    ---------------
 
    overriding function Dump_Spec
-     (Self : Absolute_Matcher) return TOML.TOML_Value is
-     (Stable_Sloc.TOML_Utils.Write_Span (Self.Span));
+     (Self : Absolute_Matcher) return TOML.TOML_Value
+   is
+      Res : constant TOML.TOML_Value := TOML_Utils.Write_Span (Self.Span);
+   begin
+      if Self.SHA256 /= (1 .. Self.SHA256'Length => ASCII.NUL) then
+         Res.Set ("sha256", TOML.Create_String (Self.SHA256));
+      end if;
+      return Res;
+   end Dump_Spec;
 
    -----------
    -- Image --
@@ -154,8 +171,27 @@ package body Stable_Sloc.Matchers.Absolute is
    ------------
 
    function Create
-     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class is
-     (Absolute_Matcher'(Span => Stable_Sloc.TOML_Utils.Read_Span (Spec)));
+     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class
+   is
+   begin
+      return Res : Absolute_Matcher :=
+               (Span => Stable_Sloc.TOML_Utils.Read_Span (Spec), others => <>)
+      do
+         if Spec.Has ("sha256") then
+            declare
+               Spec_SHA_Str : constant String :=
+                 TOML_Utils.Get (Spec, "sha256");
+            begin
+               if Spec_SHA_Str'Length /= Res.SHA256'Length then
+                  raise Parse_Error with
+                    TOML.Format_Location (Spec.Get("sha256").Location)
+                    & ":incorrect length for a SHA256 digest";
+               end if;
+               Res.SHA256 := Spec_SHA_Str;
+            end;
+         end if;
+      end return;
+   end Create;
 
    ------------
    -- Create --
@@ -163,6 +199,8 @@ package body Stable_Sloc.Matchers.Absolute is
 
    function Create
      (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class is
-     (Absolute_Matcher'(Span => Span));
+     (Absolute_Matcher'
+        (Span   => Span,
+         SHA256 => GNATCOLL.OS.FSUtil.SHA256 (+File.Full_Name)));
 
 end Stable_Sloc.Matchers.Absolute;

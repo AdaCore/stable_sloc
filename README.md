@@ -92,9 +92,16 @@ Entry fields:
 
   Column of the end of the location range.
 
+- `sha256`, optional, string.
+  Hex representation of the SHA256 digest of the file in which the designated
+  location lies. Useful to ensure an absolute entry no longer matches if a file
+  is modified.
+
 When matching an absolute entry, a check is made on each file to which the
 matcher applies to ensure the lines/columns described in the entry fit in the
-current content of the file.
+current content of the file. If the sha256 field is set, the matcher will not
+produce a successful match if the candidate's file SHA256 digest does not match
+the one stored in the entry.
 
 This matcher supports updates (-u switch on the command line)
 

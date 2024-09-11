@@ -1,0 +1,8 @@
+description: Test that absolute matchers generated include a sha256 digest of
+  the file that was used for generation, and that attempting to match on a
+  modified version of the file then results in a match failure.
+
+resources:
+  dummy_text_content: .
+
+driver: python
