@@ -1,0 +1,20 @@
+stages:
+  - checkstyle
+  - build
+  - test
+
+include:
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/check-issue@~latest
+    inputs:
+      stage: checkstyle
+
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/build@~latest
+    inputs:
+      stage: build
+      anod-args: build stable_sloc
+      save-component: true
+
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/test@~latest
+    inputs:
+      stage: test
+      anod-args: test stable_sloc
