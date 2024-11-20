@@ -40,14 +40,14 @@ build-%:
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
 			-p -j$(PROCESSORS) \
-			$(INSTR_GPR_FLAGS)
+			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)
 
 cli_build:
 	$(GPRBUILD) -p -Pstable_sloc_cli.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=static -p -j$(PROCESSORS) \
-			$(INSTR_GPR_FLAGS)
+			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)
 
 install: install-static install-static-pic install-relocatable
@@ -62,7 +62,7 @@ install-%:
 			--build-name=$* \
 			--build-var=LIBRARY_TYPE \
 			--build-var=STABLE_SLOC_LIBRARY_TYPE \
-			$(INSTR_GPR_FLAGS)
+			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)
 
 clean: clean-static clean-static-pic clean-relocatable
@@ -70,5 +70,5 @@ clean-%:
 	gprclean -Pstable_sloc.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
-			$(INSTR_GPR_FLAGS)
+			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)

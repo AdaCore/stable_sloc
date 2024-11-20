@@ -6,8 +6,6 @@
 
 --  Stable_Sloc backend leveraging regular expression to define a region
 
-with Ada.Finalization;
-
 with GNAT.Regpat;
 
 with GNATCOLL.Refcount; use GNATCOLL.Refcount;

@@ -9,8 +9,6 @@
 with GNATCOLL.Opt_Parse; use GNATCOLL.Opt_Parse;
 with GNATCOLL.VFS;
 
-with Stable_Sloc_Strings; use Stable_Sloc_Strings;
-
 package Stable_Sloc.Cmd_Parser is
 
    function Str_To_File (Filename : String) return GNATCOLL.VFS.Virtual_File is

@@ -20,10 +20,10 @@ with GNATCOLL.VFS;
 with TOML;
 
 limited with Stable_Sloc.Matchers;
-with Stable_Sloc_Strings;  use Stable_Sloc_Strings;
+with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
 package Stable_Sloc is
-   use Unbounded_Strings;
+   use Stable_Sloc_Strings.Unbounded_Strings;
 
    type Sloc is record
       Line, Column : Natural;

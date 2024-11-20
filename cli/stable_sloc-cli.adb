@@ -8,18 +8,11 @@
 --  (except custom backends).
 
 with Ada.Command_Line;
-with Ada.Directories;
-with Ada.Finalization;
 with Ada.Text_IO; use Ada.Text_IO;
-
-with GNATCOLL.JSON;
-
-with TOML;
 
 with Stable_Sloc.Cmd_Parser;
 with Stable_Sloc.Reporters.JSON;
 with Stable_Sloc.Reporters.Text;
-with Stable_Sloc.TOML_Utils;
 with Stable_Sloc_Strings;    use Stable_Sloc_Strings;
 
 procedure Stable_Sloc.CLI is
@@ -51,12 +44,12 @@ begin
         and then not Cmd.Quiet.Get
         and then Updates'Length = 0
       then
-         Reporter.Report_Load_Diagnostics(
-            (1 => Load_Diagnostic'
+         Reporter.Report_Load_Diagnostics (
+            [1 => Load_Diagnostic'
                     (File => GNATCOLL.VFS.Create (""),
                      Location => No_Sloc,
                      Diagnostic => +("No specs passed on command line (-s or"
-                                     & " --spec), nothing to do."))));
+                                     & " --spec), nothing to do."))]);
          return;
       end if;
       for Spec of Specs loop

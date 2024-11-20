@@ -39,7 +39,7 @@ private
    record
       Span   : Sloc_Span;
 
-      SHA256 : GNAT.SHA256.Message_Digest := (others => ASCII.NUL);
+      SHA256 : GNAT.SHA256.Message_Digest := [others => ASCII.NUL];
       --  Optional SHA256 digest of the file to be matched. The default value
       --  is interpreted as no check required.
    end record;

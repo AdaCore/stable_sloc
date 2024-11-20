@@ -8,8 +8,6 @@
 
 with Ada.Containers.Vectors;
 with Ada.Text_IO;
-with Ada.Strings.Fixed;
-with Ada.Strings.Unbounded.Hash;
 with Ada.Strings.Unbounded;
 
 limited with Stable_Sloc;

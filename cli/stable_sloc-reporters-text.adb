@@ -35,24 +35,24 @@ package body Stable_Sloc.Reporters.Text is
    begin
       if Matches.Is_Empty then
             Put_Line ("No match.");
-         else
-            for Match of Matches loop
-               Put (+Match.Identifier & ": ");
-               if Match.Success then
-                  Put_Line ("match SUCCESS");
-                  Put_Line
-                    ("   " & Match.File.Display_Full_Name & ":"
-                     & Image (Match.Location));
-               else
-                  Put_Line ("match FAILED");
-                  Put_Line ("   " & Match.File.Display_Full_Name);
-                  Put_Line ("   Reason: " & (+Match.Diagnostic));
-               end if;
+      else
+         for Match of Matches loop
+            Put (+Match.Identifier & ": ");
+            if Match.Success then
+               Put_Line ("match SUCCESS");
                Put_Line
-                 ("   Annotation:" & ASCII.LF &"      "
-                  & (Stable_Sloc.TOML_Utils.To_JSON (Match.Annotation).Write));
-            end loop;
-         end if;
+                 ("   " & Match.File.Display_Full_Name & ":"
+                  & Image (Match.Location));
+            else
+               Put_Line ("match FAILED");
+               Put_Line ("   " & Match.File.Display_Full_Name);
+               Put_Line ("   Reason: " & (+Match.Diagnostic));
+            end if;
+            Put_Line
+              ("   Annotation:" & ASCII.LF & "      "
+               & (Stable_Sloc.TOML_Utils.To_JSON (Match.Annotation).Write));
+         end loop;
+      end if;
    end Report_Match_Results;
 
 end Stable_Sloc.Reporters.Text;

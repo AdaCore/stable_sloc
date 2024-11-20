@@ -4,13 +4,9 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
-with Ada.Containers.Doubly_Linked_Lists;
-with Ada.Strings.Hash;
-
 with Stable_Sloc.TOML_Utils;
 
 with Libadalang.Common;           use Libadalang.Common;
-with Langkit_Support.Diagnostics;
 with Langkit_Support.Text;
 with Langkit_Support.Slocs;       use Langkit_Support.Slocs;
 
@@ -150,7 +146,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
    is
       use TOML;
       use Stable_Sloc.TOML_Utils;
-      Sem_Parents_Arr : TOML_Value := Create_Array;
+      Sem_Parents_Arr : constant TOML_Value := Create_Array;
       Hash_Image : String (1 .. 12);
    begin
       for Name of Self.Sem_Parent_Names loop
@@ -158,7 +154,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       end loop;
       Hash_IO.Put (Hash_Image, Self.Content_Hash, 16);
 
-      return Res : TOML_Value := Write_Span (Self.Relative_Span) do
+      return Res : constant TOML_Value := Write_Span (Self.Relative_Span) do
          Res.Set ("sem_parents", Sem_Parents_Arr);
          Res.Set ("context_hash", Create_String (Hash_Image));
       end return;
@@ -196,7 +192,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          begin
             if Name.Kind /= TOML_String then
                raise Parse_Error with
-                 Format_Location(Name.Location) & ":Expected a "
+                 Format_Location (Name.Location) & ":Expected a "
                  & TOML_String'Image & " for a sem_parent, but"
                  & " got a " & Name.Kind'Image;
             end if;
@@ -217,7 +213,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
      (File : Virtual_File; Span : Sloc_Span) return Sloc_Matcher_T'Class
    is
       use LAL;
-      Unit            : Analysis_Unit := Get_From_File (File);
+      Unit            : constant Analysis_Unit := Get_From_File (File);
       Start_Sloc_Node : Ada_Node;
       End_Sloc_Node   : Ada_Node;
       Ctx_Basic_Decl  : Basic_Decl;
@@ -292,7 +288,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
            Column => Span.Start_Sloc.Column - Base_Col),
          End_Sloc   =>
            (Line   => Span.End_Sloc.Line - Base_Line,
-            Column => SPan.End_Sloc.Column - Base_Col));
+            Column => Span.End_Sloc.Column - Base_Col));
 
       Res.Content_Hash := Langkit_Support.Text.Hash (Ctx_Basic_Decl.Text);
 
