@@ -63,33 +63,33 @@ package body Stable_Sloc.Cmd_Parser is
       declare
          Line : constant String := Get_Field (Low, "START_LINE");
       begin
-         Res.Span.Start_Sloc.Line := Natural'Value (Line);
+         Res.Span.Start_Sloc.Line := Positive'Value (Line);
       exception
-         when Exc : Constraint_Error =>
+         when Constraint_Error =>
             raise Opt_Parse_Error with "START_LINE must be a positive integer";
       end;
       declare
          Col : constant String := Get_Field (Low, "START_COL");
       begin
-         Res.Span.Start_Sloc.Column := Natural'Value (Col);
+         Res.Span.Start_Sloc.Column := Positive'Value (Col);
       exception
-         when Exc : Constraint_Error =>
+         when Constraint_Error =>
             raise Opt_Parse_Error with "START_COL must be a positive integer";
       end;
       declare
          Line : constant String := Get_Field (Low, "END_LINE");
       begin
-         Res.Span.End_Sloc.Line := Natural'Value (Line);
+         Res.Span.End_Sloc.Line := Positive'Value (Line);
       exception
-         when Exc : Constraint_Error =>
+         when Constraint_Error =>
             raise Opt_Parse_Error with "END_LINE must be a positive integer";
       end;
       declare
          Col : constant String := Get_Field (Low, "END_COL");
       begin
-         Res.Span.End_Sloc.Column := Natural'Value (Col);
+         Res.Span.End_Sloc.Column := Positive'Value (Col);
       exception
-         when Exc : Constraint_Error =>
+         when Constraint_Error =>
             raise Opt_Parse_Error with "END_COL must be a positive integer";
       end;
       Annotation := TOML.Load_String ("a=" & Get_Field (Low, "ANNOTATION"));

@@ -5,13 +5,10 @@
 --
 
 with Ada.Exceptions;
-with Ada.Text_IO;
-with Ada.Unchecked_Deallocation;
 
 with GNAT.OS_Lib; use GNAT.OS_Lib;
 
 with Stable_Sloc.TOML_Utils; use Stable_Sloc.TOML_Utils;
-with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
 package body Stable_Sloc.Matchers.Regexp is
 
@@ -110,7 +107,7 @@ package body Stable_Sloc.Matchers.Regexp is
          Res.Regexp.Set (Compile (To_String (Res.Orig_Spec), Res.Flags));
       end return;
    exception
-      when Exc : Parse_Error =>
+      when Parse_Error =>
          raise;
       when Exc : Expression_Error =>
          raise Parse_Error with
@@ -142,7 +139,7 @@ package body Stable_Sloc.Matchers.Regexp is
       Single_Line      : constant Boolean := (Self.Flags / 2) mod 2 = 1;
       Multi_Line       : constant Boolean := (Self.Flags / 4) mod 2 = 1;
    begin
-      return Res : TOML.TOML_Value := TOML.Create_Table do
+      return Res : constant TOML.TOML_Value := TOML.Create_Table do
          Res.Set ("regexp", TOML.Create_String (Self.Orig_Spec));
          Res.Set ("case_insensitive", TOML.Create_Boolean (Case_Insensitive));
          Res.Set ("single_line", TOML.Create_Boolean (Single_Line));
@@ -197,7 +194,7 @@ package body Stable_Sloc.Matchers.Regexp is
          return 0;
       end if;
       loop
-         exit when Cur <= 0 or else Text (Cur) = ASCII.LF;
+         exit when Cur = 0 or else Text (Cur) = ASCII.LF;
          Cur := Cur - 1;
       end loop;
       return From - Cur;

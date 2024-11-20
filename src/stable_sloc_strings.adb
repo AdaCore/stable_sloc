@@ -4,7 +4,7 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
-with Interfaces;
+with Ada.Strings.Fixed;
 
 with Stable_Sloc;
 
@@ -55,12 +55,12 @@ package body Stable_Sloc_Strings is
    ---------------------
 
    function Split_Sloc_Prefix
-     (S : String; Loc: out Stable_Sloc.Sloc) return String
+     (S : String; Loc : out Stable_Sloc.Sloc) return String
    is
       use Ada.Strings.Fixed;
       Line, Col : Natural;
-      Last_L : Positive;
-      Last_C : Positive;
+      Last_L    : Natural;
+      Last_C    : Natural;
    begin
       Last_L := Index (S, ":");
       if Last_L /= 0 then

@@ -22,7 +22,7 @@ package body Stable_Sloc.Reporters.JSON is
       Res : constant JSON_Value := Create_Object;
    begin
       if Self.Do_Report then
-         Res.Set_Field ("load_diagnostics",Self.Load_Diagnostics);
+         Res.Set_Field ("load_diagnostics", Self.Load_Diagnostics);
          Res.Set_Field ("match_results", Self.Match_Results);
          Ada.Text_IO.Put_Line (Res.Write (Compact => False));
       end if;

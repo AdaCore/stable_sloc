@@ -13,11 +13,7 @@ with GNATCOLL.VFS; use GNATCOLL.VFS;
 
 with TOML;
 
-with Stable_Sloc_Strings;
-
 package Stable_Sloc.Matchers is
-
-   use Stable_Sloc_Strings.Unbounded_Strings;
 
    type Sloc_Matcher_T is interface;
 
@@ -50,7 +46,7 @@ package Stable_Sloc.Matchers is
    --  instance that matched.
 
    function Dump_Spec
-     (Self : Sloc_Matcher_T) return Toml.TOML_Value is abstract;
+     (Self : Sloc_Matcher_T) return TOML.TOML_Value is abstract;
    --  Return the TOML that can be used to re-create Self.
 
    function Image (Self : Sloc_Matcher_T) return Unbounded_String is abstract;
@@ -75,7 +71,7 @@ package Stable_Sloc.Matchers is
    --  Register the factory to be used to instantiate a matcher from a source +
    --  span description, for the specified Matcher_Kind.
 
-   Unknown_Matcher_Error : Exception;
+   Unknown_Matcher_Error : exception;
 
    function Instantiate_Matcher
      (Entry_Spec : TOML.TOML_Value;

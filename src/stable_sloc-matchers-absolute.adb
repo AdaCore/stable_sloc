@@ -12,7 +12,6 @@ with GNATCOLL.OS.FSUtil;
 with GNATCOLL.Utils;
 
 with Stable_Sloc.TOML_Utils;
-with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
 package body Stable_Sloc.Matchers.Absolute is
 
@@ -29,8 +28,7 @@ package body Stable_Sloc.Matchers.Absolute is
       Buffer_Acc : GNAT.Strings.String_Access :=
         GNATCOLL.VFS.Read_File (File);
 
-      Res      : Sloc_Match := (Success => True, Span => Self.Span);
-      File_SHA : GNAT.SHA256.Message_Digest;
+      Res : Sloc_Match := (Success => True, Span => Self.Span);
    begin
       if Buffer_Acc = null then
          return [Sloc_Match'
@@ -38,7 +36,7 @@ package body Stable_Sloc.Matchers.Absolute is
                     Reason  => +"Could not read " & File.Display_Full_Name)];
       end if;
 
-      if Self.SHA256 /= (1 .. Self.SHA256'Length => ASCII.NUL)
+      if Self.SHA256 /= [1 .. Self.SHA256'Length => ASCII.NUL]
         and then Self.SHA256 /= GNATCOLL.OS.FSUtil.SHA256 (+File.Full_Name)
       then
          return
@@ -150,7 +148,7 @@ package body Stable_Sloc.Matchers.Absolute is
    is
       Res : constant TOML.TOML_Value := TOML_Utils.Write_Span (Self.Span);
    begin
-      if Self.SHA256 /= (1 .. Self.SHA256'Length => ASCII.NUL) then
+      if Self.SHA256 /= [1 .. Self.SHA256'Length => ASCII.NUL] then
          Res.Set ("sha256", TOML.Create_String (Self.SHA256));
       end if;
       return Res;
@@ -184,7 +182,7 @@ package body Stable_Sloc.Matchers.Absolute is
             begin
                if Spec_SHA_Str'Length /= Res.SHA256'Length then
                   raise Parse_Error with
-                    TOML.Format_Location (Spec.Get("sha256").Location)
+                    TOML.Format_Location (Spec.Get ("sha256").Location)
                     & ":incorrect length for a SHA256 digest";
                end if;
                Res.SHA256 := Spec_SHA_Str;

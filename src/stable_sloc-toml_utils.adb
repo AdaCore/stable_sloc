@@ -5,7 +5,6 @@
 --
 
 with Stable_Sloc.Matchers;
-with Stable_Sloc_Strings;  use Stable_Sloc_Strings;
 
 package body Stable_Sloc.TOML_Utils is
 
@@ -15,7 +14,6 @@ package body Stable_Sloc.TOML_Utils is
 
    function Get (Val : TOML.TOML_Value; Key : String) return Boolean is
      (Get (Val, Key, TOML_Boolean).As_Boolean);
-
 
    function Get (Val : TOML.TOML_Value; Key : String) return Integer is
      (Integer (Get (Val, Key, TOML_Integer).As_Integer));
@@ -109,7 +107,7 @@ package body Stable_Sloc.TOML_Utils is
 
    function Write_Span (Span : Sloc_Span) return TOML_Value is
    begin
-      return Res : TOML.TOML_Value := TOML.Create_Table do
+      return Res : constant TOML.TOML_Value := TOML.Create_Table do
          Res.Set
            ("start_line", TOML.Create_Integer
                             (TOML.Any_Integer (Span.Start_Sloc.Line)));
@@ -139,19 +137,23 @@ package body Stable_Sloc.TOML_Utils is
       case Kind (Val) is
          when TOML_String =>
             return Create (Val.As_String);
+
          when TOML_Integer =>
             return Create (Long_Long_Integer (Val.As_Integer));
+
          when TOML_Float =>
             if Val.As_Float.Kind = Regular then
                return Create (Long_Float (Val.As_Float.Value));
             else
-               -- NaN is not supported in JSON, we should return a null
-               -- instead.
+               --  NaN is not supported in JSON, we should return a null
+               --  instead.
 
                return JSON_Null;
             end if;
+
          when TOML_Boolean =>
             return Create (Val.As_Boolean);
+
          when TOML_Offset_Datetime .. TOML_Local_Time =>
             declare
                --  There is no way to dump a partial TOML document to string at
@@ -169,6 +171,7 @@ package body Stable_Sloc.TOML_Utils is
                      String'("key = ")'Last + 1,
                      Length (Res)));
             end;
+
          when TOML_Array =>
             declare
                Res : JSON_Array := Empty_Array;
@@ -178,12 +181,14 @@ package body Stable_Sloc.TOML_Utils is
                end loop;
                return Create (Res);
             end;
+
          when TOML_Table =>
             return Res : constant JSON_Value := Create_Object do
                for Assoc of Val.Iterate_On_Table loop
                   Res.Set_Field (+Assoc.Key, To_JSON (Assoc.Value));
                end loop;
             end return;
+
       end case;
    end To_JSON;
 
@@ -196,20 +201,25 @@ package body Stable_Sloc.TOML_Utils is
       case Val.Kind is
          when JSON_Int_Type =>
             return Create_Integer (Any_Integer (Long_Integer'(Val.Get)));
+
          when JSON_Float_Type =>
             return
               Create_Float
-                (Any_Float' (Regular, Valid_Float (Val.Get_Long_Float)));
+                (Any_Float'(Regular, Valid_Float (Val.Get_Long_Float)));
+
          when JSON_String_Type =>
             return Create_String (String'(Val.Get));
+
          when JSON_Boolean_Type =>
             return Create_Boolean (Val.Get);
+
          when JSON_Array_Type =>
-            return Res : TOML_Value := Create_Array do
+            return Res : constant  TOML_Value := Create_Array do
                for Item of JSON_Array'(Val.Get) loop
                   Res.Append (To_TOML (Item));
                end loop;
             end return;
+
          when JSON_Object_Type =>
             declare
                Res : constant TOML_Value := Create_Table;
@@ -225,9 +235,11 @@ package body Stable_Sloc.TOML_Utils is
                Val.Map_JSON_Object (Append_CB'Access);
                return Res;
             end;
+
          when JSON_Null_Type =>
             return No_TOML_Value;
-         end case;
+
+      end case;
    end To_TOML;
 
 end Stable_Sloc.TOML_Utils;

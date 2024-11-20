@@ -5,13 +5,11 @@
 --
 
 with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
 
 with Stable_Sloc.Matchers.Absolute;
 with Stable_Sloc.Matchers.LAL_Ctx;
 with Stable_Sloc.Matchers.Regexp;
-with Stable_Sloc.TOML_Utils;        use Stable_Sloc.TOML_Utils;
 
 package body Stable_Sloc.Matchers is
 
@@ -38,7 +36,7 @@ package body Stable_Sloc.Matchers is
      (Matcher_Kind : String; Matcher_Factory : Sloc_Matcher_Factory)
    is
       use Backend_Maps;
-      Cur : Cursor := Backend_Map.Find (Matcher_Kind);
+      Cur : constant Cursor := Backend_Map.Find (Matcher_Kind);
    begin
       if Cur /= No_Element then
          raise Program_Error with
@@ -55,7 +53,7 @@ package body Stable_Sloc.Matchers is
      (Matcher_Kind : String; Matcher_Factory : Source_Sloc_Matcher_Factory)
    is
       use Source_Backend_Maps;
-      Cur : Cursor := Source_Backend_Map.Find (Matcher_Kind);
+      Cur : constant Cursor := Source_Backend_Map.Find (Matcher_Kind);
    begin
       if Cur /= No_Element then
          raise Program_Error with
