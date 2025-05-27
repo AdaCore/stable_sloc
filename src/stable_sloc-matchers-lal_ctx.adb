@@ -40,7 +40,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       Res         : Sloc_Match :=
         (Success => False, Reason => Null_Unbounded_String);
       Target_Decl : Basic_Decl := No_Basic_Decl;
-      Target_Span : Langkit_Support.Slocs.Source_Location_Range;
+      Target_Sloc : Sloc;
 
       function Filter_Nodes (N : Ada_Node'Class) return Visit_Status;
       --  Visit the tree and try to locate a node whose basic decl parent stack
@@ -123,17 +123,10 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
             return [Res];
          end if;
       end if;
-      Target_Span := Target_Decl.Sloc_Range;
-      Res.Span.Start_Sloc.Line :=
-        Natural (Target_Span.Start_Line) + Self.Relative_Span.Start_Sloc.Line;
-      Res.Span.Start_Sloc.Column :=
-        Natural (Target_Span.Start_Column)
-        + Self.Relative_Span.Start_Sloc.Column;
-      Res.Span.End_Sloc.Line :=
-        Natural (Target_Span.Start_Line) + Self.Relative_Span.End_Sloc.Line;
-      Res.Span.End_Sloc.Column :=
-        Natural (Target_Span.Start_Column)
-        + Self.Relative_Span.End_Sloc.Column;
+      Target_Sloc :=
+        (Line   => Natural (Target_Decl.Sloc_Range.Start_Line),
+         Column => Natural (Target_Decl.Sloc_Range.Start_Column));
+      Res.Span := Target_Sloc + Self.Relative_Span;
       return [Res];
    end Match;
 
@@ -282,13 +275,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       Base_Line := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Line);
       Base_Col  := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Column);
 
-      Res.Relative_Span :=
-        (Start_Sloc =>
-          (Line   => Span.Start_Sloc.Line - Base_Line,
-           Column => Span.Start_Sloc.Column - Base_Col),
-         End_Sloc   =>
-           (Line   => Span.End_Sloc.Line - Base_Line,
-            Column => Span.End_Sloc.Column - Base_Col));
+      Res.Relative_Span := Span - Sloc'(Base_Line, Base_Col);
 
       Res.Content_Hash := Langkit_Support.Text.Hash (Ctx_Basic_Decl.Text);
 

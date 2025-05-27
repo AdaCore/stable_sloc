@@ -57,7 +57,7 @@ private
       Content_Hash     : Ada.Containers.Hash_Type;
       --  Hash of the text of the node being used as context.
 
-      Relative_Span    : Sloc_Span;
+      Relative_Span    : Relative_Sloc_Span;
       --  Span relative to the starting source location of the context node.
       --  The lines refer to the number of lines from the node's starting line;
       --  The columns are the absolute column of the span, minus the column

@@ -49,8 +49,15 @@ package Stable_Sloc.TOML_Utils is
    --  end_line
    --  end_col
 
+   function Read_Span (Val : TOML_Value) return Relative_Sloc_Span with
+      Pre => Val.Kind = TOML_Table;
+   --  Same as above, but with relative spans
+
    function Write_Span (Span : Sloc_Span) return TOML_Value;
-   --  Reverse of the above function
+   --  Reverse of the Read_Span function
+
+   function Write_Span (Span : Relative_Sloc_Span) return TOML_Value;
+   --  Reverse of the Read_Span function
 
    function To_String (Val : TOML_Value) return Unbounded_String;
    --  Return the inline representation of Val

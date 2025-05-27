@@ -30,9 +30,31 @@ package Stable_Sloc is
    end record;
    No_Sloc : constant Sloc := (0, 0);
 
+   type Relative_Sloc is record
+      Line, Column : Integer;
+   end record;
+   --  Same as Sloc, but allows negative line and column numbers. The main
+   --  purpose is to be able to describe a location span relative to a
+   --  reference Sloc.
+
+   function "+" (Origin : Sloc; Offset : Relative_Sloc) return Sloc is
+     ((Line   => Origin.Line + Offset.Line,
+       Column => Origin.Column + Offset.Column));
+   --  Return the Sloc obtained by adding the line of Offset to the line of
+   --  Origin, and likewise for the column. This will raise Constraint_Error if
+   --  the resulting line or column isn't a Natural.
+
+   function "-" (L, R : Sloc) return Relative_Sloc is
+     ((Line => L.Line - R.Line, Column => L.Column - R.Column));
+   --  Create a relative Sloc by subtracting the line (resp column) of R to
+   --  the one of L.
+
    function Image (Self : Sloc) return String;
    --  Return "<Line>:<Column>" if Self is not No_Sloc, return the empty string
    --  otherwise.
+
+   function Image (Self : Relative_Sloc) return String;
+   --  Return "<Line>:<Column>"
 
    function "<" (L, R : Sloc) return Boolean;
    --  Returns whether L precedes R. This is a lexicographical order on
@@ -43,9 +65,31 @@ package Stable_Sloc is
    end record;
    No_Sloc_Span : constant Sloc_Span := ((0, 0), (0, 0));
 
+   type Relative_Sloc_Span is record
+      Start_Sloc, End_Sloc : Relative_Sloc;
+   end record;
+   --  Sloc_Span that allows negative line and column numbers, which can be
+   --  used to designate a span relative to a reference Sloc.
+
+   function "+"
+     (Origin : Sloc; Offset : Relative_Sloc_Span) return Sloc_Span is
+     ((Start_Sloc => Origin + Offset.Start_Sloc,
+       End_Sloc   => Origin + Offset.End_Sloc));
+   --  Return the sloc span obtained by offsetting Origin by Offset.Start_Sloc
+   --  (resp. Origin.End_Sloc) for the Start_Sloc (resp End_Sloc).
+
+   function "-"
+     (Span : Sloc_Span; Reference : Sloc) return Relative_Sloc_Span is
+     ((Start_Sloc => Span.Start_Sloc - Reference,
+       End_Sloc   => Span.End_Sloc - Reference));
+   --  Create the relative span of Span, compared to Reference.
+
    function Image (Self : Sloc_Span) return String;
    --  Return "<Start.Line>:<Start.Column> - <End.Line>:<End.Column>" if
    --  Self is not No_Sloc_Span, return the empty string otherwise.
+
+   function Image (Self : Relative_Sloc_Span) return String;
+   --  Return "<Start.Line>:<Start.Column> - <End.Line>:<End.Column>"
 
    function "<" (L, R : Sloc_Span) return Boolean is
      (if L.Start_Sloc = R.Start_Sloc
