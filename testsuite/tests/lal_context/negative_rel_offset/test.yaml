@@ -1,0 +1,9 @@
+description: Test that stable_sloc does not crash when generating a
+  lal_context entry where one of the columns of the designated region
+  is smaller than the start column of the enclosing entity. This generates
+  a negative relative offset which used to crash stable_sloc.
+
+driver: python
+
+resources:
+  simple_ada_prj: .

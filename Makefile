@@ -55,7 +55,7 @@ install: install-static install-static-pic install-relocatable
 	$(CP) bin/stable_sloc_cli$(exeext) $(PREFIX)/bin
 
 install-%:
-	$(GPRINSTALL) -p -Pstable_sloc.gpr \
+	$(GPRINSTALL) -f -p -Pstable_sloc.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
 			--prefix=$(PREFIX) \

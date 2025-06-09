@@ -10,6 +10,8 @@ import sys
 from e3.os.process import Run, PIPE
 from e3.testsuite.driver.classic import TestAbortWithFailure
 
+from SUITE.utils import fail_if, fail_if_not_equal
+
 
 def exe_ext():
     return ".exe" if sys.platform == "win32" else ""
@@ -29,7 +31,8 @@ def run_cli(args, out=None, err=None, ignore_failure=False):
     p = Run(["stable_sloc_cli" + exe_ext()] + args, output=out, error=err)
     if not ignore_failure and p.status != 0:
         raise TestAbortWithFailure(
-            "stable_sloc_cli returned a non-zero status code"
+            "stable_sloc_cli returned a non-zero status code. Command was:\n"
+            f"{p.command_line_image()}"
         )
     return p
 
@@ -185,3 +188,31 @@ def match_annotations(
         ignore_failure=not register_failure
     )
     return CliResults.from_json_dict(json.loads(p_cli.out))
+
+
+def check_single_match(
+        res: CliResults,
+        expected_span: LocationSpan
+):
+    """
+    Check that res contains no diagnostics, and only a single successful match
+    corresponding to the expected_span.
+    """
+
+    fail_if_not_equal("Unexpected diagnostics", 0, len(res.load_diagnostics))
+
+    fail_if_not_equal(
+        what="Unexpected amount of matches",
+        expected=1,
+        actual=len(res.match_results)
+    )
+
+    match_res = res.match_results[0]
+
+    fail_if(not match_res.success, "Unexpected match failure")
+
+    fail_if_not_equal(
+        what="wrong matched location span",
+        expected=expected_span,
+        actual=match_res.sloc_range,
+    )

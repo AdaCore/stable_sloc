@@ -93,10 +93,13 @@ package body Stable_Sloc.TOML_Utils is
    ---------------
 
    function Read_Span (Val : TOML_Value) return Sloc_Span is
-      SL : constant Natural := Get (Val, "start_line");
-      SC : constant Natural := Get (Val, "start_col");
-      EL : constant Natural := Get (Val, "end_line");
-      EC : constant Natural := Get (Val, "end_col");
+     (No_Sloc + Read_Span (Val));
+
+   function Read_Span (Val : TOML_Value) return Relative_Sloc_Span is
+      SL : constant Integer := Get (Val, "start_line");
+      SC : constant Integer := Get (Val, "start_col");
+      EL : constant Integer := Get (Val, "end_line");
+      EC : constant Integer := Get (Val, "end_col");
    begin
       return (Start_Sloc => (SL, SC), End_Sloc => (EL, EC));
    end Read_Span;
@@ -106,6 +109,9 @@ package body Stable_Sloc.TOML_Utils is
    ----------------
 
    function Write_Span (Span : Sloc_Span) return TOML_Value is
+     (Write_Span (Span - No_Sloc));
+
+   function Write_Span (Span : Relative_Sloc_Span) return TOML_Value is
    begin
       return Res : constant TOML.TOML_Value := TOML.Create_Table do
          Res.Set

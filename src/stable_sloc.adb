@@ -702,7 +702,14 @@ package body Stable_Sloc is
    function Image (Self : Sloc) return String is
      (if Self = No_Sloc
       then ""
-      else Img (Self.Line) & ":" & Img (Self.Column));
+      else Image (Self - No_Sloc));
+
+   -----------
+   -- Image --
+   -----------
+
+   function Image (Self : Relative_Sloc) return String is
+     (Img (Self.Line) & ":" & Img (Self.Column));
 
    -----------
    -- Image --
@@ -711,7 +718,14 @@ package body Stable_Sloc is
    function Image (Self : Sloc_Span) return String is
      (if Self = No_Sloc_Span
       then ""
-      else Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
+      else Image (Self - No_Sloc));
+
+   -----------
+   -- Image --
+   -----------
+
+   function Image (Self : Relative_Sloc_Span) return String is
+     (Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
 
    ---------
    -- "<" --
