@@ -13,14 +13,14 @@ with Stable_Sloc.TOML_Utils; use Stable_Sloc.TOML_Utils;
 package body Stable_Sloc.Matchers.Regexp is
 
    function Count_LF
-     (Text : GNAT.OS_Lib.String_Access; From, To : Natural) return Natural with
-     Pre => Text not in null;
+     (Text : GNAT.OS_Lib.String_Access; From, To : Natural) return Natural
+   with Pre => Text not in null;
    --  Count the number of line feed characters in Text in the range
    --  From .. To (inclusive).
 
    function Prev_LF
-     (Text : GNAT.OS_Lib.String_Access; From : Natural) return Natural with
-     Pre => Text not in null;
+     (Text : GNAT.OS_Lib.String_Access; From : Natural) return Natural
+   with Pre => Text not in null;
    --  Return the number of characters between From and the previous new line
    --  in Text. Return From if there is no new line before From.
 
@@ -28,9 +28,9 @@ package body Stable_Sloc.Matchers.Regexp is
    -- Match --
    -----------
 
-   overriding function Match
-     (Self : Regexp_Matcher;
-      File : Virtual_File) return Sloc_Match_Vec
+   overriding
+   function Match
+     (Self : Regexp_Matcher; File : Virtual_File) return Sloc_Match_Vec
    is
       use GNAT.Regpat;
 
@@ -41,10 +41,11 @@ package body Stable_Sloc.Matchers.Regexp is
    begin
       if Content = null then
          return
-           [1 => (Success => False,
-                  Reason  =>
-                    (+"Could not read from file ")
-                     & GNATCOLL.VFS."+" (File.Full_Name))];
+           [1 =>
+              (Success => False,
+               Reason  =>
+                 (+"Could not read from file ")
+                 & GNATCOLL.VFS."+" (File.Full_Name))];
       end if;
       From := Content.all'First;
       loop
@@ -56,10 +57,8 @@ package body Stable_Sloc.Matchers.Regexp is
             Start_Col  : constant Natural :=
               Prev_LF (Content, Match_Arr (0).First);
             End_Line   : constant Natural :=
-              Start_Line + Count_LF
-                (Content,
-                 Match_Arr (0).First,
-                 Match_Arr (0).Last);
+              Start_Line
+              + Count_LF (Content, Match_Arr (0).First, Match_Arr (0).Last);
             End_Col    : constant Natural :=
               Prev_LF (Content, Match_Arr (0).Last) + 1;
          begin
@@ -80,28 +79,29 @@ package body Stable_Sloc.Matchers.Regexp is
    -- Create --
    ------------
 
-   function Create
-     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class
-   is
+   function Create (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class is
       use GNAT.Regpat;
    begin
       return Res : Regexp_Matcher do
          Res.Orig_Spec := Get (Spec, "regexp");
          Res.Flags := No_Flags;
          if Spec.Has ("case_insensitive") then
-            Res.Flags := Res.Flags
+            Res.Flags :=
+              Res.Flags
               + (if Get (Spec, "case_insensitive")
                  then Case_Insensitive
                  else No_Flags);
          end if;
          if Spec.Has ("multi_line") then
-            Res.Flags := Res.Flags
+            Res.Flags :=
+              Res.Flags
               + (if Get (Spec, "multi_line")
                  then Multiple_Lines
                  else No_Flags);
          end if;
          if Spec.Has ("single_line") then
-            Res.Flags := Res.Flags
+            Res.Flags :=
+              Res.Flags
               + (if Get (Spec, "single_line") then Single_Line else No_Flags);
          end if;
          Res.Regexp.Set (Compile (To_String (Res.Orig_Spec), Res.Flags));
@@ -110,24 +110,27 @@ package body Stable_Sloc.Matchers.Regexp is
       when Parse_Error =>
          raise;
       when Exc : Expression_Error =>
-         raise Parse_Error with
-            TOML.Format_Location (Spec.Get ("regexp").Location)
-            & ":Failed to compile regular expression: "
-            & Ada.Exceptions.Exception_Message (Exc);
+         raise Parse_Error
+           with
+             TOML.Format_Location (Spec.Get ("regexp").Location)
+             & ":Failed to compile regular expression: "
+             & Ada.Exceptions.Exception_Message (Exc);
       when Exc : others =>
-         raise Parse_Error with
-           "Failed to parse spec: " & ASCII.LF
-           & Spec.Dump_As_String & ASCII.LF
-           & Ada.Exceptions.Exception_Information (Exc);
+         raise Parse_Error
+           with
+             "Failed to parse spec: "
+             & ASCII.LF
+             & Spec.Dump_As_String
+             & ASCII.LF
+             & Ada.Exceptions.Exception_Information (Exc);
    end Create;
 
    ---------------
    -- Dump_Spec --
    ---------------
 
-   overriding function Dump_Spec
-     (Self : Regexp_Matcher) return TOML.TOML_Value
-   is
+   overriding
+   function Dump_Spec (Self : Regexp_Matcher) return TOML.TOML_Value is
       use type GNAT.Regpat.Regexp_Flags;
       --  From System.Regpat:
       --    No_Flags         : constant Regexp_Flags := 0;
@@ -151,8 +154,8 @@ package body Stable_Sloc.Matchers.Regexp is
    -- Image --
    -----------
 
-   overriding function Image (Self : Regexp_Matcher) return Unbounded_String
-   is
+   overriding
+   function Image (Self : Regexp_Matcher) return Unbounded_String is
    begin
       return "Regexp matcher searching: " & Self.Orig_Spec;
    end Image;

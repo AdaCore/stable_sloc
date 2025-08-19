@@ -19,17 +19,20 @@ package body Stable_Sloc_Strings is
       if Length (Prefix) > Length (Content) then
          return False;
       end if;
-      return (for all I in 1 .. Length (Prefix) =>
-                Element (Prefix, I) = Element (Content, I));
+      return
+        (for all I in 1 .. Length (Prefix) =>
+           Element (Prefix, I) = Element (Content, I));
    end Is_Prefix;
 
    ---------
    -- Img --
    ---------
 
-   function Img (X : Natural) return String is
-     (declare Str : constant String := X'Image;
-      begin Str (Str'First + 1 .. Str'Last));
+   function Img (X : Natural) return String
+   is (declare
+         Str : constant String := X'Image;
+       begin
+         Str (Str'First + 1 .. Str'Last));
 
    ------------
    -- To_Ada --

@@ -13,17 +13,19 @@ with Stable_Sloc.Matchers.Regexp;
 
 package body Stable_Sloc.Matchers is
 
-   package Backend_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type        => String,
-      Element_Type    => Sloc_Matcher_Factory,
-      Hash            => Ada.Strings.Hash,
-      Equivalent_Keys => "=");
+   package Backend_Maps is new
+     Ada.Containers.Indefinite_Hashed_Maps
+       (Key_Type        => String,
+        Element_Type    => Sloc_Matcher_Factory,
+        Hash            => Ada.Strings.Hash,
+        Equivalent_Keys => "=");
 
-   package Source_Backend_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type       => String,
-     Element_Type    =>  Source_Sloc_Matcher_Factory,
-     Hash            => Ada.Strings.Hash,
-     Equivalent_Keys => "=");
+   package Source_Backend_Maps is new
+     Ada.Containers.Indefinite_Hashed_Maps
+       (Key_Type        => String,
+        Element_Type    => Source_Sloc_Matcher_Factory,
+        Hash            => Ada.Strings.Hash,
+        Equivalent_Keys => "=");
 
    Backend_Map        : Backend_Maps.Map;
    Source_Backend_Map : Source_Backend_Maps.Map;
@@ -39,8 +41,8 @@ package body Stable_Sloc.Matchers is
       Cur : constant Cursor := Backend_Map.Find (Matcher_Kind);
    begin
       if Cur /= No_Element then
-         raise Program_Error with
-           "Matcher already registered with key " & Matcher_Kind;
+         raise Program_Error
+           with "Matcher already registered with key " & Matcher_Kind;
       end if;
       Backend_Map.Insert (Matcher_Kind, Matcher_Factory);
    end Register_Matcher;
@@ -56,8 +58,8 @@ package body Stable_Sloc.Matchers is
       Cur : constant Cursor := Source_Backend_Map.Find (Matcher_Kind);
    begin
       if Cur /= No_Element then
-         raise Program_Error with
-           "Matcher already registered with key " & Matcher_Kind;
+         raise Program_Error
+           with "Matcher already registered with key " & Matcher_Kind;
       end if;
       Source_Backend_Map.Insert (Matcher_Kind, Matcher_Factory);
    end Register_Source_Matcher;
@@ -67,11 +69,10 @@ package body Stable_Sloc.Matchers is
    -------------------------
 
    function Instantiate_Matcher
-     (Entry_Spec : TOML.TOML_Value;
-      Kind       : String) return Sloc_Matcher_T'Class
+     (Entry_Spec : TOML.TOML_Value; Kind : String) return Sloc_Matcher_T'Class
    is
       use Backend_Maps;
-      Cur  : constant Cursor := Backend_Map.Find (Kind);
+      Cur : constant Cursor := Backend_Map.Find (Kind);
    begin
       if Cur = No_Element then
          raise Unknown_Matcher_Error with "No such kind of matcher: " & Kind;
@@ -80,12 +81,11 @@ package body Stable_Sloc.Matchers is
    end Instantiate_Matcher;
 
    function Instantiate_Matcher
-     (File : Virtual_File;
-      Span : Sloc_Span;
-      Kind : String) return Sloc_Matcher_T'Class
+     (File : Virtual_File; Span : Sloc_Span; Kind : String)
+      return Sloc_Matcher_T'Class
    is
       use Source_Backend_Maps;
-      Cur  : constant Cursor := Source_Backend_Map.Find (Kind);
+      Cur : constant Cursor := Source_Backend_Map.Find (Kind);
    begin
       if Cur = No_Element then
          raise Unknown_Matcher_Error with "No such kind of matcher: " & Kind;

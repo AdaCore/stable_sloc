@@ -18,15 +18,15 @@ package Stable_Sloc_Strings is
    use Unbounded_Strings;
    subtype US is Unbounded_String;
 
-   package US_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Natural, Element_Type => US);
+   package US_Vectors is new
+     Ada.Containers.Vectors (Index_Type => Natural, Element_Type => US);
    subtype US_Vector is US_Vectors.Vector;
 
    function "+" (S : Unbounded_String) return String
-     renames Unbounded_Strings.To_String;
+   renames Unbounded_Strings.To_String;
 
    function "+" (S : String) return Unbounded_String
-     renames Unbounded_Strings.To_Unbounded_String;
+   renames Unbounded_Strings.To_Unbounded_String;
 
    function Is_Prefix (Prefix, Content : Unbounded_String) return Boolean;
    --  Return Whether Prefix is indeed a prefix of Content.

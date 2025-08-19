@@ -1,12 +1,22 @@
 stages:
-  - checkstyle
+  - check
   - build
   - test
 
 include:
   - component: $CI_SERVER_FQDN/eng/gitlab-templates/check-issue@~latest
     inputs:
-      stage: checkstyle
+      stage: check
+
+  # gnatformat check
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/gnatformat@main
+    inputs:
+      stage: check
+      anod-spec: stable_sloc
+      gnatformat-args: -P stable_sloc_cli.gpr --check
+      install-gnatformat: true
+      install-gnatformat-extra-anod-args: -Qedge
+
 
   - component: $CI_SERVER_FQDN/eng/gitlab-templates/build@~latest
     inputs:

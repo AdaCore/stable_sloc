@@ -10,15 +10,16 @@ with GNATCOLL.JSON; use GNATCOLL.JSON;
 
 package body Stable_Sloc.Reporters.JSON is
 
-   procedure Append_Array (Dest : JSON_Value; Src : JSON_Value) with
-     Pre => Dest.Kind = JSON_Array_Type and then Src.Kind = JSON_Array_Type;
+   procedure Append_Array (Dest : JSON_Value; Src : JSON_Value)
+   with Pre => Dest.Kind = JSON_Array_Type and then Src.Kind = JSON_Array_Type;
    --  Append Src to Dest
 
    --------------
    -- Finalize --
    --------------
 
-   overriding procedure Finalize (Self : in out JSON_Reporter) is
+   overriding
+   procedure Finalize (Self : in out JSON_Reporter) is
       Res : constant JSON_Value := Create_Object;
    begin
       if Self.Do_Report then
@@ -28,19 +29,20 @@ package body Stable_Sloc.Reporters.JSON is
       end if;
    end Finalize;
 
-   overriding function New_Reporter return JSON_Reporter is
-     (Ada.Finalization.Controlled with
-      Load_Diagnostics => Create (Empty_Array),
-      Match_Results    => Create (Empty_Array),
-      Do_Report        => False);
+   overriding
+   function New_Reporter return JSON_Reporter
+   is (Ada.Finalization.Controlled
+       with
+         Load_Diagnostics => Create (Empty_Array),
+         Match_Results    => Create (Empty_Array),
+         Do_Report        => False);
 
    -----------------------------
    -- Report_Load_Diagnostics --
    -----------------------------
 
    procedure Report_Load_Diagnostics
-     (Self : in out JSON_Reporter; Diags : Load_Diagnostic_Arr)
-   is
+     (Self : in out JSON_Reporter; Diags : Load_Diagnostic_Arr) is
    begin
       Self.Do_Report := True;
       Append_Array (Self.Load_Diagnostics, To_JSON (Diags));
@@ -51,8 +53,7 @@ package body Stable_Sloc.Reporters.JSON is
    --------------------------
 
    procedure Report_Match_Results
-     (Self : in out JSON_Reporter; Matches : Match_Result_Vec)
-   is
+     (Self : in out JSON_Reporter; Matches : Match_Result_Vec) is
    begin
       Self.Do_Report := True;
       Append_Array (Self.Match_Results, To_JSON (Matches));

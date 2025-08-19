@@ -12,39 +12,47 @@ package body Stable_Sloc.TOML_Utils is
    -- Get --
    ---------
 
-   function Get (Val : TOML.TOML_Value; Key : String) return Boolean is
-     (Get (Val, Key, TOML_Boolean).As_Boolean);
+   function Get (Val : TOML.TOML_Value; Key : String) return Boolean
+   is (Get (Val, Key, TOML_Boolean).As_Boolean);
 
-   function Get (Val : TOML.TOML_Value; Key : String) return Integer is
-     (Integer (Get (Val, Key, TOML_Integer).As_Integer));
+   function Get (Val : TOML.TOML_Value; Key : String) return Integer
+   is (Integer (Get (Val, Key, TOML_Integer).As_Integer));
 
-   function Get (Val : TOML.TOML_Value; Key : String) return String is
-     (Get (Val, Key, TOML_String).As_String);
+   function Get (Val : TOML.TOML_Value; Key : String) return String
+   is (Get (Val, Key, TOML_String).As_String);
 
    function Get
-     (Val : TOML.TOML_Value; Key : String) return Unbounded_UTF8_String is
-     (Get (Val, Key, TOML_String).As_Unbounded_String);
+     (Val : TOML.TOML_Value; Key : String) return Unbounded_UTF8_String
+   is (Get (Val, Key, TOML_String).As_Unbounded_String);
 
    function Get
      (Val : TOML.TOML_Value; Key : String; Kind : Any_Value_Kind)
-     return TOML_Value
-   is
+      return TOML_Value is
    begin
       if Val.Kind /= TOML_Table then
-         raise Stable_Sloc.Matchers.Parse_Error with
-           Format_Location (Val.Location) & ":Can't get """ & Key
-           & """ from a " & Val.Kind'Image;
+         raise Stable_Sloc.Matchers.Parse_Error
+           with
+             Format_Location (Val.Location)
+             & ":Can't get """
+             & Key
+             & """ from a "
+             & Val.Kind'Image;
       end if;
       if not Val.Has (Key) then
-         raise Stable_Sloc.Matchers.Parse_Error with
-           Format_Location (Val.Location) & ":Missing """ & Key & """ field";
+         raise Stable_Sloc.Matchers.Parse_Error
+           with
+             Format_Location (Val.Location) & ":Missing """ & Key & """ field";
       end if;
       if Val.Get (Key).Kind /= Kind then
-         raise Stable_Sloc.Matchers.Parse_Error with
-            Format_Location (Val.Get (Key).Location)
-            & ":Unexpected type for """ & Key
-            & """: expected " & Kind'Image & " but got "
-            & Val.Get (Key).Kind'Image;
+         raise Stable_Sloc.Matchers.Parse_Error
+           with
+             Format_Location (Val.Get (Key).Location)
+             & ":Unexpected type for """
+             & Key
+             & """: expected "
+             & Kind'Image
+             & " but got "
+             & Val.Get (Key).Kind'Image;
       end if;
       return Val.Get (Key);
    end Get;
@@ -54,8 +62,7 @@ package body Stable_Sloc.TOML_Utils is
    -----------------
 
    function Get_Or_Null
-     (Val : TOML.TOML_Value; Key : String) return Unbounded_String
-   is
+     (Val : TOML.TOML_Value; Key : String) return Unbounded_String is
    begin
       if Val.Kind /= TOML_Table
         or else not Val.Has (Key)
@@ -80,10 +87,15 @@ package body Stable_Sloc.TOML_Utils is
          return Default;
       end if;
       if Bool.Kind /= TOML_Boolean then
-         raise Stable_Sloc.Matchers.Parse_Error with
-         Format_Location (Bool.Location) & ":Wrong type for """ & Key
-         & """: expected " & TOML_Boolean'Image & " but got "
-         & Bool.Kind'Image;
+         raise Stable_Sloc.Matchers.Parse_Error
+           with
+             Format_Location (Bool.Location)
+             & ":Wrong type for """
+             & Key
+             & """: expected "
+             & TOML_Boolean'Image
+             & " but got "
+             & Bool.Kind'Image;
       end if;
       return Bool.As_Boolean;
    end Get_Or_Default;
@@ -92,8 +104,8 @@ package body Stable_Sloc.TOML_Utils is
    -- Read_Span --
    ---------------
 
-   function Read_Span (Val : TOML_Value) return Sloc_Span is
-     (No_Sloc + Read_Span (Val));
+   function Read_Span (Val : TOML_Value) return Sloc_Span
+   is (No_Sloc + Read_Span (Val));
 
    function Read_Span (Val : TOML_Value) return Relative_Sloc_Span is
       SL : constant Integer := Get (Val, "start_line");
@@ -108,24 +120,24 @@ package body Stable_Sloc.TOML_Utils is
    -- Write_Span --
    ----------------
 
-   function Write_Span (Span : Sloc_Span) return TOML_Value is
-     (Write_Span (Span - No_Sloc));
+   function Write_Span (Span : Sloc_Span) return TOML_Value
+   is (Write_Span (Span - No_Sloc));
 
    function Write_Span (Span : Relative_Sloc_Span) return TOML_Value is
    begin
       return Res : constant TOML.TOML_Value := TOML.Create_Table do
          Res.Set
-           ("start_line", TOML.Create_Integer
-                            (TOML.Any_Integer (Span.Start_Sloc.Line)));
+           ("start_line",
+            TOML.Create_Integer (TOML.Any_Integer (Span.Start_Sloc.Line)));
          Res.Set
-           ("start_col", TOML.Create_Integer
-                           (TOML.Any_Integer (Span.Start_Sloc.Column)));
+           ("start_col",
+            TOML.Create_Integer (TOML.Any_Integer (Span.Start_Sloc.Column)));
          Res.Set
-           ("end_line", TOML.Create_Integer
-                          (TOML.Any_Integer (Span.End_Sloc.Line)));
+           ("end_line",
+            TOML.Create_Integer (TOML.Any_Integer (Span.End_Sloc.Line)));
          Res.Set
-           ("end_col", TOML.Create_Integer
-                         (TOML.Any_Integer (Span.End_Sloc.Column)));
+           ("end_col",
+            TOML.Create_Integer (TOML.Any_Integer (Span.End_Sloc.Column)));
       end return;
    end Write_Span;
 
@@ -171,11 +183,10 @@ package body Stable_Sloc.TOML_Utils is
             begin
                Dummy_Table.Set ("key", Val);
                Res := Dump_As_Unbounded (Dummy_Table);
-               return Create
-                 (Unbounded_Slice
-                    (Res,
-                     String'("key = ")'Last + 1,
-                     Length (Res)));
+               return
+                 Create
+                   (Unbounded_Slice
+                      (Res, String'("key = ")'Last + 1, Length (Res)));
             end;
 
          when TOML_Array =>
@@ -220,7 +231,7 @@ package body Stable_Sloc.TOML_Utils is
             return Create_Boolean (Val.Get);
 
          when JSON_Array_Type =>
-            return Res : constant  TOML_Value := Create_Array do
+            return Res : constant TOML_Value := Create_Array do
                for Item of JSON_Array'(Val.Get) loop
                   Res.Append (To_TOML (Item));
                end loop;

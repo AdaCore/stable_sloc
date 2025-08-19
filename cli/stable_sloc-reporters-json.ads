@@ -10,9 +10,8 @@ with GNATCOLL.JSON;
 
 package Stable_Sloc.Reporters.JSON is
 
-   type JSON_Reporter is new Reporter
-   with record
-      Do_Report        : Boolean := False;
+   type JSON_Reporter is new Reporter with record
+      Do_Report : Boolean := False;
       --  Finalization can happen multiple times as the reporter object is
       --  first initialized. Only emit a report once a call to Report_* has
       --  actually taken place.
@@ -21,18 +20,22 @@ package Stable_Sloc.Reporters.JSON is
       Match_Results    : GNATCOLL.JSON.JSON_Value;
    end record;
 
-   overriding procedure Finalize (Self : in out JSON_Reporter);
+   overriding
+   procedure Finalize (Self : in out JSON_Reporter);
    --  Write and format self on the standard output, if the JSON output is
    --  enabled.
 
-   overriding function New_Reporter return JSON_Reporter;
+   overriding
+   function New_Reporter return JSON_Reporter;
    --  Create a new reporter
 
-   overriding procedure Report_Load_Diagnostics
+   overriding
+   procedure Report_Load_Diagnostics
      (Self : in out JSON_Reporter; Diags : Load_Diagnostic_Arr);
    --  Add the load diagnostics into Self
 
-   overriding procedure Report_Match_Results
+   overriding
+   procedure Report_Match_Results
      (Self : in out JSON_Reporter; Matches : Match_Result_Vec);
    --  Add the match results into Self
 

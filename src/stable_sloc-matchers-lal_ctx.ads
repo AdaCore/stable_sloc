@@ -16,19 +16,19 @@ package Stable_Sloc.Matchers.LAL_Ctx is
    type LAL_Ctx_Matcher is new Sloc_Matcher_T with private;
    --  Matcher using a regular expression to match a stable sloc.
 
-   overriding function Match
-     (Self : LAL_Ctx_Matcher;
-      File : Virtual_File) return Sloc_Match_Vec;
+   overriding
+   function Match
+     (Self : LAL_Ctx_Matcher; File : Virtual_File) return Sloc_Match_Vec;
 
-   overriding function Dump_Spec
-     (Self : LAL_Ctx_Matcher) return TOML.TOML_Value;
+   overriding
+   function Dump_Spec (Self : LAL_Ctx_Matcher) return TOML.TOML_Value;
    --  Return the text that can be used to re-create Self.
 
-   overriding function Image (Self : LAL_Ctx_Matcher) return Unbounded_String;
+   overriding
+   function Image (Self : LAL_Ctx_Matcher) return Unbounded_String;
    --  Return a synthetic image f the matcher. For debug purposes.
 
-   function Create
-     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class;
+   function Create (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class;
    --  Create a matcher from the given Spec. Raise a Parse_Error in case
    --  parsing the spec was unsuccessful.
 
@@ -54,10 +54,10 @@ private
       Sem_Parent_Names : US_Vector;
       --  Simple names of the semantic parents, up to the compilation unit name
 
-      Content_Hash     : Ada.Containers.Hash_Type;
+      Content_Hash : Ada.Containers.Hash_Type;
       --  Hash of the text of the node being used as context.
 
-      Relative_Span    : Relative_Sloc_Span;
+      Relative_Span : Relative_Sloc_Span;
       --  Span relative to the starting source location of the context node.
       --  The lines refer to the number of lines from the node's starting line;
       --  The columns are the absolute column of the span, minus the column

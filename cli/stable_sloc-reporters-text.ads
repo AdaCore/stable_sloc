@@ -10,14 +10,17 @@ package Stable_Sloc.Reporters.Text is
 
    type Text_Reporter is new Reporter with null record;
 
-   overriding function New_Reporter return Text_Reporter;
+   overriding
+   function New_Reporter return Text_Reporter;
    --  Create a new reporter
 
-   overriding procedure Report_Load_Diagnostics
+   overriding
+   procedure Report_Load_Diagnostics
      (Self : in out Text_Reporter; Diags : Load_Diagnostic_Arr);
    --  Add the load diagnostics into Self
 
-   overriding procedure Report_Match_Results
+   overriding
+   procedure Report_Match_Results
      (Self : in out Text_Reporter; Matches : Match_Result_Vec);
    --  Add the match results into Self
 
