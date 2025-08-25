@@ -1,0 +1,6 @@
+description: Simple sanity check on the clang context based matcher
+
+resources:
+  simple_c_cpp: .
+
+driver: python

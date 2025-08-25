@@ -1,0 +1,7 @@
+description: CHeck correct matching and rejection of invalidated matchers when
+  the designated region is located in a out-of-line declaration.
+
+resources:
+  simple_c_cpp: .
+
+driver: python

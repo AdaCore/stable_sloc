@@ -6,6 +6,9 @@ abstract project Config is
    --  Use -gnatX instead of -gnat2022 to be compatible with the fsf gnat
    Ada_Switches := ("-gnatX", "-g", "-gnatwa");
 
+   type Boolean is ("True", "False");
+   C_Support : Boolean := external ("C_SUPPORT", "True");
+
    case Build_Mode is
       when "dev" =>
          Ada_Switches := Ada_Switches & ("-O0", "-gnata", "-gnatwe", "-gnatyg");
@@ -23,4 +26,10 @@ abstract project Config is
          when "prod" => null;
       end case;
    end Binder;
+
+   package Linker is
+      for Required_Switches use
+        ("-lstdc++", "-static-libstdc++", "-static-libgcc");
+   end Linker;
+
 end Config;

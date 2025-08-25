@@ -15,6 +15,8 @@ with Stable_Sloc.Reporters.JSON;
 with Stable_Sloc.Reporters.Text;
 with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
+with GNATCOLL.Traces;
+
 procedure Stable_Sloc.CLI is
    package Cmd renames Cmd_Parser;
 
@@ -22,6 +24,12 @@ begin
    if not Cmd.Parser.Parse then
       Ada.Command_Line.Set_Exit_Status (1);
       return;
+   end if;
+
+   if Cmd.Debug.Get then
+      GNATCOLL.Traces.Parse_Config (Config => "+");
+   else
+      GNATCOLL.Traces.Parse_Config_File;
    end if;
 
    declare

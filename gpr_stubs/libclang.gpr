@@ -1,0 +1,3 @@
+project Libclang is
+   for Languages use ();
+end Libclang;

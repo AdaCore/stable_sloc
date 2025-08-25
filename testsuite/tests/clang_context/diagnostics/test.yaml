@@ -1,0 +1,8 @@
+description: Check that circumstantiated diagnostics are emitted by
+  Stable_Sloc for various usage issues concerning specifically the
+  Clang_Context backend.
+
+driver: python
+
+resources:
+  simple_c_cpp: .
