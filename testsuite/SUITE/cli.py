@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import json
 from typing import Any
 import sys
+import tomllib
 
 from e3.os.process import Run, PIPE
 from e3.testsuite.driver.classic import TestAbortWithFailure
@@ -57,6 +58,9 @@ class Location:
         line = field_or_error(source, "line", int)
         col = field_or_error(source, "column", int)
         return cls(line, col)
+
+    def __str__(self) -> str:
+        return f"{self.line}:{self.col}"
 
 
 @dataclass
@@ -202,4 +206,22 @@ def check_single_match(res: CliResults, expected_span: LocationSpan):
         what="wrong matched location span",
         expected=expected_span,
         actual=match_res.sloc_range,
+    )
+
+
+def cli_arg_for_entry_update(
+    identifier: str, kind: str, filename: str, span: LocationSpan, payload: str
+):
+    """
+    Generate the command line option to request the creation of a matcher
+    entry of the given kind, identifier, matching the designated span in
+    filename, and payload. Payload must parse as a valid TOML inline table.
+    """
+    parsed_payload = tomllib.loads(f"[root]\n foo={payload}")["root"]["foo"]
+    if not isinstance(parsed_payload, dict):
+        TestAbortWithFailure("Expected Payload to parse as a TOML table")
+
+    return (
+        f"-u{identifier}:{kind}:{filename}:"
+        f"{span.first}:{span.last}:{payload}"
     )
