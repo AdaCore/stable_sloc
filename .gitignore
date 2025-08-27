@@ -3,3 +3,5 @@ bin*/
 lib*/
 obj*/
 __pycache__
+testsuite/tmp
+testsuite/out

@@ -9,8 +9,7 @@ annotation_file = "annotations.toml"
 
 run_cli(
     [
-        "-u'my_spec:absolute:content.txt:5:7:7:3:"
-        "{message=\"sample text\"}",
+        "-u'my_spec:absolute:content.txt:5:7:7:3:" '{message="sample text"}',
         "-o",
         annotation_file,
         "-v",
@@ -18,6 +17,4 @@ run_cli(
 )
 
 # Then match it on the same file, as a sanity check measure
-run_cli(
-    ["-s", annotation_file, "content.txt"]
-)
+run_cli(["-s", annotation_file, "content.txt"])

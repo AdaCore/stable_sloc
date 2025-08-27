@@ -24,6 +24,7 @@ package Stable_Sloc.Matchers is
       case Success is
          when True =>
             Span : Sloc_Span;
+
          when False =>
             Reason : Unbounded_String;
       end case;
@@ -34,19 +35,20 @@ package Stable_Sloc.Matchers is
    --  renders this match invalid. Otherwise if there is no match at all, do
    --  not produce a Sloc_Match.
 
-   package Sloc_Match_Vectors is new Ada.Containers.Vectors
-     (Index_Type   => Positive,
-      Element_Type => Sloc_Match);
+   package Sloc_Match_Vectors is new
+     Ada.Containers.Vectors
+       (Index_Type   => Positive,
+        Element_Type => Sloc_Match);
    subtype Sloc_Match_Vec is Sloc_Match_Vectors.Vector;
 
    function Match
-     (Self : Sloc_Matcher_T;
-      File : Virtual_File) return Sloc_Match_Vec is abstract;
+     (Self : Sloc_Matcher_T; File : Virtual_File) return Sloc_Match_Vec
+   is abstract;
    --  Try to match Self on the contents of File. Return a match array for each
    --  instance that matched.
 
-   function Dump_Spec
-     (Self : Sloc_Matcher_T) return TOML.TOML_Value is abstract;
+   function Dump_Spec (Self : Sloc_Matcher_T) return TOML.TOML_Value
+   is abstract;
    --  Return the TOML that can be used to re-create Self.
 
    function Image (Self : Sloc_Matcher_T) return Unbounded_String is abstract;
@@ -74,8 +76,8 @@ package Stable_Sloc.Matchers is
    Unknown_Matcher_Error : exception;
 
    function Instantiate_Matcher
-     (Entry_Spec : TOML.TOML_Value;
-      Kind       : String) return Sloc_Matcher_T'Class with
+     (Entry_Spec : TOML.TOML_Value; Kind : String) return Sloc_Matcher_T'Class
+   with
      Pre => not Entry_Spec.Is_Null and then Entry_Spec.Kind in TOML.TOML_Table;
    --  Create a matcher of the appropriate kind as defined in Entry_Spec.
    --  If an error occurs during loading of the Entry_Spec, a Parse_Error is
@@ -85,11 +87,10 @@ package Stable_Sloc.Matchers is
    --  Unknown_Matcher_Error.
 
    function Instantiate_Matcher
-     (File : Virtual_File;
-      Span : Sloc_Span;
-      Kind : String) return Sloc_Matcher_T'Class;
+     (File : Virtual_File; Span : Sloc_Span; Kind : String)
+      return Sloc_Matcher_T'Class;
 
-   procedure Free_Matcher is new Ada.Unchecked_Deallocation
-     (Sloc_Matcher_T'Class, Sloc_Matcher_Acc);
+   procedure Free_Matcher is new
+     Ada.Unchecked_Deallocation (Sloc_Matcher_T'Class, Sloc_Matcher_Acc);
 
 end Stable_Sloc.Matchers;

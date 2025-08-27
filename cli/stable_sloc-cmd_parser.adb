@@ -14,8 +14,7 @@ package body Stable_Sloc.Cmd_Parser is
    -- Parse_Update_Request --
    --------------------------
 
-   function Parse_Update_Request (Arg : String) return Update_Request
-   is
+   function Parse_Update_Request (Arg : String) return Update_Request is
       function Get_Field (From : in out Positive; What : String) return String;
       --  Parse one field from Arg, reading from From and advancing it upon
       --  successful read. Use What as the missing field name in diagnostics.
@@ -33,7 +32,7 @@ package body Stable_Sloc.Cmd_Parser is
 
       function Get_Field (From : in out Positive; What : String) return String
       is
-         To : Natural;
+         To       : Natural;
          Old_From : constant Positive := From;
       begin
          if From not in Arg'Range then

@@ -39,8 +39,8 @@ package Stable_Sloc.TOML_Utils is
    --  Default if Val does not have Key field. If there is a Key field in val
    --  but it is of the wrong type, raise Parse_Error.
 
-   function Read_Span (Val : TOML_Value) return Sloc_Span with
-     Pre => Val.Kind = TOML_Table;
+   function Read_Span (Val : TOML_Value) return Sloc_Span
+   with Pre => Val.Kind = TOML_Table;
    --  Read a sloc Span from Val. The various locations are expected to be laid
    --  out flat in the table as the following field:
    --
@@ -49,8 +49,8 @@ package Stable_Sloc.TOML_Utils is
    --  end_line
    --  end_col
 
-   function Read_Span (Val : TOML_Value) return Relative_Sloc_Span with
-      Pre => Val.Kind = TOML_Table;
+   function Read_Span (Val : TOML_Value) return Relative_Sloc_Span
+   with Pre => Val.Kind = TOML_Table;
    --  Same as above, but with relative spans
 
    function Write_Span (Span : Sloc_Span) return TOML_Value;

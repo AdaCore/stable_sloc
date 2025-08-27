@@ -6,9 +6,9 @@
 
 with Stable_Sloc.TOML_Utils;
 
-with Libadalang.Common;           use Libadalang.Common;
+with Libadalang.Common;     use Libadalang.Common;
 with Langkit_Support.Text;
-with Langkit_Support.Slocs;       use Langkit_Support.Slocs;
+with Langkit_Support.Slocs; use Langkit_Support.Slocs;
 
 package body Stable_Sloc.Matchers.LAL_Ctx is
 
@@ -20,18 +20,18 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
    --  Return all the canonical names of the parent basic decls of N in
    --  increasing depth order. N will be the last element of the list.
 
-   function Get_Canonical_Name (N : LAL.Basic_Decl) return Unbounded_String is
-     (+(Langkit_Support.Text.Image
-          (Langkit_Support.Text.To_Text
-             (N.P_Defining_Name.P_Canonical_Text))));
+   function Get_Canonical_Name (N : LAL.Basic_Decl) return Unbounded_String
+   is (+(Langkit_Support.Text.Image
+           (Langkit_Support.Text.To_Text
+              (N.P_Defining_Name.P_Canonical_Text))));
 
    -----------
    -- Match --
    -----------
 
-   overriding function Match
-     (Self : LAL_Ctx_Matcher;
-      File : Virtual_File) return Sloc_Match_Vec
+   overriding
+   function Match
+     (Self : LAL_Ctx_Matcher; File : Virtual_File) return Sloc_Match_Vec
    is
       use LAL;
       Unit  : constant Analysis_Unit := Get_From_File (File);
@@ -80,10 +80,12 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          Names := Get_Basic_Decl_Parent_Names (N.As_Basic_Decl);
          if Names /= Self.Sem_Parent_Names then
             Res.Reason :=
-               Unbounded_String'
-                 (+("Mismatched parent basic decl names:" & ASCII.LF))
-               & "expected: " & To_Ada (Self.Sem_Parent_Names)
-               & (ASCII.LF & "but got: ") & To_Ada (Names);
+              Unbounded_String'
+                (+("Mismatched parent basic decl names:" & ASCII.LF))
+              & "expected: "
+              & To_Ada (Self.Sem_Parent_Names)
+              & (ASCII.LF & "but got: ")
+              & To_Ada (Names);
             if Names.Length >= Self.Sem_Parent_Names.Length then
                return Over;
             else
@@ -104,7 +106,7 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          return Stop;
       end Filter_Nodes;
 
-   --  Start of processing for Match
+      --  Start of processing for Match
    begin
       if Unit.Has_Diagnostics then
          for Diag of Unit.Diagnostics loop
@@ -134,13 +136,12 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
    -- Dump_Spec --
    ---------------
 
-   overriding function Dump_Spec
-     (Self : LAL_Ctx_Matcher) return TOML.TOML_Value
-   is
+   overriding
+   function Dump_Spec (Self : LAL_Ctx_Matcher) return TOML.TOML_Value is
       use TOML;
       use Stable_Sloc.TOML_Utils;
       Sem_Parents_Arr : constant TOML_Value := Create_Array;
-      Hash_Image : String (1 .. 12);
+      Hash_Image      : String (1 .. 12);
    begin
       for Name of Self.Sem_Parent_Names loop
          Sem_Parents_Arr.Append (Create_String (Name));
@@ -157,26 +158,26 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
    -- Image --
    -----------
 
-   overriding function Image (Self : LAL_Ctx_Matcher) return Unbounded_String
+   overriding
+   function Image (Self : LAL_Ctx_Matcher) return Unbounded_String
    is (Unbounded_String'
          ("LAL context based matcher, matching "
-          & To_Ada (Self.Sem_Parent_Names) & " + "
+          & To_Ada (Self.Sem_Parent_Names)
+          & " + "
           & (+Image (Self.Relative_Span))));
 
    ------------
    -- Create --
    ------------
 
-   function Create
-     (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class
-   is
+   function Create (Spec : TOML.TOML_Value) return Sloc_Matcher_T'Class is
       use TOML;
       use Stable_Sloc.TOML_Utils;
       Res        : LAL_Ctx_Matcher;
       Name_Arr   : constant TOML_Value :=
         Get (Spec, "sem_parents", TOML_Array);
       Hash_Image : constant String := Get (Spec, "context_hash");
-      Hash_Value   : Ada.Containers.Hash_Type;
+      Hash_Value : Ada.Containers.Hash_Type;
       Dummy_Last : Positive;
    begin
       for I in 1 .. Name_Arr.Length loop
@@ -184,10 +185,14 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
             Name : constant TOML_Value := Name_Arr.Item (I);
          begin
             if Name.Kind /= TOML_String then
-               raise Parse_Error with
-                 Format_Location (Name.Location) & ":Expected a "
-                 & TOML_String'Image & " for a sem_parent, but"
-                 & " got a " & Name.Kind'Image;
+               raise Parse_Error
+                 with
+                   Format_Location (Name.Location)
+                   & ":Expected a "
+                   & TOML_String'Image
+                   & " for a sem_parent, but"
+                   & " got a "
+                   & Name.Kind'Image;
             end if;
             Res.Sem_Parent_Names.Append (Name.As_Unbounded_String);
          end;
@@ -227,15 +232,16 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
           ((Line   => Line_Number (Span.Start_Sloc.Line),
             Column => Column_Number (Span.Start_Sloc.Column)));
       if Start_Sloc_Node.Is_Null then
-         raise Parse_Error with
-           "Did not find a node containing " & Image (Span.Start_Sloc);
+         raise Parse_Error
+           with "Did not find a node containing " & Image (Span.Start_Sloc);
       end if;
-      End_Sloc_Node := Unit.Root.Lookup
-        ((Line   => Line_Number (Span.End_Sloc.Line),
-          Column => Column_Number (Span.End_Sloc.Column)));
+      End_Sloc_Node :=
+        Unit.Root.Lookup
+          ((Line   => Line_Number (Span.End_Sloc.Line),
+            Column => Column_Number (Span.End_Sloc.Column)));
       if End_Sloc_Node.Is_Null then
-         raise Parse_Error with
-           "Did not find a node containing " & Image (Span.End_Sloc);
+         raise Parse_Error
+           with "Did not find a node containing " & Image (Span.End_Sloc);
       end if;
 
       --  Find the inner-most basic decl containing each of them
@@ -244,16 +250,19 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          Start_Sloc_Node := Start_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
       if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
-         raise Parse_Error with
-           "Did not find enclosing basic decl for " & Image (Span.Start_Sloc);
+         raise Parse_Error
+           with
+             "Did not find enclosing basic decl for "
+             & Image (Span.Start_Sloc);
       end if;
 
       if End_Sloc_Node.Kind not in Ada_Basic_Decl then
          End_Sloc_Node := End_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
       if End_Sloc_Node.Is_Null or else End_Sloc_Node.Unit /= Unit then
-         raise Parse_Error with
-           "Did not find enclosing basic decl for " & Image (Span.End_Sloc);
+         raise Parse_Error
+           with
+             "Did not find enclosing basic decl for " & Image (Span.End_Sloc);
       end if;
 
       --  Find common named enclosing basic decl
@@ -265,15 +274,15 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          Start_Sloc_Node := Start_Sloc_Node.P_Parent_Basic_Decl.As_Ada_Node;
       end if;
       if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
-         raise Parse_Error with
-           "Did not find enclosing basic decl for " & Image (Span);
+         raise Parse_Error
+           with "Did not find enclosing basic decl for " & Image (Span);
       end if;
 
       --  Construct the matcher
 
       Ctx_Basic_Decl := Start_Sloc_Node.As_Basic_Decl;
       Base_Line := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Line);
-      Base_Col  := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Column);
+      Base_Col := Natural (Ctx_Basic_Decl.Sloc_Range.Start_Column);
 
       Res.Relative_Span := Span - Sloc'(Base_Line, Base_Col);
 

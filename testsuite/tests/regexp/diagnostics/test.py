@@ -8,6 +8,4 @@ from SUITE.cli import run_cli
 format_args: list[list[str]] = [[], ["--json-output"]]
 
 for extra_arg in format_args:
-    run_cli(
-        ["-sannotations.toml", "non_existent.txt"] + extra_arg
-    )
+    run_cli(["-sannotations.toml", "non_existent.txt"] + extra_arg)

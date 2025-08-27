@@ -1,6 +1,6 @@
 import os
 
-from typing import Dict, Optional
+from typing import Optional
 
 from e3.fs import sync_tree
 from e3.testsuite.control import YAMLTestControlCreator

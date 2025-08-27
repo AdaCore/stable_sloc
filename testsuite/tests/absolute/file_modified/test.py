@@ -11,11 +11,13 @@ from SUITE.utils import fail_if_not_equal, fail_if
 
 annotation_file = "annotations.toml"
 
-run_cli([
-    "-umy_spec:absolute:content.txt:1:7:2:3:{message=\"dummy\"}",
-    f"-o{annotation_file}",
-    "-q"
-])
+run_cli(
+    [
+        '-umy_spec:absolute:content.txt:1:7:2:3:{message="dummy"}',
+        f"-o{annotation_file}",
+        "-q",
+    ]
+)
 
 # Modify the file, by adding one character
 with open("content.txt", "a") as f:
@@ -34,7 +36,5 @@ res = annots.match_results[0]
 fail_if(res.success, "Unexpected match success")
 
 fail_if_not_equal(
-    "unexpected error message",
-    res.diagnostic,
-    "file has been modified"
+    "unexpected error message", res.diagnostic, "file has been modified"
 )

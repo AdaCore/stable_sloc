@@ -37,15 +37,13 @@ def run_cli(args, out=None, err=None, ignore_failure=False):
     return p
 
 
-class CLIResultError (Exception):
+class CLIResultError(Exception):
     pass
 
 
-def field_or_error(source: dict[str, Any], key: str, type: Any) -> Any:
-    if key not in source or not isinstance(source[key], type):
-        raise CLIResultError(
-            f'Missing or incorrect type for "{key}" field'
-        )
+def field_or_error(source: dict[str, Any], key: str, field_type: Any) -> Any:
+    if key not in source or not isinstance(source[key], field_type):
+        raise CLIResultError(f'Missing or incorrect type for "{key}" field')
     return source[key]
 
 
@@ -82,6 +80,7 @@ class LoadDiagnostic:
     """
     Class representing a entry load diagnostic
     """
+
     file: str
     sloc: Location
     diagnostic: str
@@ -91,11 +90,7 @@ class LoadDiagnostic:
         file = field_or_error(source, "file", str)
         diagnostic = field_or_error(source, "diagnostic", str)
         sloc = Location.from_json_dict(
-            field_or_error(
-                source,
-                "location",
-                dict
-            )
+            field_or_error(source, "location", dict)
         )
         return cls(file, sloc, diagnostic)
 
@@ -105,6 +100,7 @@ class MatchResult:
     """
     Class representing a match result
     """
+
     success: bool
     identifier: str
     file: str
@@ -120,22 +116,15 @@ class MatchResult:
         file = field_or_error(source, "file", str)
         if success:
             diagnostic = None
-            sloc_range = LocationSpan.from_json_dict(field_or_error(
-                source,
-                "location",
-                dict
-            ))
+            sloc_range = LocationSpan.from_json_dict(
+                field_or_error(source, "location", dict)
+            )
         else:
             sloc_range = None
             diagnostic = field_or_error(source, "diagnostic", str)
 
         return cls(
-            success,
-            identifier,
-            file,
-            annotation,
-            sloc_range,
-            diagnostic
+            success, identifier, file, annotation, sloc_range, diagnostic
         )
 
 
@@ -144,6 +133,7 @@ class CliResults:
     """
     Represents the results of a stable_sloc_cli invocation
     """
+
     load_diagnostics: list[LoadDiagnostic]
     match_results: list[MatchResult]
 
@@ -153,24 +143,20 @@ class CliResults:
         matches = field_or_error(source, "match_results", list)
         load_diagnostics = []
         for diag in diags:
-            load_diagnostics.append(
-                LoadDiagnostic.from_json_dict(diag)
-            )
+            load_diagnostics.append(LoadDiagnostic.from_json_dict(diag))
 
         match_results = []
         for match in matches:
-            match_results.append(
-                MatchResult.from_json_dict(match)
-            )
+            match_results.append(MatchResult.from_json_dict(match))
 
         return cls(load_diagnostics, match_results)
 
 
 def match_annotations(
-        annotations: list[str],
-        files: list[str],
-        extra_opts: list[str] | None = None,
-        register_failure=True
+    annotations: list[str],
+    files: list[str],
+    extra_opts: list[str] | None = None,
+    register_failure=True,
 ) -> CliResults:
     """
     Run the cli on the specified files, to match the given annotations, and
@@ -185,15 +171,12 @@ def match_annotations(
         + files
         + ["--json-output"],
         out=PIPE,
-        ignore_failure=not register_failure
+        ignore_failure=not register_failure,
     )
     return CliResults.from_json_dict(json.loads(p_cli.out))
 
 
-def check_single_match(
-        res: CliResults,
-        expected_span: LocationSpan
-):
+def check_single_match(res: CliResults, expected_span: LocationSpan):
     """
     Check that res contains no diagnostics, and only a single successful match
     corresponding to the expected_span.
@@ -204,12 +187,16 @@ def check_single_match(
     fail_if_not_equal(
         what="Unexpected amount of matches",
         expected=1,
-        actual=len(res.match_results)
+        actual=len(res.match_results),
     )
 
     match_res = res.match_results[0]
 
-    fail_if(not match_res.success, "Unexpected match failure")
+    fail_if(
+        not match_res.success,
+        f"Unexpected match failure for {match_res.identifier}:"
+        f" {match_res.diagnostic}",
+    )
 
     fail_if_not_equal(
         what="wrong matched location span",

@@ -37,15 +37,15 @@ package Stable_Sloc is
    --  purpose is to be able to describe a location span relative to a
    --  reference Sloc.
 
-   function "+" (Origin : Sloc; Offset : Relative_Sloc) return Sloc is
-     ((Line   => Origin.Line + Offset.Line,
-       Column => Origin.Column + Offset.Column));
+   function "+" (Origin : Sloc; Offset : Relative_Sloc) return Sloc
+   is ((Line   => Origin.Line + Offset.Line,
+        Column => Origin.Column + Offset.Column));
    --  Return the Sloc obtained by adding the line of Offset to the line of
    --  Origin, and likewise for the column. This will raise Constraint_Error if
    --  the resulting line or column isn't a Natural.
 
-   function "-" (L, R : Sloc) return Relative_Sloc is
-     ((Line => L.Line - R.Line, Column => L.Column - R.Column));
+   function "-" (L, R : Sloc) return Relative_Sloc
+   is ((Line => L.Line - R.Line, Column => L.Column - R.Column));
    --  Create a relative Sloc by subtracting the line (resp column) of R to
    --  the one of L.
 
@@ -71,17 +71,15 @@ package Stable_Sloc is
    --  Sloc_Span that allows negative line and column numbers, which can be
    --  used to designate a span relative to a reference Sloc.
 
-   function "+"
-     (Origin : Sloc; Offset : Relative_Sloc_Span) return Sloc_Span is
-     ((Start_Sloc => Origin + Offset.Start_Sloc,
-       End_Sloc   => Origin + Offset.End_Sloc));
+   function "+" (Origin : Sloc; Offset : Relative_Sloc_Span) return Sloc_Span
+   is ((Start_Sloc => Origin + Offset.Start_Sloc,
+        End_Sloc   => Origin + Offset.End_Sloc));
    --  Return the sloc span obtained by offsetting Origin by Offset.Start_Sloc
    --  (resp. Origin.End_Sloc) for the Start_Sloc (resp End_Sloc).
 
-   function "-"
-     (Span : Sloc_Span; Reference : Sloc) return Relative_Sloc_Span is
-     ((Start_Sloc => Span.Start_Sloc - Reference,
-       End_Sloc   => Span.End_Sloc - Reference));
+   function "-" (Span : Sloc_Span; Reference : Sloc) return Relative_Sloc_Span
+   is ((Start_Sloc => Span.Start_Sloc - Reference,
+        End_Sloc   => Span.End_Sloc - Reference));
    --  Create the relative span of Span, compared to Reference.
 
    function Image (Self : Sloc_Span) return String;
@@ -91,10 +89,10 @@ package Stable_Sloc is
    function Image (Self : Relative_Sloc_Span) return String;
    --  Return "<Start.Line>:<Start.Column> - <End.Line>:<End.Column>"
 
-   function "<" (L, R : Sloc_Span) return Boolean is
-     (if L.Start_Sloc = R.Start_Sloc
-      then L.End_Sloc < R.End_Sloc
-      else L.Start_Sloc < R.Start_Sloc);
+   function "<" (L, R : Sloc_Span) return Boolean
+   is (if L.Start_Sloc = R.Start_Sloc
+       then L.End_Sloc < R.End_Sloc
+       else L.Start_Sloc < R.Start_Sloc);
    --  Compare L and R by lexicographical order
 
    type Load_Diagnostic is record
@@ -122,12 +120,12 @@ package Stable_Sloc is
       Annotation : TOML.TOML_Value;
       --  Annotation attached to the entry
 
-      File       : GNATCOLL.VFS.Virtual_File;
+      File : GNATCOLL.VFS.Virtual_File;
       --  File on which the entry matched
 
       case Success is
          when True =>
-            Location   : Sloc_Span;
+            Location : Sloc_Span;
             --  Location span that the entry matched
 
          when False =>
@@ -147,13 +145,15 @@ package Stable_Sloc is
    --  - Location
    --  - Identifier
 
-   package Match_Result_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Match_Result);
+   package Match_Result_Vectors is new
+     Ada.Containers.Vectors
+       (Index_Type   => Positive,
+        Element_Type => Match_Result);
    subtype Match_Result_Vec is Match_Result_Vectors.Vector;
 
    package Match_Res_Sorting is new Match_Result_Vectors.Generic_Sorting ("<");
    procedure Sort (Results : in out Match_Result_Vec)
-     renames Match_Res_Sorting.Sort;
+   renames Match_Res_Sorting.Sort;
 
    function To_JSON
      (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value;
@@ -205,12 +205,11 @@ package Stable_Sloc is
    procedure Dump_Entries (DB : Entry_DB);
    --  Dump the entries in DB to standard output.
 
-   procedure Write_Entries
-     (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File);
+   procedure Write_Entries (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File);
    --  Write the DB entry database to File
 
-   type Sloc_Matcher_Acc is access all
-     Stable_Sloc.Matchers.Sloc_Matcher_T'Class;
+   type Sloc_Matcher_Acc is
+     access all Stable_Sloc.Matchers.Sloc_Matcher_T'Class;
 
    function Add_Or_Update_Entry
      (DB          : in out Entry_DB;
@@ -234,10 +233,10 @@ package Stable_Sloc is
    --  Return whether the new entry was successfully added to DB or not.
 
    type Entry_View is record
-      Kind         : Unbounded_String;
+      Kind : Unbounded_String;
       --  Name of the matcher kind used for this entry
 
-      Annotations  : TOML.TOML_Value;
+      Annotations : TOML.TOML_Value;
       --  Array of annotations attached to this entry
 
       File_Pattern : Unbounded_String;
@@ -261,10 +260,10 @@ package Stable_Sloc is
    --  any. Return No_Entry_View if there is no entry associated to Identifier.
 
    procedure Replace_Entry
-     (Target_DB  : in out Entry_DB;
-      Source_DB  : Entry_DB;
-      Target_Id  : Unbounded_String;
-      Source_Id  : Unbounded_String);
+     (Target_DB : in out Entry_DB;
+      Source_DB : Entry_DB;
+      Target_Id : Unbounded_String;
+      Source_Id : Unbounded_String);
    --  Replace or insert, in Target_DB the entry associated with Target_Id,
    --  using the entry in Source_DB at Source_Id. Raises Constraint_Error if
    --  there is not entry associated with Source_Id in Source_DB.
@@ -273,27 +272,25 @@ package Stable_Sloc is
      (DB : in out Entry_DB; Identifier : Unbounded_String);
    --  Remove the entry at Identifier from DB
 
-   type Entry_View_CB is access
-     procedure (Identifier : Unbounded_String; Entr : Entry_View);
+   type Entry_View_CB is
+     access procedure (Identifier : Unbounded_String; Entr : Entry_View);
 
-   procedure Iterate_Entries
-     (DB : Entry_DB;
-      CB : not null Entry_View_CB);
+   procedure Iterate_Entries (DB : Entry_DB; CB : not null Entry_View_CB);
    --  Call CB over all the entries in DB
 
 private
 
    type SS_Entry is new Ada.Finalization.Controlled with record
-      Annotations  : TOML.TOML_Value;
+      Annotations : TOML.TOML_Value;
       --  Annotations to return in case of successful match
 
       File_Pattern : Unbounded_String;
       --  Textual globbing pattern used to determine relevant files
 
-      File_Regexp  : GNAT.Regexp.Regexp;
+      File_Regexp : GNAT.Regexp.Regexp;
       --  Compiled globbing pattern to determine relevant files
 
-      Kind         : Unbounded_String;
+      Kind : Unbounded_String;
       --  Name of the matcher kind to be used
 
       Sloc_Matcher : Sloc_Matcher_Acc;
@@ -309,19 +306,22 @@ private
       --  Last match location for this entry, only set if At_Most_Once is True
    end record;
 
-   overriding procedure Adjust (Self : in out SS_Entry);
+   overriding
+   procedure Adjust (Self : in out SS_Entry);
 
-   overriding procedure Finalize (Self : in out SS_Entry);
+   overriding
+   procedure Finalize (Self : in out SS_Entry);
 
-   package Entry_Maps is new Ada.Containers.Hashed_Maps
-     (Key_Type        => Unbounded_Strings.Unbounded_String,
-      Element_Type    => SS_Entry,
-      Hash            => Ada.Strings.Unbounded.Hash,
-      Equivalent_Keys => Unbounded_Strings."=");
+   package Entry_Maps is new
+     Ada.Containers.Hashed_Maps
+       (Key_Type        => Unbounded_Strings.Unbounded_String,
+        Element_Type    => SS_Entry,
+        Hash            => Ada.Strings.Unbounded.Hash,
+        Equivalent_Keys => Unbounded_Strings."=");
    subtype Entry_Map is Entry_Maps.Map;
 
    type Entry_DB is record
-      Map             : Entry_Map;
+      Map : Entry_Map;
    end record;
 
 end Stable_Sloc;

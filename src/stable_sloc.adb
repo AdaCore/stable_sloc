@@ -14,8 +14,8 @@ with Stable_Sloc.TOML_Utils; use Stable_Sloc.TOML_Utils;
 
 package body Stable_Sloc is
 
-   function "+" (Loc : TOML.Source_Location) return Sloc is
-     ((Loc.Line, Loc.Column));
+   function "+" (Loc : TOML.Source_Location) return Sloc
+   is ((Loc.Line, Loc.Column));
 
    function To_JSON (Loc : Sloc_Span) return GNATCOLL.JSON.JSON_Value;
    --  Return an object JSON_Value representing the location range.
@@ -38,20 +38,23 @@ package body Stable_Sloc is
    with Pre => Entry_Maps.Has_Element (Cur);
    --  Create an Entry_View from Cur
 
-      -----------------------
+   -----------------------
    -- Format_Diagnostic --
    -----------------------
 
-   function Format_Diagnostic (D : Load_Diagnostic) return String is
-     (D.File.Display_Full_Name & ":" & Image (D.Location)
-      & (if D.Location = No_Sloc then " " else ": ")
-      & (+D.Diagnostic));
+   function Format_Diagnostic (D : Load_Diagnostic) return String
+   is (D.File.Display_Full_Name
+       & ":"
+       & Image (D.Location)
+       & (if D.Location = No_Sloc then " " else ": ")
+       & (+D.Diagnostic));
 
    ------------
    -- Adjust --
    ------------
 
-   overriding procedure Adjust (Self : in out SS_Entry) is
+   overriding
+   procedure Adjust (Self : in out SS_Entry) is
    begin
       Self.Sloc_Matcher := new Sloc_Matcher_T'Class'(Self.Sloc_Matcher.all);
    end Adjust;
@@ -60,13 +63,16 @@ package body Stable_Sloc is
    -- Finalize --
    --------------
 
-   overriding procedure Finalize (Self : in out SS_Entry) is
+   overriding
+   procedure Finalize (Self : in out SS_Entry) is
    begin
       Free_Matcher (Self.Sloc_Matcher);
    end Finalize;
 
-   package Diag_Vecs is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Load_Diagnostic);
+   package Diag_Vecs is new
+     Ada.Containers.Vectors
+       (Index_Type   => Positive,
+        Element_Type => Load_Diagnostic);
    subtype Diag_Vector is Diag_Vecs.Vector;
 
    -------------
@@ -92,7 +98,7 @@ package body Stable_Sloc is
      (Diags : Load_Diagnostic_Arr) return GNATCOLL.JSON.JSON_Value
    is
       use GNATCOLL.JSON;
-      Arr          : JSON_Array := Empty_Array;
+      Arr : JSON_Array := Empty_Array;
    begin
       for Diag of Diags loop
          declare
@@ -118,7 +124,7 @@ package body Stable_Sloc is
      (Results : Match_Result_Vec) return GNATCOLL.JSON.JSON_Value
    is
       use GNATCOLL.JSON;
-      Arr : JSON_Array := Empty_Array;
+      Arr       : JSON_Array := Empty_Array;
       Local_Res : JSON_Value;
    begin
       for Match_Res of Results loop
@@ -130,6 +136,7 @@ package body Stable_Sloc is
          case Match_Res.Success is
             when True =>
                Local_Res.Set_Field ("location", To_JSON (Match_Res.Location));
+
             when False =>
                Local_Res.Set_Field ("diagnostic", Match_Res.Diagnostic);
          end case;
@@ -142,7 +149,8 @@ package body Stable_Sloc is
    -- Create_DB --
    ---------------
 
-   function Create_DB return Entry_DB is (Map => Entry_Maps.Empty_Map);
+   function Create_DB return Entry_DB
+   is (Map => Entry_Maps.Empty_Map);
 
    ---------------
    -- Import_DB --
@@ -164,7 +172,8 @@ package body Stable_Sloc is
    -- Is_Empty --
    --------------
 
-   function Is_Empty (DB : Entry_DB) return Boolean is (DB.Map.Is_Empty);
+   function Is_Empty (DB : Entry_DB) return Boolean
+   is (DB.Map.Is_Empty);
 
    --------------
    -- Clear_DB --
@@ -212,31 +221,36 @@ package body Stable_Sloc is
             Parsed_Entry.Annotations :=
               Get (Spec, "annotations", TOML.TOML_Array);
             if Parsed_Entry.Annotations.Length = 0 then
-               raise Parse_Error with
-               TOML.Format_Location (Parsed_Entry.Annotations.Location)
-               & ":Empty annotations array";
+               raise Parse_Error
+                 with
+                   TOML.Format_Location (Parsed_Entry.Annotations.Location)
+                   & ":Empty annotations array";
             end if;
 
             for J in 1 .. Parsed_Entry.Annotations.Length loop
-               declare Annot : constant TOML.TOML_Value :=
-                 Parsed_Entry.Annotations.Item (J);
+               declare
+                  Annot : constant TOML.TOML_Value :=
+                    Parsed_Entry.Annotations.Item (J);
                begin
-                  if Annot.Kind not in TOML.TOML_Table
-                  then
-                     raise Parse_Error with
-                       TOML.Format_Location (Annot.Location)
-                       & ":Wrong type for an annotation: expected "
-                       & TOML.TOML_Table'Image & " but got "
-                       & Annot.Kind'Image;
+                  if Annot.Kind not in TOML.TOML_Table then
+                     raise Parse_Error
+                       with
+                         TOML.Format_Location (Annot.Location)
+                         & ":Wrong type for an annotation: expected "
+                         & TOML.TOML_Table'Image
+                         & " but got "
+                         & Annot.Kind'Image;
                   end if;
                   if Annot.Has ("purpose")
                     and then Annot.Get ("purpose").Kind not in TOML.TOML_String
                   then
-                     raise Parse_Error with
-                       TOML.Format_Location (Annot.Get ("purpose").Location)
-                       & ":Wrong type for ""purpose"": expected "
-                       & TOML.TOML_String'Image & "but got "
-                       & Annot.Get ("purpose").Kind'Image;
+                     raise Parse_Error
+                       with
+                         TOML.Format_Location (Annot.Get ("purpose").Location)
+                         & ":Wrong type for ""purpose"": expected "
+                         & TOML.TOML_String'Image
+                         & "but got "
+                         & Annot.Get ("purpose").Kind'Image;
                   end if;
                end;
             end loop;
@@ -244,16 +258,21 @@ package body Stable_Sloc is
             Parsed_Entry.Kind := Get (Spec, "kind");
             Parsed_Entry.Sloc_Matcher :=
               new Sloc_Matcher_T'Class'
-                (Instantiate_Matcher (Get (Spec, "matcher", TOML.TOML_Table),
-                                      Kind => +Parsed_Entry.Kind));
+                (Instantiate_Matcher
+                   (Get (Spec, "matcher", TOML.TOML_Table),
+                    Kind => +Parsed_Entry.Kind));
             Parsed_Entry.File_Pattern :=
               (if not File_Matcher.Is_Null
                  and then (File_Matcher.Kind in TOML.TOML_String
-                           or else raise Parse_Error with
-                             TOML.Format_Location (File_Matcher.Location)
-                             & ":unexpected type for ""files"": expected "
-                             & TOML.TOML_String'Image & " but got "
-                             & File_Matcher.Kind'Image)
+                           or else raise Parse_Error
+                                     with
+                                       TOML.Format_Location
+                                         (File_Matcher.Location)
+                                       & ":unexpected type for ""files"":"
+                                       & " expected "
+                                       & TOML.TOML_String'Image
+                                       & " but got "
+                                       & File_Matcher.Kind'Image)
                then File_Matcher.As_Unbounded_String
                else Null_Unbounded_String);
             Parsed_Entry.File_Regexp :=
@@ -270,7 +289,9 @@ package body Stable_Sloc is
                      Location   =>
                        (Entr.Value.Location.Line, Entr.Value.Location.Column),
                      Diagnostic =>
-                       +"Error while parsing entry """ & Entr.Key & """: "
+                       +"Error while parsing entry """
+                       & Entr.Key
+                       & """: "
                        & "Could not compile file pattern. "
                        & Ada.Exceptions.Exception_Message (Exc)));
 
@@ -283,24 +304,28 @@ package body Stable_Sloc is
                           (Entr.Value.Location.Line,
                            Entr.Value.Location.Column),
                         Diagnostic =>
-                        +"Error while parsing entry """ & Entr.Key & """: "
-                        & Ada.Exceptions.Exception_Message (Exc)));
+                          +"Error while parsing entry """
+                          & Entr.Key
+                          & """: "
+                          & Ada.Exceptions.Exception_Message (Exc)));
                end if;
 
             when Exc : Parse_Error =>
                declare
                   Loc : Sloc;
                   Msg : constant String :=
-                     Split_Sloc_Prefix
-                        (Ada.Exceptions.Exception_Message (Exc), Loc);
+                    Split_Sloc_Prefix
+                      (Ada.Exceptions.Exception_Message (Exc), Loc);
                begin
                   Diags.Append
-                  (Load_Diagnostic'
-                     (File       => Spec_File,
-                      Location   => Loc,
-                      Diagnostic =>
-                        +"Error while parsing entry """ & Entr.Key & """: "
-                        & Msg));
+                    (Load_Diagnostic'
+                       (File       => Spec_File,
+                        Location   => Loc,
+                        Diagnostic =>
+                          +"Error while parsing entry """
+                          & Entr.Key
+                          & """: "
+                          & Msg));
                end;
          end;
       end loop;
@@ -315,12 +340,14 @@ package body Stable_Sloc is
          Cur := Local_Entries.Map.First;
          while Cur /= No_Element loop
             if DB.Map.Contains (Key (Cur)) then
-               Diags.Append (Load_Diagnostic'
-                 (File       => Spec_File,
-                  Location   =>  No_Sloc,
-                  Diagnostic =>
-                    Key (Cur) & ": an entry with the same identifier was"
-                    & " already loaded, it will not be loaded."));
+               Diags.Append
+                 (Load_Diagnostic'
+                    (File       => Spec_File,
+                     Location   => No_Sloc,
+                     Diagnostic =>
+                       Key (Cur)
+                       & ": an entry with the same identifier was"
+                       & " already loaded, it will not be loaded."));
             end if;
             Cur := Next (Cur);
          end loop;
@@ -347,12 +374,12 @@ package body Stable_Sloc is
       Res : Match_Result_Vec;
       Cur : Cursor;
    begin
-   --  TODO??? This currently iterates over each file, then over each entry,
-   --  which may not be the most efficient way of doing things. Namely, we
-   --  could imagine in the future to batch process all entries for the same
-   --  backend for the same file to avoid reading the same file multiple times.
-   --  This would require some API modification in the Stable_Sloc.Matchers
-   --  interface.
+      --  TODO??? This currently iterates over each file, then over each entry,
+      --  which may not be the most efficient way of doing things. Namely, we
+      --  could imagine in the future to batch process all entries for the same
+      --  backend for the same file to avoid reading the same file multiple
+      --  times. This would require some API modification in the
+      --  Stable_Sloc.Matchers interface.
 
       for File of Files loop
          Cur := DB.Map.First;
@@ -398,37 +425,39 @@ package body Stable_Sloc is
                            if Entr.At_Most_Once
                              and then Entr.Last_File /= No_File
                              and then Entr.Last_Range /= No_Sloc_Span
-                             and then
-                               (Entr.Last_File /= File
-                                or else Entr.Last_Range /= Match.Span)
+                             and then (Entr.Last_File /= File
+                                       or else Entr.Last_Range /= Match.Span)
                            then
-                              Res.Append (Match_Result'
-                                (Success    => False,
-                                 Identifier => Key (Cur),
-                                 Annotation => Annot,
-                                 File       => File,
-                                 Diagnostic =>
-                                   +"Annotation has already matched at a"
-                                    & " different location"));
+                              Res.Append
+                                (Match_Result'
+                                   (Success    => False,
+                                    Identifier => Key (Cur),
+                                    Annotation => Annot,
+                                    File       => File,
+                                    Diagnostic =>
+                                      +"Annotation has already matched at a"
+                                      & " different location"));
                            else
-                              Res.Append (Match_Result'
-                                (Success    => True,
-                                 Identifier => Key (Cur),
-                                 Annotation => Annot,
-                                 File       => File,
-                                 Location   => Match.Span));
+                              Res.Append
+                                (Match_Result'
+                                   (Success    => True,
+                                    Identifier => Key (Cur),
+                                    Annotation => Annot,
+                                    File       => File,
+                                    Location   => Match.Span));
                               if Entr.At_Most_Once then
                                  Entr.Last_File := File;
                                  Entr.Last_Range := Match.Span;
                               end if;
                            end if;
                         else
-                           Res.Append (Match_Result'
-                             (Success    => False,
-                              Identifier => Key (Cur),
-                              Annotation => Annot,
-                              File       => File,
-                              Diagnostic => Match.Reason));
+                           Res.Append
+                             (Match_Result'
+                                (Success    => False,
+                                 Identifier => Key (Cur),
+                                 Annotation => Annot,
+                                 File       => File,
+                                 Diagnostic => Match.Reason));
                         end if;
                      end;
                   end loop;
@@ -460,14 +489,16 @@ package body Stable_Sloc is
       New_Entry  : SS_Entry;
       Filename   : constant Unbounded_String :=
         +(GNATCOLL.VFS."+" (File.Full_Name));
-      Actual_Pat : constant Unbounded_String := Escape
-        (if File_Prefix /= Null_Unbounded_String
-           and then Is_Prefix (File_Prefix, Filename)
-         then Unbounded_Slice
-                (Source => Filename,
-                 Low    => Length (File_Prefix) + 1,
-                 High   => Length (Filename))
-         else Filename);
+      Actual_Pat : constant Unbounded_String :=
+        Escape
+          (if File_Prefix /= Null_Unbounded_String
+             and then Is_Prefix (File_Prefix, Filename)
+           then
+             Unbounded_Slice
+               (Source => Filename,
+                Low    => Length (File_Prefix) + 1,
+                High   => Length (Filename))
+           else Filename);
    begin
       if not Replace and then Cur /= No_Element then
          return
@@ -475,11 +506,12 @@ package body Stable_Sloc is
               (File       => File,
                Location   => No_Sloc,
                Diagnostic =>
-                 "Identifier """ & Identifier
-                  & """ already in entry database")];
+                 "Identifier """
+                 & Identifier
+                 & """ already in entry database")];
       end if;
-      New_Entry.Sloc_Matcher := new Sloc_Matcher_T'Class'
-        (Instantiate_Matcher (File, Span, +Kind));
+      New_Entry.Sloc_Matcher :=
+        new Sloc_Matcher_T'Class'(Instantiate_Matcher (File, Span, +Kind));
       New_Entry.Annotations := TOML.Create_Array;
       New_Entry.Annotations.Append (Annotation);
       New_Entry.Kind := Kind;
@@ -488,28 +520,29 @@ package body Stable_Sloc is
       New_Entry.At_Most_Once := True;
       DB.Map.Include (Identifier, New_Entry);
       return [];
-      exception
-         when Unknown_Matcher_Error =>
+   exception
+      when Unknown_Matcher_Error =>
+         return
+           [Load_Diagnostic'
+              (File       => File,
+               Location   => No_Sloc,
+               Diagnostic => +"No such matcher kind: " & Kind)];
+      when Exc : Parse_Error =>
+         declare
+            Loc : Sloc;
+            Msg : constant String :=
+              Split_Sloc_Prefix (Ada.Exceptions.Exception_Message (Exc), Loc);
+         begin
             return
-               [Load_Diagnostic'
-                  (File       => File,
-                   Location   => No_Sloc,
-                   Diagnostic => +"No such matcher kind: " & Kind)];
-         when Exc : Parse_Error =>
-            declare
-               Loc : Sloc;
-               Msg : constant String :=
-                 Split_Sloc_Prefix
-                   (Ada.Exceptions.Exception_Message (Exc), Loc);
-            begin
-               return
-                 [Load_Diagnostic'
-                    (File       => File,
-                     Location   => Loc,
-                     Diagnostic =>
-                       +"Error while creating entry """ & Identifier & """: "
-                       & Msg)];
-            end;
+              [Load_Diagnostic'
+                 (File       => File,
+                  Location   => Loc,
+                  Diagnostic =>
+                    +"Error while creating entry """
+                    & Identifier
+                    & """: "
+                    & Msg)];
+         end;
    end Add_Or_Update_Entry;
 
    -----------------------
@@ -544,7 +577,7 @@ package body Stable_Sloc is
          begin
             Put_Line (+("Entry " & Key (Cur) & ":"));
             Put_Line
-            ("   Annotations : "
+              ("   Annotations : "
                & To_JSON (Entr.Annotations).Write (Compact => True));
             Put_Line ("   File matcher: " & (+Entr.File_Pattern));
             Put_Line ("   At_Most_Once: " & Entr.At_Most_Once'Image);
@@ -559,9 +592,7 @@ package body Stable_Sloc is
    -- Write_Entries --
    -------------------
 
-   procedure Write_Entries
-     (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File)
-   is
+   procedure Write_Entries (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File) is
       use Ada.Text_IO;
       use Entry_Maps;
       use TOML;
@@ -588,15 +619,15 @@ package body Stable_Sloc is
       end loop;
       TOML.File_IO.Dump_To_File (Res, File_T);
       Close (File_T);
-      exception
-         when Exc : others =>
-            Put_Line
-              (Standard_Error,
-               "Error while writing entries to file:"
-               & Ada.Exceptions.Exception_Information (Exc));
-            if Is_Open (File_T) then
-               Close (File_T);
-            end if;
+   exception
+      when Exc : others =>
+         Put_Line
+           (Standard_Error,
+            "Error while writing entries to file:"
+            & Ada.Exceptions.Exception_Information (Exc));
+         if Is_Open (File_T) then
+            Close (File_T);
+         end if;
    end Write_Entries;
 
    ----------
@@ -615,7 +646,7 @@ package body Stable_Sloc is
 
          --  Clone the annotations to avoid tampering with the DB
 
-         Res.Annotations  := Ref.Annotations.Clone;
+         Res.Annotations := Ref.Annotations.Clone;
          Res.At_Most_Once := Ref.At_Most_Once;
       end return;
    end View;
@@ -641,17 +672,17 @@ package body Stable_Sloc is
    -------------------
 
    procedure Replace_Entry
-     (Target_DB  : in out Entry_DB;
-      Source_DB  : Entry_DB;
-      Target_Id  : Unbounded_String;
-      Source_Id  : Unbounded_String)
+     (Target_DB : in out Entry_DB;
+      Source_DB : Entry_DB;
+      Target_Id : Unbounded_String;
+      Source_Id : Unbounded_String)
    is
       use Entry_Maps;
       Source_Cur : constant Cursor := Source_DB.Map.Find (Source_Id);
    begin
       if Source_Cur = No_Element then
-         raise Constraint_Error with
-           "No entry with identifier " & (+Source_Id);
+         raise Constraint_Error
+           with "No entry with identifier " & (+Source_Id);
       end if;
       Target_DB.Map.Include (Target_Id, Element (Source_Cur));
    end Replace_Entry;
@@ -660,8 +691,7 @@ package body Stable_Sloc is
    -- Delete_Entry --
    ------------------
 
-   procedure Delete_Entry
-     (DB : in out Entry_DB; Identifier : Unbounded_String)
+   procedure Delete_Entry (DB : in out Entry_DB; Identifier : Unbounded_String)
    is
       use Entry_Maps;
       Cur : Cursor := DB.Map.Find (Identifier);
@@ -675,10 +705,7 @@ package body Stable_Sloc is
    -- Iterate_Entries --
    ---------------------
 
-   procedure Iterate_Entries
-     (DB : Entry_DB;
-      CB : not null Entry_View_CB)
-   is
+   procedure Iterate_Entries (DB : Entry_DB; CB : not null Entry_View_CB) is
       use Entry_Maps;
       Cur : Cursor := DB.Map.First;
    begin
@@ -692,40 +719,36 @@ package body Stable_Sloc is
    -- "<" --
    ---------
 
-   function "<" (L, R : Sloc) return Boolean is
-     (if L.Line = R.Line then L.Column < R.Column else L.Line < R.Line);
+   function "<" (L, R : Sloc) return Boolean
+   is (if L.Line = R.Line then L.Column < R.Column else L.Line < R.Line);
 
    -----------
    -- Image --
    -----------
 
-   function Image (Self : Sloc) return String is
-     (if Self = No_Sloc
-      then ""
-      else Image (Self - No_Sloc));
+   function Image (Self : Sloc) return String
+   is (if Self = No_Sloc then "" else Image (Self - No_Sloc));
 
    -----------
    -- Image --
    -----------
 
-   function Image (Self : Relative_Sloc) return String is
-     (Img (Self.Line) & ":" & Img (Self.Column));
+   function Image (Self : Relative_Sloc) return String
+   is (Img (Self.Line) & ":" & Img (Self.Column));
 
    -----------
    -- Image --
    -----------
 
-   function Image (Self : Sloc_Span) return String is
-     (if Self = No_Sloc_Span
-      then ""
-      else Image (Self - No_Sloc));
+   function Image (Self : Sloc_Span) return String
+   is (if Self = No_Sloc_Span then "" else Image (Self - No_Sloc));
 
    -----------
    -- Image --
    -----------
 
-   function Image (Self : Relative_Sloc_Span) return String is
-     (Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
+   function Image (Self : Relative_Sloc_Span) return String
+   is (Image (Self.Start_Sloc) & " - " & Image (Self.End_Sloc));
 
    ---------
    -- "<" --

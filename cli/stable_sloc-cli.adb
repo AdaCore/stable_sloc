@@ -13,7 +13,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Stable_Sloc.Cmd_Parser;
 with Stable_Sloc.Reporters.JSON;
 with Stable_Sloc.Reporters.Text;
-with Stable_Sloc_Strings;    use Stable_Sloc_Strings;
+with Stable_Sloc_Strings; use Stable_Sloc_Strings;
 
 procedure Stable_Sloc.CLI is
    package Cmd renames Cmd_Parser;
@@ -44,12 +44,14 @@ begin
         and then not Cmd.Quiet.Get
         and then Updates'Length = 0
       then
-         Reporter.Report_Load_Diagnostics (
-            [1 => Load_Diagnostic'
-                    (File => GNATCOLL.VFS.Create (""),
-                     Location => No_Sloc,
-                     Diagnostic => +("No specs passed on command line (-s or"
-                                     & " --spec), nothing to do."))]);
+         Reporter.Report_Load_Diagnostics
+           ([1 =>
+               Load_Diagnostic'
+                 (File       => GNATCOLL.VFS.Create (""),
+                  Location   => No_Sloc,
+                  Diagnostic =>
+                    +("No specs passed on command line (-s or"
+                      & " --spec), nothing to do."))]);
          return;
       end if;
       for Spec of Specs loop
@@ -84,8 +86,8 @@ begin
                  Update_Req.Kind,
                  Update_Req.File,
                  Update_Req.Span,
-                 File_Prefix           => Cmd.Prefix.Get,
-                 Replace               => not Cmd.Strict.Get);
+                 File_Prefix => Cmd.Prefix.Get,
+                 Replace     => not Cmd.Strict.Get);
          begin
             if Diags'Length /= 0 then
                Reporter.Report_Load_Diagnostics (Diags);
@@ -103,13 +105,12 @@ begin
 
       --  Dump the entries to file
 
-      if Output /= No_File and then not Output.Is_Absolute_Path
-      then
+      if Output /= No_File and then not Output.Is_Absolute_Path then
          Output := Get_Current_Dir / Output;
       end if;
       if Output /= No_File then
-         if Output.Get_Parent /= No_File and then
-           not Output.Get_Parent.Is_Regular_File
+         if Output.Get_Parent /= No_File
+           and then not Output.Get_Parent.Is_Regular_File
          then
             Output.Get_Parent.Make_Dir (Recursive => True);
          end if;
@@ -125,8 +126,7 @@ begin
          return;
       end if;
       declare
-         VF_Arr : constant File_Array :=
-           [for File of Files => File];
+         VF_Arr : constant File_Array := [for File of Files => File];
          Res    : Match_Result_Vec :=
            Match_Entries (VF_Arr, DB, +Cmd.Filter.Get);
       begin

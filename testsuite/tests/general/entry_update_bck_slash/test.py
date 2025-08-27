@@ -16,7 +16,7 @@ target_file = os.path.join("src", "content.txt")
 
 run_cli(
     [
-        '-utest:absolute:' + target_file + ':1:1:2:2:{foo="bar"}',
+        "-utest:absolute:" + target_file + ':1:1:2:2:{foo="bar"}',
         "-q",
         "-oannotation.toml",
     ]
@@ -29,13 +29,11 @@ res = match_annotations(
 
 fail_if(
     len(res.load_diagnostics) != 0,
-    "unexpected entry diagnostics" + str(res.load_diagnostics)
+    "unexpected entry diagnostics" + str(res.load_diagnostics),
 )
 
 fail_if_not_equal(
-    "Number of match results",
-    actual=len(res.match_results),
-    expected=1
+    "Number of match results", actual=len(res.match_results), expected=1
 )
 
 fail_if(
@@ -46,5 +44,5 @@ fail_if(
 fail_if_not_equal(
     "Unexpected match location",
     actual=res.match_results[0].sloc_range,
-    expected=LocationSpan(Location(1, 1), Location(2, 2))
+    expected=LocationSpan(Location(1, 1), Location(2, 2)),
 )
