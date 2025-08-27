@@ -3,15 +3,20 @@
 import sys
 
 from e3.testsuite import Testsuite
+from e3.testsuite.driver import TestDriver
 
 from drivers.python_driver import PythonDriver
 
 
 class StableSlocTestsuite(Testsuite):
-    tests_subdir = "tests"
-    test_driver_map = {
-        "python": PythonDriver
-    }
+
+    @property
+    def tests_subdir(self):
+        return "tests"
+
+    @property
+    def test_driver_map(self) -> dict[str, type[TestDriver]]:
+        return {"python": PythonDriver}
 
     def add_options(self, parser):
         parser.add_argument(
@@ -30,10 +35,7 @@ class StableSlocTestsuite(Testsuite):
         self.env.control_env = {}
 
         # This allows the drivers and test cases to access the SUITE package
-        self.env.add_search_path(
-            "PYTHONPATH",
-            self.root_dir
-        )
+        self.env.add_search_path("PYTHONPATH", self.root_dir)
 
 
 if __name__ == "__main__":

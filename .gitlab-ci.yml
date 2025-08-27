@@ -17,6 +17,11 @@ include:
       install-gnatformat: true
       install-gnatformat-extra-anod-args: -Qedge
 
+  # Pre-commit check. Skip gnatformat as it is taken care of by the gnatformat
+  # job.
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/pre-commit@~latest
+    inputs:
+      pre-commit-skip: "gnatformat"
 
   - component: $CI_SERVER_FQDN/eng/gitlab-templates/build@~latest
     inputs:

@@ -13,22 +13,10 @@ original_f = "annotations.toml"
 new_f = "new_annotations.toml"
 
 # Load a spec file and dump it to a new file
-run_cli(
-    [
-        f"-s{original_f}",
-        f"-o{new_f}",
-        "-q"
-    ]
-)
+run_cli([f"-s{original_f}", f"-o{new_f}", "-q"])
 
 # Load the new specs to ensure they are valid
-run_cli(
-    [
-        f"-s{new_f}",
-        "--strict",
-        "-v"
-    ]
-)
+run_cli([f"-s{new_f}", "--strict", "-v"])
 
 # Compare the two files. The TOML library doesn't preserve the original
 # formatting, and there are optional fields that may not have been set in

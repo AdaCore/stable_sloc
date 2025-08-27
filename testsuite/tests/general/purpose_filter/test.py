@@ -21,13 +21,13 @@ def check_one(prefix):
     run_cli(
         ["-sannotations.toml", "--json-output", "content.txt"]
         + ([f"--filter={prefix}"] if prefix else []),
-        out=out_file
+        out=out_file,
     )
     results = json.loads(contents_of(out_file))
     fail_if_not_equal(
         f"cli diagnostics for prefix '{prefix}'",
         expected=[],
-        actual=results["load_diagnostics"]
+        actual=results["load_diagnostics"],
     )
     for result in results["match_results"]:
         purpose = result["annotation"].get("purpose", "")
@@ -35,9 +35,9 @@ def check_one(prefix):
             fail_if(
                 not purpose.startswith(prefix),
                 comment="wrong purpose prefix for entry "
-                        + result["identifier"]
-                        + f". Expected {prefix} but got: "
-                        + str(result)
+                + result["identifier"]
+                + f". Expected {prefix} but got: "
+                + str(result),
             )
 
 

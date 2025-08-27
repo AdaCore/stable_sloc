@@ -8,7 +8,11 @@ a negative relative offset which used to crash stable_sloc.
 import tomllib
 
 from SUITE.cli import (
-    match_annotations, Location, LocationSpan, run_cli, check_single_match
+    match_annotations,
+    Location,
+    LocationSpan,
+    run_cli,
+    check_single_match,
 )
 from SUITE.utils import contents_of, fail_if_not_equal
 
@@ -21,11 +25,13 @@ from SUITE.utils import contents_of, fail_if_not_equal
 # result in the relative location span'columns being negative (-3 in this
 # case).
 annotation_file = "annotations.toml"
-run_cli([
-    "-umy_spec:lal_context:pkg.adb:13:1:15:1:{message=\"negative offset\"}",
-    f"-o{annotation_file}",
-    "-q"
-])
+run_cli(
+    [
+        '-umy_spec:lal_context:pkg.adb:13:1:15:1:{message="negative offset"}',
+        f"-o{annotation_file}",
+        "-q",
+    ]
+)
 
 # Verify the generated column offsets are indeed negative
 generated_entry = tomllib.loads(contents_of(annotation_file))
