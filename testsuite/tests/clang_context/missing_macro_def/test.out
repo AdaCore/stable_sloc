@@ -1,0 +1,6 @@
+Entry missing_header:
+   Annotations : [{"message":"sample text"}]
+   File matcher: foo.cpp
+   At_Most_Once: TRUE
+   Matcher kind: clang_context
+   Sloc matcher: Clang context based matcher, matching SomeClass::PREFIX + 1:2 - 1:12

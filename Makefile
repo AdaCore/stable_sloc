@@ -26,9 +26,19 @@ ifdef INSTR
 INSTR_GPR_FLAGS=--src-subdirs=gnatcov-instr --implicit-with=gnatcov_rts.gpr
 endif
 
+C_SUPPORT?=True
+ifeq ($(C_SUPPORT), True)
+include libclang_common.mk
+LLVM_LINK_FLAGS = -largs $(LD_FLAGS)
+else
+CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+GPR_PROJECT_PATH := $(CURRENT_DIR)/gpr_stubs:$(GPR_PROJECT_PATH)
+LLVM_LINK_FLAGS=
+endif
+
 all: build
 
-build: instr build-static build-static-pic build-relocatable cli_build
+build: instr build-static cli_build
 
 instr:
 ifdef INSTR
@@ -39,18 +49,22 @@ build-%:
 	$(GPRBUILD) -Pstable_sloc.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
+			-XC_SUPPORT=$(C_SUPPORT) \
 			-p -j$(PROCESSORS) \
 			$(INSTR_GPR_FLAGS) \
+			$(LLVM_LINK_FLAGS) \
 			$(GPRFLAGS)
 
 cli_build:
 	$(GPRBUILD) -p -Pstable_sloc_cli.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=static -p -j$(PROCESSORS) \
+			-XC_SUPPORT=$(C_SUPPORT) \
 			$(INSTR_GPR_FLAGS) \
+			$(LLVM_LINK_FLAGS) \
 			$(GPRFLAGS)
 
-install: install-static install-static-pic install-relocatable
+install: install-static
 	$(MKDIR) $(PREFIX)/bin
 	$(CP) bin/stable_sloc_cli$(exeext) $(PREFIX)/bin
 
@@ -58,6 +72,7 @@ install-%:
 	$(GPRINSTALL) -f -p -Pstable_sloc.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
+			-XC_SUPPORT=$(C_SUPPORT) \
 			--prefix=$(PREFIX) \
 			--build-name=$* \
 			--build-var=LIBRARY_TYPE \
@@ -65,10 +80,11 @@ install-%:
 			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)
 
-clean: clean-static clean-static-pic clean-relocatable
+clean: clean-static
 clean-%:
 	gprclean -Pstable_sloc.gpr \
 			-XSTABLE_SLOC_BUILD_MODE=$(BUILD_MODE) \
 			-XLIBRARY_TYPE=$* \
+			-XC_SUPPORT=$(C_SUPPORT) \
 			$(INSTR_GPR_FLAGS) \
 			$(GPRFLAGS)

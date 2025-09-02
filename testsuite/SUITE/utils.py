@@ -17,7 +17,7 @@ def fail_if_not_equal(what, expected, actual):
         print(what + " differs from the expected baseline.")
         print("expected: ", end="")
         print(expected)
-        print("actual", end="")
+        print("actual: ", end="")
         print(actual)
         sys.exit(1)
 
@@ -31,7 +31,7 @@ def fail_if_no_match(what, pattern: str, actual: str):
     if re.search(pattern=pattern, string=actual) is None:
         print("Could not match pattern on actual:")
         print("pattern: " + pattern)
-        print("actual :" + actual)
+        print("actual: " + actual)
         sys.exit(1)
 
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 
 from e3.testsuite import Testsuite
 from e3.testsuite.driver import TestDriver
@@ -36,6 +37,10 @@ class StableSlocTestsuite(Testsuite):
 
         # This allows the drivers and test cases to access the SUITE package
         self.env.add_search_path("PYTHONPATH", self.root_dir)
+
+        # Add the bin directory of this repo to the path to simplify the dev
+        # env setup.
+        self.env.add_path(os.path.join(self.root_dir, "..", "bin"))
 
 
 if __name__ == "__main__":

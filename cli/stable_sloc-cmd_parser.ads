@@ -84,7 +84,7 @@ package Stable_Sloc.Cmd_Parser is
           & ":START_COL:END_LINE:END_COL:ANNOTATION]",
         Help       =>
           "Create or update the entry with the given IDENTIFIER, for the given"
-          & " ANNOTATION (as an inline TOML array)."
+          & " ANNOTATION (as an inline TOML table)."
           & ASCII.LF
           & " The entry will use a matcher of specified KIND, which shall"
           & " match the given location in file FILENAME.",
@@ -132,5 +132,12 @@ package Stable_Sloc.Cmd_Parser is
        (Parser,
         Long => "--warn-unknown-matcher",
         Help => "Do not silently ignore entries for an unknown matcher kind");
+
+   package Debug is new
+     Parse_Flag
+       (Parser,
+        short => "-d",
+        Long  => "--debug",
+        Help  => "Activate all debug logs");
 
 end Stable_Sloc.Cmd_Parser;

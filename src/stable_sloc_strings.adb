@@ -28,17 +28,18 @@ package body Stable_Sloc_Strings is
    -- Img --
    ---------
 
-   function Img (X : Natural) return String
+   function Img (X : Integer) return String
    is (declare
          Str : constant String := X'Image;
        begin
-         Str (Str'First + 1 .. Str'Last));
+         Str (Str'First + (if X < 0 then 0 else 1) .. Str'Last));
 
-   ------------
-   -- To_Ada --
-   ------------
+   ---------------
+   -- To_Symbol --
+   ---------------
 
-   function To_Ada (Vec : US_Vector) return Unbounded_String is
+   function To_Symbol (Vec : US_Vector; Sep : String) return Unbounded_String
+   is
       use US_Vectors;
       Res : Unbounded_String := Null_Unbounded_String;
       Cur : Cursor := Vec.First;
@@ -47,11 +48,11 @@ package body Stable_Sloc_Strings is
          Res := Res & Element (Cur);
          Next (Cur);
          if Has_Element (Cur) then
-            Res := Res & ".";
+            Res := Res & Sep;
          end if;
       end loop;
       return Res;
-   end To_Ada;
+   end To_Symbol;
 
    ---------------------
    -- Get_Sloc_Prefix --

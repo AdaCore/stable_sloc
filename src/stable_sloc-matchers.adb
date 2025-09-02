@@ -10,6 +10,7 @@ with Ada.Strings.Hash;
 with Stable_Sloc.Matchers.Absolute;
 with Stable_Sloc.Matchers.LAL_Ctx;
 with Stable_Sloc.Matchers.Regexp;
+with Stable_Sloc.Matchers.Clang_Ctx;
 
 package body Stable_Sloc.Matchers is
 
@@ -100,8 +101,16 @@ begin
    Register_Matcher ("regexp", Stable_Sloc.Matchers.Regexp.Create'Access);
    Register_Matcher
      ("lal_context", Stable_Sloc.Matchers.LAL_Ctx.Create'Access);
+
    Register_Source_Matcher
      ("absolute", Stable_Sloc.Matchers.Absolute.Create'Access);
    Register_Source_Matcher
      ("lal_context", Stable_Sloc.Matchers.LAL_Ctx.Create'Access);
+
+   if Stable_Sloc.Matchers.Clang_Ctx.Clang_Support_Enabled then
+      Register_Matcher
+        ("clang_context", Stable_Sloc.Matchers.Clang_Ctx.Create'Access);
+      Register_Source_Matcher
+        ("clang_context", Stable_Sloc.Matchers.Clang_Ctx.Create'Access);
+   end if;
 end Stable_Sloc.Matchers;

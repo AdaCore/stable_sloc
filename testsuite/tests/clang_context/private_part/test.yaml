@@ -1,0 +1,4 @@
+description: Check that the clang_context matcher behaves correctly on spans
+  for which the enclosing declaration is in a private part.
+
+driver: python

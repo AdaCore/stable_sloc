@@ -1,0 +1,96 @@
+# All these entries should fail to load due to a missing field in the
+# "matcher" table.
+
+[missing_hash]
+annotations = [
+  {message="This entry should fail due to a missing 'contex_hash' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_hash.matcher]
+start_col = 2
+start_line = 1
+end_col = 12
+end_line = 2
+sem_parents = [
+"foo",
+]
+
+[missing_sem_parents]
+annotations = [
+  {message="This entry should fail due to a missing 'sem_parents' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_sem_parents.matcher]
+context_hash = "16#74E0F043#"
+start_col = 2
+start_line = 1
+end_col = 12
+end_line = 2
+
+[missing_sl]
+annotations = [
+  {message="This entry should fail due to a missing 'start_line' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_sl.matcher]
+start_col = 2
+end_col = 12
+end_line = 2
+context_hash = "16#74E0F043#"
+sem_parents = [
+"foo",
+]
+
+[missing_sc]
+annotations = [
+  {message="This entry should fail due to a missing 'start_col' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_sc.matcher]
+start_line = 1
+end_col = 12
+end_line = 2
+context_hash = "16#74E0F043#"
+sem_parents = [
+"foo",
+]
+
+[missing_el]
+annotations = [
+  {message="This entry should fail due to a missing 'end_line' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_el.matcher]
+start_col = 2
+start_line = 1
+end_col = 12
+context_hash = "16#74E0F043#"
+sem_parents = [
+"foo",
+]
+
+[missing_ec]
+annotations = [
+  {message="This entry should fail due to a missing 'end_col' field"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[missing_ec.matcher]
+start_col = 2
+start_line = 1
+end_line = 2
+context_hash = "16#74E0F043#"
+sem_parents = [
+"foo",
+]

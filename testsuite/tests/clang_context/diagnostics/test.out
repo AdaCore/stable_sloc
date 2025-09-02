@@ -1,0 +1,102 @@
+missing_field.toml:89:1: Error while parsing entry "missing_ec": Missing "end_col" field
+missing_field.toml:73:1: Error while parsing entry "missing_el": Missing "end_line" field
+missing_field.toml:11:1: Error while parsing entry "missing_hash": Missing "context_hash" field
+missing_field.toml:57:1: Error while parsing entry "missing_sc": Missing "start_col" field
+missing_field.toml:27:1: Error while parsing entry "missing_sem_parents": Missing "sem_parents" field
+missing_field.toml:41:1: Error while parsing entry "missing_sl": Missing "start_line" field
+mismatched_parents: match FAILED
+   bar.cpp
+   Reason: Could not find declaration with the a matching qualified name. Expected Something::My_Class::baz but only found baz
+   Annotation:
+      {"message":"This entry should fail due to a difference in parent names"}
+mismatched_hash: match FAILED
+   foo.c
+   Reason: Content of declaration foo has changed
+   Annotation:
+      {"message":"This entry should fail due to a mismatch in the decl hash"}
+missing_file: match FAILED
+   inexistent.c
+   Reason: Could not read inexistent.c
+   Annotation:
+      {"message":"This entry should fail due to a missing file"}
+{
+  "load_diagnostics": [
+    {
+      "diagnostic": "Error while parsing entry \"missing_ec\": Missing \"end_col\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 89
+      }
+    },
+    {
+      "diagnostic": "Error while parsing entry \"missing_el\": Missing \"end_line\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 73
+      }
+    },
+    {
+      "diagnostic": "Error while parsing entry \"missing_hash\": Missing \"context_hash\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 11
+      }
+    },
+    {
+      "diagnostic": "Error while parsing entry \"missing_sc\": Missing \"start_col\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 57
+      }
+    },
+    {
+      "diagnostic": "Error while parsing entry \"missing_sem_parents\": Missing \"sem_parents\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 27
+      }
+    },
+    {
+      "diagnostic": "Error while parsing entry \"missing_sl\": Missing \"start_line\" field",
+      "file": "missing_field.toml",
+      "location": {
+        "column": 1,
+        "line": 41
+      }
+    }
+  ],
+  "match_results": [
+    {
+      "annotation": {
+        "message": "This entry should fail due to a difference in parent names"
+      },
+      "diagnostic": "Could not find declaration with the a matching qualified name. Expected Something::My_Class::baz but only found baz",
+      "file": "bar.cpp",
+      "identifier": "mismatched_parents",
+      "success": false
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail due to a mismatch in the decl hash"
+      },
+      "diagnostic": "Content of declaration foo has changed",
+      "file": "foo.c",
+      "identifier": "mismatched_hash",
+      "success": false
+    },
+    {
+      "annotation": {
+        "message": "This entry should fail due to a missing file"
+      },
+      "diagnostic": "Could not read inexistent.c",
+      "file": "inexistent.c",
+      "identifier": "missing_file",
+      "success": false
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+description: Check that the clang_context matcher behaves correctly on sources
+  which require a header to properly parse
+
+driver: python

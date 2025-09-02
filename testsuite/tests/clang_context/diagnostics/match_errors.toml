@@ -1,0 +1,54 @@
+# All these entries should properly load, but fail to match
+
+[missing_file]
+annotations = [
+  {message="This entry should fail due to a missing file"}
+]
+at_most_once = true
+file = "inexistent.c"
+kind = "clang_context"
+[missing_file.matcher]
+start_col = 2
+start_line = 1
+end_col = 12
+end_line = 2
+context_hash = "16#74E0F043#"
+sem_parents = [
+"foo",
+]
+
+[mismatched_hash]
+annotations = [
+  {message="This entry should fail due to a mismatch in the decl hash"}
+]
+at_most_once = true
+file = "foo.c"
+kind = "clang_context"
+[mismatched_hash.matcher]
+start_col = 2
+start_line = 1
+end_col = 12
+end_line = 2
+context_hash = "16#DEADBEEF#"
+sem_parents = [
+"foo",
+]
+
+[mismatched_parents]
+annotations = [
+  {message="This entry should fail due to a difference in parent names"}
+]
+at_most_once = true
+file = "bar.cpp"
+kind = "clang_context"
+[mismatched_parents.matcher]
+context_hash = "16#27D6073C#"
+start_col = 2
+start_line = 1
+end_col = 12
+end_line = 2
+sem_parents = [
+"Something",
+"My_Class",
+"baz",
+]

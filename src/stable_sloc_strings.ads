@@ -31,11 +31,19 @@ package Stable_Sloc_Strings is
    function Is_Prefix (Prefix, Content : Unbounded_String) return Boolean;
    --  Return Whether Prefix is indeed a prefix of Content.
 
-   function Img (X : Natural) return String;
-   --  Returns X'Image without the leading space
+   function Img (X : Integer) return String;
+   --  Returns X'Image without the leading space (if positive)
 
-   function To_Ada (Vec : US_Vector) return Unbounded_String;
+   function To_Symbol (Vec : US_Vector; Sep : String) return Unbounded_String;
+   --  Collate the various strings in Vec with Sep between each element
+
+   function To_Ada (Vec : US_Vector) return Unbounded_String
+   is (To_Symbol (Vec, "."));
    --  Collate the various strings in Vec with a '.' between each element
+
+   function To_CPP (Vec : US_Vector) return Unbounded_String
+   is (To_Symbol (Vec, "::"));
+   --  Collate the various string with a "::" between each element
 
    package Hash_IO is new Ada.Text_IO.Modular_IO (Ada.Containers.Hash_Type);
 

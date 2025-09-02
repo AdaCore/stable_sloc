@@ -17,4 +17,6 @@ project Stable_Sloc_Cli is
       for Executable ("stable_sloc-cli.adb") use "stable_sloc_cli";
    end Builder;
 
+   package Linker renames Config.Linker;
+
 end Stable_Sloc_Cli;
