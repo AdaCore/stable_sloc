@@ -27,8 +27,20 @@ include:
       stage: build
       anod-args: build stable_sloc
       save-component: true
+      linux: true
+      cpus: 8
+      disk: 80
+      windows: true
+      windows-cpus: 2
+      windows-mem: 4
 
   - component: $CI_SERVER_FQDN/eng/gitlab-templates/test@~latest
     inputs:
       stage: test
       anod-args: test stable_sloc
+      linux: true
+      cpus: 8
+      disk: 80
+      windows: true
+      windows-cpus: 2
+      windows-mem: 4
