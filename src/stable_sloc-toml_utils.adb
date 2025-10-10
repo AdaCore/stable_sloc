@@ -153,13 +153,13 @@ package body Stable_Sloc.TOML_Utils is
    function To_JSON (Val : TOML_Value) return JSON_Value is
    begin
       case Kind (Val) is
-         when TOML_String =>
+         when TOML_String                             =>
             return Create (Val.As_String);
 
-         when TOML_Integer =>
+         when TOML_Integer                            =>
             return Create (Long_Long_Integer (Val.As_Integer));
 
-         when TOML_Float =>
+         when TOML_Float                              =>
             if Val.As_Float.Kind = Regular then
                return Create (Long_Float (Val.As_Float.Value));
             else
@@ -169,7 +169,7 @@ package body Stable_Sloc.TOML_Utils is
                return JSON_Null;
             end if;
 
-         when TOML_Boolean =>
+         when TOML_Boolean                            =>
             return Create (Val.As_Boolean);
 
          when TOML_Offset_Datetime .. TOML_Local_Time =>
@@ -189,7 +189,7 @@ package body Stable_Sloc.TOML_Utils is
                       (Res, String'("key = ")'Last + 1, Length (Res)));
             end;
 
-         when TOML_Array =>
+         when TOML_Array                              =>
             declare
                Res : JSON_Array := Empty_Array;
             begin
@@ -199,7 +199,7 @@ package body Stable_Sloc.TOML_Utils is
                return Create (Res);
             end;
 
-         when TOML_Table =>
+         when TOML_Table                              =>
             return Res : constant JSON_Value := Create_Object do
                for Assoc of Val.Iterate_On_Table loop
                   Res.Set_Field (+Assoc.Key, To_JSON (Assoc.Value));
@@ -216,28 +216,28 @@ package body Stable_Sloc.TOML_Utils is
    function To_TOML (Val : JSON_Value) return TOML_Value is
    begin
       case Val.Kind is
-         when JSON_Int_Type =>
+         when JSON_Int_Type     =>
             return Create_Integer (Any_Integer (Long_Integer'(Val.Get)));
 
-         when JSON_Float_Type =>
+         when JSON_Float_Type   =>
             return
               Create_Float
                 (Any_Float'(Regular, Valid_Float (Val.Get_Long_Float)));
 
-         when JSON_String_Type =>
+         when JSON_String_Type  =>
             return Create_String (String'(Val.Get));
 
          when JSON_Boolean_Type =>
             return Create_Boolean (Val.Get);
 
-         when JSON_Array_Type =>
+         when JSON_Array_Type   =>
             return Res : constant TOML_Value := Create_Array do
                for Item of JSON_Array'(Val.Get) loop
                   Res.Append (To_TOML (Item));
                end loop;
             end return;
 
-         when JSON_Object_Type =>
+         when JSON_Object_Type  =>
             declare
                Res : constant TOML_Value := Create_Table;
                procedure Append_CB (Name : UTF8_String; Element : JSON_Value);
@@ -253,7 +253,7 @@ package body Stable_Sloc.TOML_Utils is
                return Res;
             end;
 
-         when JSON_Null_Type =>
+         when JSON_Null_Type    =>
             return No_TOML_Value;
 
       end case;
