@@ -29,7 +29,7 @@ abstract project Config is
 
    package Linker is
       for Required_Switches use
-        ("-lstdc++", "-static-libstdc++", "-static-libgcc");
+        ("-static-libstdc++", "-static-libgcc");
    end Linker;
 
 end Config;
