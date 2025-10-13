@@ -15,6 +15,7 @@ include:
       anod-spec: stable_sloc
       gnatformat-args: -P stable_sloc_cli.gpr --check
       install-gnatformat: true
+      install-gnatformat-extra-anod-args: "-Qrelease=26.0"
 
   # Pre-commit check. Skip gnatformat as it is taken care of by the gnatformat
   # job.
@@ -27,8 +28,20 @@ include:
       stage: build
       anod-args: build stable_sloc
       save-component: true
+      linux: true
+      cpus: 8
+      disk: 80
+      windows: true
+      windows-cpus: 2
+      windows-mem: 4
 
   - component: $CI_SERVER_FQDN/eng/gitlab-templates/test@~latest
     inputs:
       stage: test
       anod-args: test stable_sloc
+      linux: true
+      cpus: 8
+      disk: 80
+      windows: true
+      windows-cpus: 2
+      windows-mem: 4

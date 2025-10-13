@@ -5,6 +5,16 @@ with "./config.gpr";
 
 project Stable_Sloc_Cli is
 
+   --  We currently don't have a need to compile C++ sources in the CLI
+   --  project, but adding C++ as a language forces GPRbuild to use g++ to
+   --  perform the final executable link. As Stable_Sloc depends on Lib_Clang,
+   --  which itself depends on the libstdc++, it is more robust to use g++ to
+   --  perform the final link.
+   --
+   --  TODO: This can be removed once the C++ config issue is solved on the
+   --  libclang side (see eng/toolchain/llvm-bindings#1).
+   for Languages use ("Ada", "C++");
+
    for Main use ("stable_sloc-cli.adb");
    for Source_Dirs use ("cli");
    for Object_Dir use "obj";
