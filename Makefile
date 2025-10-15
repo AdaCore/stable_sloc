@@ -9,10 +9,12 @@ HOST_UNAME=$(shell uname -s)
 ifneq (,$(filter MINGW% CYGW%, $(HOST_UNAME)))
 HOST_OS=windows
 exeext=.exe
+PATH_SEP=;
 endif
 ifneq (,$(filter Linux, $(HOST_UNAME)))
 HOST_OS=linux
 exeext=
+PATH_SEP=:
 endif
 
 RM=rm -f
@@ -32,7 +34,7 @@ include libclang_common.mk
 LLVM_LINK_FLAGS = -largs $(LD_FLAGS)
 else
 CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-GPR_PROJECT_PATH := $(CURRENT_DIR)/gpr_stubs:$(GPR_PROJECT_PATH)
+GPR_PROJECT_PATH := $(CURRENT_DIR)/gpr_stubs$(PATH_SEP)$(GPR_PROJECT_PATH)
 LLVM_LINK_FLAGS=
 endif
 
