@@ -134,7 +134,7 @@ package body Stable_Sloc is
          Local_Res.Set_Field ("file", Match_Res.File.Display_Full_Name);
          Local_Res.Set_Field ("success", Match_Res.Success);
          case Match_Res.Success is
-            when True =>
+            when True  =>
                Local_Res.Set_Field ("location", To_JSON (Match_Res.Location));
 
             when False =>
