@@ -1,4 +1,4 @@
-with "gnatcoll.gpr";
+with "gnatcoll_core.gpr";
 with "ada_toml.gpr";
 with "libadalang.gpr";
 with "libclang.gpr";
