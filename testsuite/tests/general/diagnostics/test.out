@@ -113,7 +113,7 @@
       }
     },
     {
-      "diagnostic": "cannot open non_existant.toml: non_existant.toml: No such file or directory",
+      "diagnostic": "non_existant.toml: No such file or directory",
       "file": "non_existant.toml",
       "location": {
         "column": 0,
