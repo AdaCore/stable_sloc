@@ -113,16 +113,38 @@ begin
 
       --  Dump the entries to file
 
-      if Output /= No_File and then not Output.Is_Absolute_Path then
-         Output := Get_Current_Dir / Output;
-      end if;
       if Output /= No_File then
-         if Output.Get_Parent /= No_File
-           and then not Output.Get_Parent.Is_Regular_File
-         then
-            Output.Get_Parent.Make_Dir (Recursive => True);
-         end if;
-         Write_Entries (DB, Output);
+         declare
+            Origin : Virtual_File := No_File;
+            --  The spec file that Output designates, if any. Writing back to
+            --  one of the specs rewrites that one, instead of collapsing every
+            --  spec into it. What is handed over is the spec file itself: that
+            --  is the value Load_Entries recorded as the entries' origin.
+         begin
+            --  Compared before the statements below make Output absolute, so
+            --  that both sides are the values as spelled on the command line.
+            --  Bringing two spellings of the same file to a common form is
+            --  left to the comparison itself.
+
+            for Spec of Specs loop
+               if Spec = Output then
+                  Origin := Spec;
+                  exit;
+               end if;
+            end loop;
+
+            if not Output.Is_Absolute_Path then
+               Output := Get_Current_Dir / Output;
+            end if;
+
+            if Output.Get_Parent /= No_File
+              and then not Output.Get_Parent.Is_Regular_File
+            then
+               Output.Get_Parent.Make_Dir (Recursive => True);
+            end if;
+
+            Write_Entries (DB, Output, Origin);
+         end;
       end if;
 
       --  Match the entries on the passed files
