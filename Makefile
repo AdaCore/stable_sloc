@@ -1,4 +1,4 @@
-PREFIX=
+PREFIX?=$(CURDIR)/local
 
 BUILD_MODE?=dev
 

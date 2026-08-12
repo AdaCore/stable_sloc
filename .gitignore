@@ -2,6 +2,7 @@
 bin*/
 lib*/
 obj*/
+local/
 __pycache__
 testsuite/tmp
 testsuite/out
