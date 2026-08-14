@@ -8,6 +8,9 @@ from e3.testsuite.driver.classic import (
     ClassicTestDriver,
     TestAbortWithError,
 )
+from e3.testsuite.result import TestResult
+
+from SUITE.utils import LOG_FILE
 
 
 class BaseDriver(ClassicTestDriver):
@@ -50,3 +53,18 @@ class BaseDriver(ClassicTestDriver):
         if "resources" in self.test_env:
             for src_dir, dest_dir in self.test_env["resources"].items():
                 self.sync_res(src_dir, dest_dir)
+
+    def push_result(self, result: Optional[TestResult] = None) -> None:
+        """Add whatever the test logged to its result before recording it.
+
+        This is the hook every outcome goes through. tear_down would be too
+        late: a test aborting on a failure has its result pushed on the way out
+        of run_wrapper's try block, before the finally that tears down.
+        """
+        target = self.result if result is None else result
+        log_file = self.working_dir(LOG_FILE)
+        if os.path.exists(log_file):
+            with open(log_file) as f:
+                target.log += f"\nTest log:\n{f.read()}"
+
+        super().push_result(result)
