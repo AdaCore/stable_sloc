@@ -1,0 +1,8 @@
+description: Test that writing the entry database back to one of the spec
+  files rewrites only the entries that came from it, instead of collapsing
+  every spec into it.
+
+driver: python
+
+resources:
+  dummy_text_content: .

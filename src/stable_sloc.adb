@@ -279,6 +279,7 @@ package body Stable_Sloc is
               Pad_And_Compile (Parsed_Entry.File_Pattern);
             Parsed_Entry.At_Most_Once :=
               Get_Or_Default (Spec, "at_most_once", False);
+            Parsed_Entry.Origin := Spec_File;
             Local_Entries.Map.Insert (Entr.Key, Parsed_Entry);
 
          exception
@@ -592,10 +593,23 @@ package body Stable_Sloc is
    -- Write_Entries --
    -------------------
 
-   procedure Write_Entries (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File) is
+   procedure Write_Entries
+     (DB     : Entry_DB;
+      File   : GNATCOLL.VFS.Virtual_File;
+      Origin : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File)
+   is
       use Ada.Text_IO;
       use Entry_Maps;
       use TOML;
+
+      function Belongs_Here
+        (Entry_Origin : GNATCOLL.VFS.Virtual_File) return Boolean
+      is (GNATCOLL.VFS."=" (Origin, GNATCOLL.VFS.No_File)
+          or else GNATCOLL.VFS."=" (Entry_Origin, GNATCOLL.VFS.No_File)
+          or else GNATCOLL.VFS."=" (Entry_Origin, Origin));
+      --  Whether an entry loaded from Entry_Origin belongs in the file being
+      --  written. One loaded from no file belongs in whichever file that is.
+
       Res    : constant TOML_Value := Create_Table;
       Cur    : Cursor := DB.Map.First;
       File_T : File_Type;
@@ -607,13 +621,15 @@ package body Stable_Sloc is
               DB.Map.Constant_Reference (Cur);
             Entry_Value : constant TOML_Value := Create_Table;
          begin
-            Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
-            Entry_Value.Set ("annotations", Entr.Annotations);
-            Entry_Value.Set ("kind", Create_String (Entr.Kind));
-            Entry_Value.Set
-              ("at_most_once", Create_Boolean (Entr.At_Most_Once));
-            Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
-            Res.Set (Key (Cur), Entry_Value);
+            if Belongs_Here (Entr.Origin) then
+               Entry_Value.Set ("file", Create_String (Entr.File_Pattern));
+               Entry_Value.Set ("annotations", Entr.Annotations);
+               Entry_Value.Set ("kind", Create_String (Entr.Kind));
+               Entry_Value.Set
+                 ("at_most_once", Create_Boolean (Entr.At_Most_Once));
+               Entry_Value.Set ("matcher", Entr.Sloc_Matcher.Dump_Spec);
+               Res.Set (Key (Cur), Entry_Value);
+            end if;
          end;
          Next (Cur);
       end loop;
@@ -648,6 +664,7 @@ package body Stable_Sloc is
 
          Res.Annotations := Ref.Annotations.Clone;
          Res.At_Most_Once := Ref.At_Most_Once;
+         Res.Origin := Ref.Origin;
       end return;
    end View;
 

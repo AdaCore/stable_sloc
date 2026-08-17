@@ -4,6 +4,7 @@ Various utilities abstracting the use of the stable sloc CLI
 
 from dataclasses import dataclass
 import json
+import os
 from typing import Any
 import sys
 import tomllib
@@ -11,7 +12,7 @@ import tomllib
 from e3.os.process import Run, PIPE
 from e3.testsuite.driver.classic import TestAbortWithFailure
 
-from SUITE.utils import fail_if, fail_if_not_equal
+from SUITE.utils import fail_if, fail_if_not_equal, log
 
 
 def exe_ext():
@@ -29,7 +30,13 @@ def run_cli(args, out=None, err=None, ignore_failure=False):
         ignore_failure (bool): If True, ignore the return status of
         the command invocation. Otherwise the test fails.
     """
-    p = Run(["stable_sloc_cli" + exe_ext()] + args, output=out, error=err)
+    cmd = ["stable_sloc_cli" + exe_ext()] + args
+
+    # Log the invocation, so that a failure says what was actually run. The cwd
+    # goes with it: arguments are often relative to it.
+    log(f"cd {os.getcwd()} && {' '.join(cmd)}")
+
+    p = Run(cmd, output=out, error=err)
     if not ignore_failure and p.status != 0:
         raise TestAbortWithFailure(
             "stable_sloc_cli returned a non-zero status code. Command was:\n"

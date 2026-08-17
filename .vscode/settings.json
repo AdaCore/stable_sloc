@@ -1,0 +1,13 @@
+{
+  // stable_sloc.gpr and stable_sloc_cli.gpr are both roots. The CLI one withs
+  // the library, so it is the only one covering both src/ and cli/.
+  "ada.projectFile": "stable_sloc_cli.gpr",
+
+  // The values the Makefile defaults to, so the editor loads the same view of
+  // the tree that 'make' builds. LIBRARY_TYPE matches the build-static target.
+  "ada.scenarioVariables": {
+    "STABLE_SLOC_BUILD_MODE": "dev",
+    "LIBRARY_TYPE": "static",
+    "C_SUPPORT": "True"
+  }
+}

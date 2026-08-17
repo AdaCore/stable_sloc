@@ -205,8 +205,20 @@ package Stable_Sloc is
    procedure Dump_Entries (DB : Entry_DB);
    --  Dump the entries in DB to standard output.
 
-   procedure Write_Entries (DB : Entry_DB; File : GNATCOLL.VFS.Virtual_File);
-   --  Write the DB entry database to File
+   procedure Write_Entries
+     (DB     : Entry_DB;
+      File   : GNATCOLL.VFS.Virtual_File;
+      Origin : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File);
+   --  Write the DB entry database to File.
+   --
+   --  When Origin is set, write only the entries that were loaded from it,
+   --  together with those not loaded from any file. A database built from
+   --  several files can then be written back one file at a time, instead of
+   --  collapsing all of them into File: pass the file being rewritten as both
+   --  File and Origin, and entries belonging to the others are left alone.
+   --
+   --  Entries created since loading have no origin, so they are written
+   --  whatever Origin is: they belong to whichever file is being written.
 
    type Sloc_Matcher_Acc is
      access all Stable_Sloc.Matchers.Sloc_Matcher_T'Class;
@@ -245,6 +257,10 @@ package Stable_Sloc is
       At_Most_Once : Boolean;
       --  Whether this entry is supposed to match more than once.
 
+      Origin : GNATCOLL.VFS.Virtual_File;
+      --  File this entry was loaded from, or No_File when it was created in
+      --  memory rather than loaded. See Write_Entries.
+
    end record;
    --  Representation of a Stable_Sloc entry for viewing purposes
 
@@ -252,7 +268,8 @@ package Stable_Sloc is
      (Kind         => Null_Unbounded_String,
       Annotations  => TOML.No_TOML_Value,
       File_Pattern => Null_Unbounded_String,
-      At_Most_Once => False);
+      At_Most_Once => False,
+      Origin       => GNATCOLL.VFS.No_File);
 
    function Query_Entry
      (DB : Entry_DB; Identifier : Unbounded_String) return Entry_View;
@@ -300,6 +317,9 @@ private
       --  Wether this entry is only expected to match once. If True, this entry
       --  must return a failed match result upon each subsequent successful
       --  match.
+
+      Origin : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File;
+      --  File this entry was loaded from, if any
 
       Last_File  : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File;
       Last_Range : Sloc_Span := No_Sloc_Span;

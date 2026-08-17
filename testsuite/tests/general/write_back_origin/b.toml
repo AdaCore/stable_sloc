@@ -1,0 +1,9 @@
+[from_b]
+annotations=[
+    {message="loaded from b.toml"}
+]
+kind="absolute"
+matcher.start_line=2
+matcher.start_col=1
+matcher.end_line=2
+matcher.end_col=2
