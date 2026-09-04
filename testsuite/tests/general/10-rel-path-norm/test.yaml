@@ -1,0 +1,8 @@
+description: Check that matching on a file provided as a relative path
+  works correctly even if the matcher file pattern doesn't contain the
+  exact same relative path
+
+resources:
+  dummy_text_content: src
+
+driver: python

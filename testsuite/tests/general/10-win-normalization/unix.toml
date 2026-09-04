@@ -1,0 +1,10 @@
+[simple_absolute]
+# The pattern here is written as if we match a Windows path, to make sure it
+# works on unix systems as well.
+file="src\\\\content.txt"
+kind="absolute"
+annotations=[{purpose="testing", message="This entry matched"}]
+matcher.start_line=3
+matcher.start_col=39
+matcher.end_line=5
+matcher.end_col=45

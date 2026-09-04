@@ -236,6 +236,11 @@ package Stable_Sloc is
    --  and Annotation. The new entry shall use the specified matcher Kind, and
    --  return a positive match on File for the given location Span.
    --
+   --  In order to be as precise as possible, the full filename stored in File
+   --  is used as a match pattern. It is not normalized in order to allow
+   --  passing a relative name if more convenient than using File_Prefix
+   --  described hereafter.
+   --
    --  If File_Prefix is not null, it is removed from the filename when
    --  creating the file matcher to be used in the entry. Either may be
    --  relative: the two are normalized before being compared, so the prefix

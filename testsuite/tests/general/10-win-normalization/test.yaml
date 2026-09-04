@@ -1,0 +1,8 @@
+description: Check that specs can work across host OSes. A spec file with a
+  unix-style pattern for the file that match should work on Windows, and vice
+  versa.
+
+resources:
+  dummy_text_content: src
+
+driver: python
