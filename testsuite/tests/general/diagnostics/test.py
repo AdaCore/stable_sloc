@@ -8,14 +8,19 @@ from SUITE.cli import run_cli
 
 # Explicit listing of the spec files as the order matters here, we need
 # wrong_type.toml to be passed last.
-run_cli(
-    [
-        "-smissing_field.toml",
-        "-smatch_errors.toml",
-        "-swrong_type.toml",
-        "-snon_existant.toml",
-        "--json-output",
-        "--warn-unknown-matcher",
-        "content.txt",
-    ]
-)
+
+args = [
+    "-smissing_field.toml",
+    "-smatch_errors.toml",
+    "-swrong_type.toml",
+    "-snon_existant.toml",
+    "--warn-unknown-matcher",
+    "content.txt",
+    "--json-output",
+]
+run_cli(args)
+
+# Run the same command but with text output to log how the diagnostics are
+# formatted.
+args.pop()
+run_cli(args)

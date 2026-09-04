@@ -147,3 +147,27 @@
     }
   ]
 }
+missing_field.toml:30:13: Error while parsing entry "empty_annotations": Empty annotations array
+missing_field.toml:20:1: Error while parsing entry "missing_annotations": Missing "annotations" field
+missing_field.toml:3:1: Error while parsing entry "missing_kind": Missing "kind" field
+missing_field.toml:13:1: Error while parsing entry "missing_matcher": Missing "matcher" field
+wrong_type.toml:80:1: Error while parsing entry "file_wont_compile": Could not compile file pattern. '{' must always be associated with a '}' at offset 14
+wrong_type.toml:91:1: Error while parsing entry "unknown_matcher": No such kind of matcher: nonexistant
+wrong_type.toml:72:15: Error while parsing entry "wrong_annotation_item": Wrong type for an annotation: expected TOML_TABLE but got TOML_INTEGER
+wrong_type.toml:17:13: Error while parsing entry "wrong_annotations": Unexpected type for "annotations": expected TOML_ARRAY but got TOML_TABLE
+wrong_type.toml:43:14: Error while parsing entry "wrong_at_most_once": Wrong type for "at_most_once": expected TOML_BOOLEAN but got TOML_STRING
+wrong_type.toml:4:6: Error while parsing entry "wrong_file": unexpected type for "files": expected TOML_STRING but got TOML_BOOLEAN
+wrong_type.toml:30:6: Error while parsing entry "wrong_kind": Unexpected type for "kind": expected TOML_STRING but got TOML_BOOLEAN
+wrong_type.toml:56:9: Error while parsing entry "wrong_matcher": Unexpected type for "matcher": expected TOML_TABLE but got TOML_ARRAY
+wrong_type.toml:61:14: Error while parsing entry "wrong_purpose": Wrong type for "purpose": expected TOML_STRINGbut got TOML_BOOLEAN
+wrong_type.toml: double_match: an entry with the same identifier was already loaded, it will not be loaded.
+non_existant.toml: No such file or directory
+double_match: match FAILED
+   content.txt
+   Reason: Annotation has already matched at a different location
+   Annotation:
+      {"message":"  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"}
+double_match: match SUCCESS
+   content.txt:2:17 - 2:22
+   Annotation:
+      {"message":"  This entry will should produce one sucessfull match and one or more failed matches as the entry has the 'at_most_one' flag set to true"}
