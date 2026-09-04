@@ -8,10 +8,10 @@ my_spec: match SUCCESS
    pkg.adb:16:7 - 16:24
    Annotation:
       {"message":"sample text"}
-nonexistant.adb: Error while creating entry "missing_file": Could not get LAL tree
-main.adb: Error while creating entry "no_basic_decl_start": Did not find enclosing basic decl for 1:1
-pkg.ads: Error while creating entry "no_basic_decl_end": Did not find enclosing basic decl for 12:17
-main.adb: Error while creating entry "no_node_start": Did not find a node containing 20:1
-main.adb: Error while creating entry "sno_node_end": Did not find a node containing 22:1
+Error while creating entry "missing_file": Could not get LAL tree for nonexistant.adb
+Error while creating entry "no_basic_decl_start": Did not find enclosing basic decl for 1:1 in main.adb
+Error while creating entry "no_basic_decl_end": Did not find enclosing basic decl for 12:17 in pkg.ads
+Error while creating entry "no_node_start": Did not find a node containing 20:1 in main.adb
+Error while creating entry "sno_node_end": Did not find a node containing 22:1 in main.adb
 No loaded entries
 No files to process, nothing to do.

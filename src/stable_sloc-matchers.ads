@@ -18,7 +18,10 @@ package Stable_Sloc.Matchers is
    type Sloc_Matcher_T is interface;
 
    Parse_Error : exception;
-   --  Raised when an error occurs while creating a matcher from a TOML spec
+   --  Raised when an error occurs while creating a matcher from a TOML spec.
+   --  If the error message associated with the exception starts with a source
+   --  location (i.e. <LINE>:<COL>:) it will be interpreted as applying to the
+   --  TOML spec file and extracted from error message.
 
    type Sloc_Match (Success : Boolean := False) is record
       case Success is

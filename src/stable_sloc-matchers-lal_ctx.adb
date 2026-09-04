@@ -219,10 +219,12 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       Res       : LAL_Ctx_Matcher;
       Base_Line : Natural;
       Base_Col  : Natural;
+
+      Filename : constant String := File.Display_Full_Name;
    begin
       --  Do not check diagnostics. ??? This might need to be revisited.
       if Unit.Root.Is_Null then
-         raise Parse_Error with "Could not get LAL tree";
+         raise Parse_Error with "Could not get LAL tree for " & Filename;
       end if;
 
       --  Lookup the given locations
@@ -233,7 +235,11 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
             Column => Column_Number (Span.Start_Sloc.Column)));
       if Start_Sloc_Node.Is_Null then
          raise Parse_Error
-           with "Did not find a node containing " & Image (Span.Start_Sloc);
+           with
+             "Did not find a node containing "
+             & Image (Span.Start_Sloc)
+             & " in "
+             & Filename;
       end if;
       End_Sloc_Node :=
         Unit.Root.Lookup
@@ -241,7 +247,11 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
             Column => Column_Number (Span.End_Sloc.Column)));
       if End_Sloc_Node.Is_Null then
          raise Parse_Error
-           with "Did not find a node containing " & Image (Span.End_Sloc);
+           with
+             "Did not find a node containing "
+             & Image (Span.End_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       --  Find the inner-most basic decl containing each of them
@@ -253,7 +263,9 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
          raise Parse_Error
            with
              "Did not find enclosing basic decl for "
-             & Image (Span.Start_Sloc);
+             & Image (Span.Start_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       if End_Sloc_Node.Kind not in Ada_Basic_Decl then
@@ -262,7 +274,10 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       if End_Sloc_Node.Is_Null or else End_Sloc_Node.Unit /= Unit then
          raise Parse_Error
            with
-             "Did not find enclosing basic decl for " & Image (Span.End_Sloc);
+             "Did not find enclosing basic decl for "
+             & Image (Span.End_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       --  Find common named enclosing basic decl
@@ -275,7 +290,11 @@ package body Stable_Sloc.Matchers.LAL_Ctx is
       end if;
       if Start_Sloc_Node.Is_Null or else Start_Sloc_Node.Unit /= Unit then
          raise Parse_Error
-           with "Did not find enclosing basic decl for " & Image (Span);
+           with
+             "Did not find enclosing basic decl for "
+             & Image (Span)
+             & " in "
+             & Filename;
       end if;
 
       --  Construct the matcher
