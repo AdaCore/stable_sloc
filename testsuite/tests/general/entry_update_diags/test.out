@@ -1,2 +1,2 @@
-content.txt: Identifier "abcdef" already in entry database
-content.txt: No such matcher kind: nonexistant
+Identifier "abcdef" already in entry database
+No such matcher kind: nonexistant

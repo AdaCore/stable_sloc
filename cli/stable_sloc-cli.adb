@@ -55,7 +55,7 @@ begin
          Reporter.Report_Load_Diagnostics
            ([1 =>
                Load_Diagnostic'
-                 (File       => GNATCOLL.VFS.Create (""),
+                 (File       => No_File,
                   Location   => No_Sloc,
                   Diagnostic =>
                     +("No specs passed on command line (-s or"
