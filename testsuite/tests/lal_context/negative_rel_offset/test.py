@@ -43,4 +43,8 @@ fail_if_not_equal(
 
 # Match the new entry to ensure we have a correct spec and check the result
 annots = match_annotations([annotation_file], ["pkg.adb"])
-check_single_match(annots, LocationSpan(Location(13, 1), Location(15, 1)))
+check_single_match(
+    annots,
+    "pkg.adb",
+    LocationSpan(Location(13, 1), Location(15, 1)),
+)

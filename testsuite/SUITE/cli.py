@@ -187,10 +187,12 @@ def match_annotations(
     return CliResults.from_json_dict(json.loads(p_cli.out))
 
 
-def check_single_match(res: CliResults, expected_span: LocationSpan):
+def check_single_match(
+    res: CliResults, file: str, expected_span: LocationSpan
+):
     """
     Check that res contains no diagnostics, and only a single successful match
-    corresponding to the expected_span.
+    corresponding to the expected_span in file.
     """
 
     fail_if_not_equal("Unexpected diagnostics", 0, len(res.load_diagnostics))
@@ -207,6 +209,12 @@ def check_single_match(res: CliResults, expected_span: LocationSpan):
         not match_res.success,
         f"Unexpected match failure for {match_res.identifier}:"
         f" {match_res.diagnostic}",
+    )
+
+    fail_if_not_equal(
+        what="wrong matched file",
+        expected=os.path.abspath(file),
+        actual=os.path.abspath(match_res.file),
     )
 
     fail_if_not_equal(

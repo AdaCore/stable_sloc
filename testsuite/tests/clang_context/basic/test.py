@@ -42,10 +42,18 @@ c_matches = match_annotations(
     annotations=[annotation_file],
     files=["foo.c"],
 )
-check_single_match(c_matches, LocationSpan(Location(3, 3), Location(4, 13)))
+check_single_match(
+    c_matches,
+    "foo.c",
+    LocationSpan(Location(3, 3), Location(4, 13)),
+)
 
 cpp_matches = match_annotations(
     annotations=[annotation_file],
     files=["bar.cpp"],
 )
-check_single_match(cpp_matches, LocationSpan(Location(7, 5), Location(8, 15)))
+check_single_match(
+    cpp_matches,
+    "bar.cpp",
+    LocationSpan(Location(7, 5), Location(8, 15)),
+)

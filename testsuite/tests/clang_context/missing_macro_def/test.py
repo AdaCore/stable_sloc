@@ -37,5 +37,5 @@ cpp_matches = match_annotations(
     files=["foo.cpp"],
 )
 check_single_match(
-    cpp_matches, LocationSpan(Location(10, 5), Location(10, 15))
+    cpp_matches, "foo.cpp", LocationSpan(Location(10, 5), Location(10, 15))
 )
