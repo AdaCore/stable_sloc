@@ -7,6 +7,8 @@
 with Ada.Exceptions;
 with Ada.Text_IO;
 
+with GNATCOLL.VFS; use GNATCOLL.VFS;
+
 with TOML.File_IO;
 
 with Stable_Sloc.Matchers;   use Stable_Sloc.Matchers;
@@ -38,16 +40,27 @@ package body Stable_Sloc is
    with Pre => Entry_Maps.Has_Element (Cur);
    --  Create an Entry_View from Cur
 
+   function File_If_Sloc (F : Virtual_File; S : Sloc) return Virtual_File
+   is (if S /= No_Sloc then F else No_File);
+   --  Convenience wrapper to return No_File if S is No_Sloc, or F otherwise
+
    -----------------------
    -- Format_Diagnostic --
    -----------------------
 
-   function Format_Diagnostic (D : Load_Diagnostic) return String
-   is (D.File.Display_Full_Name
-       & ":"
-       & Image (D.Location)
-       & (if D.Location = No_Sloc then " " else ": ")
-       & (+D.Diagnostic));
+   function Format_Diagnostic (D : Load_Diagnostic) return String is
+      Res : Unbounded_String;
+   begin
+      if D.File /= No_File then
+         Res := +D.File.Display_Full_Name;
+         if D.Location /= No_Sloc then
+            Res := Res & ":" & Image (D.Location);
+         end if;
+         Res := Res & ": ";
+      end if;
+      Res := Res & D.Diagnostic;
+      return +Res;
+   end Format_Diagnostic;
 
    ------------
    -- Adjust --
@@ -105,7 +118,12 @@ package body Stable_Sloc is
             New_Diag : constant JSON_Value := Create_Object;
             Loc      : constant JSON_Value := Create_Object;
          begin
-            New_Diag.Set_Field ("file", Create (Diag.File.Display_Full_Name));
+            if Diag.File = No_File then
+               New_Diag.Set_Field ("file", "");
+            else
+               New_Diag.Set_Field
+                 ("file", Create (Diag.File.Display_Full_Name));
+            end if;
             Loc.Set_Field ("line", Diag.Location.Line);
             Loc.Set_Field ("column", Diag.Location.Column);
             New_Diag.Set_Field ("location", Loc);
@@ -189,14 +207,14 @@ package body Stable_Sloc is
    ------------------
 
    function Load_Entries
-     (Spec_File      : GNATCOLL.VFS.Virtual_File;
+     (Spec_File      : Virtual_File;
       DB             : in out Entry_DB;
       Ignore_Unknown : Boolean := True;
       Strict         : Boolean := False) return Load_Diagnostic_Arr
    is
       use Entry_Maps;
       Spec_Load_Res : constant TOML.Read_Result :=
-        TOML.File_IO.Load_File (GNATCOLL.VFS."+" (Spec_File.Full_Name));
+        TOML.File_IO.Load_File (+(Spec_File.Full_Name));
       Root          : TOML.TOML_Value;
       Diags         : Diag_Vector;
       Local_Entries : Entry_DB := Create_DB;
@@ -204,7 +222,7 @@ package body Stable_Sloc is
    begin
       if not Spec_Load_Res.Success then
          return
-           [(File       => Spec_File,
+           [(File       => File_If_Sloc (Spec_File, +Spec_Load_Res.Location),
              Location   => +Spec_Load_Res.Location,
              Diagnostic => Spec_Load_Res.Message)];
       end if;
@@ -290,7 +308,7 @@ package body Stable_Sloc is
                      Location   =>
                        (Entr.Value.Location.Line, Entr.Value.Location.Column),
                      Diagnostic =>
-                       +"Error while parsing entry """
+                       "Error while parsing entry """
                        & Entr.Key
                        & """: "
                        & "Could not compile file pattern. "
@@ -305,7 +323,7 @@ package body Stable_Sloc is
                           (Entr.Value.Location.Line,
                            Entr.Value.Location.Column),
                         Diagnostic =>
-                          +"Error while parsing entry """
+                          "Error while parsing entry """
                           & Entr.Key
                           & """: "
                           & Ada.Exceptions.Exception_Message (Exc)));
@@ -320,10 +338,10 @@ package body Stable_Sloc is
                begin
                   Diags.Append
                     (Load_Diagnostic'
-                       (File       => Spec_File,
+                       (File       => File_If_Sloc (Spec_File, Loc),
                         Location   => Loc,
                         Diagnostic =>
-                          +"Error while parsing entry """
+                          "Error while parsing entry """
                           & Entr.Key
                           & """: "
                           & Msg));
@@ -366,12 +384,10 @@ package body Stable_Sloc is
    -------------------
 
    function Match_Entries
-     (Files          : GNATCOLL.VFS.File_Array;
-      DB             : in out Entry_DB;
-      Purpose_Prefix : String := "") return Match_Result_Vec
+     (Files : File_Array; DB : in out Entry_DB; Purpose_Prefix : String := "")
+      return Match_Result_Vec
    is
       use Entry_Maps;
-      use GNATCOLL.VFS;
       Res : Match_Result_Vec;
       Cur : Cursor;
    begin
@@ -410,8 +426,7 @@ package body Stable_Sloc is
                if Relevant_Annotations.Length = 0 then
                   goto Continue;
                end if;
-               if not GNAT.Regexp.Match
-                        (GNATCOLL.VFS."+" (File.Full_Name), Entr.File_Regexp)
+               if not GNAT.Regexp.Match (+File.Full_Name, Entr.File_Regexp)
                then
                   goto Continue;
                end if;
@@ -480,7 +495,7 @@ package body Stable_Sloc is
       Identifier  : Unbounded_String;
       Annotation  : TOML.TOML_Value;
       Kind        : Unbounded_String;
-      File        : GNATCOLL.VFS.Virtual_File;
+      File        : Virtual_File;
       Span        : Sloc_Span;
       File_Prefix : Unbounded_String := Null_Unbounded_String;
       Replace     : Boolean := True) return Load_Diagnostic_Arr
@@ -504,7 +519,7 @@ package body Stable_Sloc is
       if not Replace and then Cur /= No_Element then
          return
            [Load_Diagnostic'
-              (File       => File,
+              (File       => No_File,
                Location   => No_Sloc,
                Diagnostic =>
                  "Identifier """
@@ -525,9 +540,9 @@ package body Stable_Sloc is
       when Unknown_Matcher_Error =>
          return
            [Load_Diagnostic'
-              (File       => File,
+              (File       => No_File,
                Location   => No_Sloc,
-               Diagnostic => +"No such matcher kind: " & Kind)];
+               Diagnostic => "No such matcher kind: " & Kind)];
       when Exc : Parse_Error =>
          declare
             Loc : Sloc;
@@ -536,10 +551,10 @@ package body Stable_Sloc is
          begin
             return
               [Load_Diagnostic'
-                 (File       => File,
+                 (File       => File_If_Sloc (File, Loc),
                   Location   => Loc,
                   Diagnostic =>
-                    +"Error while creating entry """
+                    "Error while creating entry """
                     & Identifier
                     & """: "
                     & Msg)];
@@ -553,7 +568,7 @@ package body Stable_Sloc is
    procedure Reset_Match_Count (DB : in out Entry_DB) is
    begin
       for Cur in DB.Map.Iterate loop
-         DB.Map.Reference (Cur).Last_File := GNATCOLL.VFS.No_File;
+         DB.Map.Reference (Cur).Last_File := No_File;
          DB.Map.Reference (Cur).Last_Range := No_Sloc_Span;
       end loop;
    end Reset_Match_Count;
@@ -594,19 +609,16 @@ package body Stable_Sloc is
    -------------------
 
    procedure Write_Entries
-     (DB     : Entry_DB;
-      File   : GNATCOLL.VFS.Virtual_File;
-      Origin : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File)
+     (DB : Entry_DB; File : Virtual_File; Origin : Virtual_File := No_File)
    is
       use Ada.Text_IO;
       use Entry_Maps;
       use TOML;
 
-      function Belongs_Here
-        (Entry_Origin : GNATCOLL.VFS.Virtual_File) return Boolean
-      is (GNATCOLL.VFS."=" (Origin, GNATCOLL.VFS.No_File)
-          or else GNATCOLL.VFS."=" (Entry_Origin, GNATCOLL.VFS.No_File)
-          or else GNATCOLL.VFS."=" (Entry_Origin, Origin));
+      function Belongs_Here (Entry_Origin : Virtual_File) return Boolean
+      is (Origin = No_File
+          or else Entry_Origin = No_File
+          or else Entry_Origin = Origin);
       --  Whether an entry loaded from Entry_Origin belongs in the file being
       --  written. One loaded from no file belongs in whichever file that is.
 
@@ -614,7 +626,7 @@ package body Stable_Sloc is
       Cur    : Cursor := DB.Map.First;
       File_T : File_Type;
    begin
-      Create (File_T, Out_File, Name => GNATCOLL.VFS."+" (File.Full_Name));
+      Create (File_T, Out_File, Name => +File.Full_Name);
       while Cur /= No_Element loop
          declare
             Entr        : constant Constant_Reference_Type :=
@@ -772,7 +784,6 @@ package body Stable_Sloc is
    ---------
 
    function "<" (L, R : Match_Result) return Boolean is
-      use GNATCOLL.VFS;
    begin
       if L.File /= R.File then
          return L.File.Display_Full_Name < R.File.Display_Full_Name;

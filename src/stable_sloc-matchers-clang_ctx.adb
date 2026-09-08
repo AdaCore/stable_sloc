@@ -398,12 +398,14 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
 
       Res : Clang_Ctx_Matcher;
 
+      Filename : constant String := File.Display_Full_Name;
+
    begin
       --  Diagnostics not emitted here, might need to be revisited if we find
       --  issues with this.
 
       if TU = null then
-         raise Parse_Error with "could not load Clang AST";
+         raise Parse_Error with "could not load Clang AST for " & Filename;
       end if;
 
       --  Lookup the start and end cursors
@@ -411,24 +413,40 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
       Start_Loc := Get_CX_Location (TU, Span.Start_Sloc);
       if Equal_Locations (Start_Loc, Get_Null_Location) /= 0 then
          raise Parse_Error
-           with "Could not look up location " & Image (Span.Start_Sloc);
+           with
+             "Could not look up location "
+             & Image (Span.Start_Sloc)
+             & " in "
+             & Filename;
       end if;
       Start_Sloc_Cur := Get_Cursor (TU, Start_Loc);
       if Cursor_Is_Null (Start_Sloc_Cur) then
          raise Parse_Error
-           with "Could not look up location " & Image (Span.Start_Sloc);
+           with
+             "Could not look up location "
+             & Image (Span.Start_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       End_Loc := Get_CX_Location (TU, Span.End_Sloc);
 
       if Equal_Locations (End_Loc, Get_Null_Location) /= 0 then
          raise Parse_Error
-           with "Could not look up location " & Image (Span.End_Sloc);
+           with
+             "Could not look up location "
+             & Image (Span.End_Sloc)
+             & " in "
+             & Filename;
       end if;
       End_Sloc_Cur := Get_Cursor (TU, End_Loc);
       if Cursor_Is_Null (End_Sloc_Cur) then
          raise Parse_Error
-           with "Could not look up location " & Image (Span.End_Sloc);
+           with
+             "Could not look up location "
+             & Image (Span.End_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       --  Find the inner most declaration for the source location of the range
@@ -446,7 +464,9 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
          raise Parse_Error
            with
              "Did not find enclosing declaration for "
-             & Image (Span.Start_Sloc);
+             & Image (Span.Start_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       Me.Trace ("Initial End location cur :" & Cursor_Image (End_Sloc_Cur));
@@ -460,7 +480,10 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
       if Cursor_Is_Null (End_Sloc_Cur) then
          raise Parse_Error
            with
-             "Did not find enclosing declaration for " & Image (Span.End_Sloc);
+             "Did not find enclosing declaration for "
+             & Image (Span.End_Sloc)
+             & " in "
+             & Filename;
       end if;
 
       --  Locate the common enclosing declaration
@@ -478,7 +501,9 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
          raise Parse_Error
            with
              "Could not locate common enclosing declaration for "
-             & Image (Span);
+             & Image (Span)
+             & " in "
+             & Filename;
       end if;
 
       --  Build the matcher
@@ -487,7 +512,9 @@ package body Stable_Sloc.Matchers.Clang_Ctx is
       if Decl_Span = No_Sloc_Span or else Decl_Span.Start_Sloc = No_Sloc then
          raise Parse_Error
            with
-             "Could not get source location for common enclosing declaration";
+             "Could not get source location for common enclosing declaration"
+             & " in "
+             & Filename;
       end if;
 
       Res.Relative_Span := Span - Decl_Span.Start_Sloc;
