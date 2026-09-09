@@ -230,14 +230,17 @@ package Stable_Sloc is
       Kind        : Unbounded_String;
       File        : GNATCOLL.VFS.Virtual_File;
       Span        : Sloc_Span;
-      File_Prefix : Unbounded_String := Null_Unbounded_String;
+      File_Prefix : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File;
       Replace     : Boolean := True) return Load_Diagnostic_Arr;
    --  Add or update the entry designated by Identifier for the given Purpose,
    --  and Annotation. The new entry shall use the specified matcher Kind, and
    --  return a positive match on File for the given location Span.
    --
    --  If File_Prefix is not null, it is removed from the filename when
-   --  creating the file matcher to be used in the entry.
+   --  creating the file matcher to be used in the entry. Either may be
+   --  relative: the two are normalized before being compared, so the prefix
+   --  applies whenever it names a directory containing File, however each is
+   --  spelled. When no prefix applies the name is kept as given.
    --
    --  If Replace is False and there already is an entry with the same
    --  Identifier in DB, then the new entry is not added to DB.

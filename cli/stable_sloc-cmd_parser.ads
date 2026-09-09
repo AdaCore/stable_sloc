@@ -57,9 +57,9 @@ package Stable_Sloc.Cmd_Parser is
         Help        =>
           "Prefix to be removed from the filenames when creating"
           & " entries' file matchers",
-        Arg_Type    => US,
-        Convert     => GNATCOLL.Opt_Parse.Convert,
-        Default_Val => Unbounded_Strings.Null_Unbounded_String);
+        Arg_Type    => GNATCOLL.VFS.Virtual_File,
+        Convert     => Str_To_File,
+        Default_Val => GNATCOLL.VFS.No_File);
 
    package Output is new
      Parse_Option

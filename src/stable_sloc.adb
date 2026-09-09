@@ -497,24 +497,73 @@ package body Stable_Sloc is
       Kind        : Unbounded_String;
       File        : Virtual_File;
       Span        : Sloc_Span;
-      File_Prefix : Unbounded_String := Null_Unbounded_String;
+      File_Prefix : GNATCOLL.VFS.Virtual_File := GNATCOLL.VFS.No_File;
       Replace     : Boolean := True) return Load_Diagnostic_Arr
    is
       use Entry_Maps;
-      Cur        : constant Cursor := DB.Map.Find (Identifier);
-      New_Entry  : SS_Entry;
-      Filename   : constant Unbounded_String :=
-        +(GNATCOLL.VFS."+" (File.Full_Name));
+
+      subtype VF is GNATCOLL.VFS.Virtual_File;
+
+      function Resolved (F : VF) return VF;
+      --  F as an absolute name with its links resolved, which is the only
+      --  form the two operations below agree on
+
+      --------------
+      -- Resolved --
+      --------------
+
+      function Resolved (F : VF) return VF is
+      begin
+         if GNATCOLL.VFS."=" (F, GNATCOLL.VFS.No_File) then
+            return GNATCOLL.VFS.No_File;
+         end if;
+
+         --  Create is what makes a relative name absolute, against the
+         --  current directory. Normalizing through Full_Name would not:
+         --  that only rewrites the name it is given, so a relative one
+         --  stays relative and compares against nothing.
+
+         declare
+            Abs_F : constant VF :=
+              GNATCOLL.VFS.Create
+                (GNATCOLL.VFS.Full_Name (F).all, Normalize => True);
+         begin
+            return
+              GNATCOLL.VFS.Create
+                (GNATCOLL.VFS.Full_Name
+                   (Abs_F, Normalize => True, Resolve_Links => True).all);
+         end;
+      end Resolved;
+
+      Cur : constant Cursor := DB.Map.Find (Identifier);
+
+      New_Entry : SS_Entry;
+
+      Res_Prefix : constant VF := Resolved (File_Prefix);
+      Res_File   : constant VF := Resolved (File);
+
+      Strip : constant Boolean :=
+        GNATCOLL.VFS.Is_Parent (Res_Prefix, Res_File)
+        and then GNATCOLL.VFS.Is_Directory (Res_Prefix);
+      --  Whether the prefix applies. Both conditions are needed for the two
+      --  operations below to agree: Is_Parent normalizes and resolves links
+      --  of its own accord, while Relative_Path takes names as they come and
+      --  gives up unless handed a directory. Letting them disagree turns a
+      --  prefix that looked like it applied into an absolute pattern.
+
       Actual_Pat : constant Unbounded_String :=
         Escape
-          (if File_Prefix /= Null_Unbounded_String
-             and then Is_Prefix (File_Prefix, Filename)
-           then
-             Unbounded_Slice
-               (Source => Filename,
-                Low    => Length (File_Prefix) + 1,
-                High   => Length (Filename))
-           else Filename);
+          (+(GNATCOLL.VFS."+"
+               (if Strip
+                then GNATCOLL.VFS.Relative_Path (Res_File, Res_Prefix)
+
+                --  With no prefix to subtract, the name stays as the caller
+                --  wrote it. Resolving it here would turn every prefixless
+                --  pattern absolute, and those travel badly: they match
+                --  nothing on another machine, nor on a host that spells the
+                --  same name differently.
+
+                else File.Full_Name)));
    begin
       if not Replace and then Cur /= No_Element then
          return
