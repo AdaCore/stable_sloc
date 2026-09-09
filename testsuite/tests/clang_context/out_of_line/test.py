@@ -38,7 +38,7 @@ cpp_matches = match_annotations(
     files=["bar.cpp"],
 )
 check_single_match(
-    cpp_matches, LocationSpan(Location(37, 3), Location(38, 15))
+    cpp_matches, "bar.cpp", LocationSpan(Location(37, 3), Location(38, 15))
 )
 
 # Same, but check that we relocate correctly if the enclosing decl hasn't
@@ -48,7 +48,9 @@ ok_cpp_matches = match_annotations(
     files=["m_ok_bar.cpp"],
 )
 check_single_match(
-    ok_cpp_matches, LocationSpan(Location(11, 3), Location(12, 15))
+    ok_cpp_matches,
+    "m_ok_bar.cpp",
+    LocationSpan(Location(11, 3), Location(12, 15)),
 )
 
 # Check Stable_Sloc correctly reject the annotation if we do modify the

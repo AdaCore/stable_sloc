@@ -5,6 +5,7 @@
 --
 
 with Ada.Exceptions;
+with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with GNATCOLL.VFS; use GNATCOLL.VFS;
@@ -27,10 +28,11 @@ package body Stable_Sloc is
    --  Check wether Prefix is a prefix of Text. An empty string prefix is a
    --  prefix of anything.
 
-   function Pad_And_Compile
+   function Pad_Unixify_And_Compile
      (Pattern : Unbounded_String) return GNAT.Regexp.Regexp;
    --  Append '*' at the beginning and the end of Pattern if there isn't
-   --  already a wildcard, and compile that string as a globbing pattern.
+   --  already a wildcard, convert backslashes into forward slashes and compile
+   --  that string as a globbing pattern.
 
    function Escape (Filename : Unbounded_String) return Unbounded_String;
    --  Double any '\' character in Filename to ensure it can be textually
@@ -294,7 +296,7 @@ package body Stable_Sloc is
                then File_Matcher.As_Unbounded_String
                else Null_Unbounded_String);
             Parsed_Entry.File_Regexp :=
-              Pad_And_Compile (Parsed_Entry.File_Pattern);
+              Pad_Unixify_And_Compile (Parsed_Entry.File_Pattern);
             Parsed_Entry.At_Most_Once :=
               Get_Or_Default (Spec, "at_most_once", False);
             Parsed_Entry.Origin := Spec_File;
@@ -399,6 +401,7 @@ package body Stable_Sloc is
       --  Stable_Sloc.Matchers interface.
 
       for File of Files loop
+         File.Normalize_Path;
          Cur := DB.Map.First;
          while Cur /= No_Element loop
             declare
@@ -407,6 +410,15 @@ package body Stable_Sloc is
                Local_Res            : Sloc_Match_Vec;
                Relevant_Annotations : constant TOML.TOML_Value :=
                  TOML.Create_Array;
+               Match_Filename       : constant Filesystem_String :=
+                 Virtual_File'
+                     (if File.Is_Absolute_Path
+                      then File
+                      else Get_Current_Dir / File)
+                   .Unix_Style_Full_Name (Normalize => True);
+               --  Interpret relative paths to the current working dir, and
+               --  convert them to unix as the regular expressions are
+               --  normalized as well.
             begin
                for J in 1 .. Entr.Annotations.Length loop
                   declare
@@ -426,7 +438,8 @@ package body Stable_Sloc is
                if Relevant_Annotations.Length = 0 then
                   goto Continue;
                end if;
-               if not GNAT.Regexp.Match (+File.Full_Name, Entr.File_Regexp)
+
+               if not GNAT.Regexp.Match (+Match_Filename, Entr.File_Regexp)
                then
                   goto Continue;
                end if;
@@ -581,7 +594,8 @@ package body Stable_Sloc is
       New_Entry.Annotations.Append (Annotation);
       New_Entry.Kind := Kind;
       New_Entry.File_Pattern := Actual_Pat;
-      New_Entry.File_Regexp := Pad_And_Compile (New_Entry.File_Pattern);
+      New_Entry.File_Regexp :=
+        Pad_Unixify_And_Compile (New_Entry.File_Pattern);
       New_Entry.At_Most_Once := True;
       DB.Map.Include (Identifier, New_Entry);
       return [];
@@ -862,26 +876,50 @@ package body Stable_Sloc is
       return Is_Prefix (+Prefix, Text);
    end Is_Prefix;
 
-   ---------------------
-   -- Pad_And_Compile --
-   ---------------------
+   -----------------------------
+   -- Pad_Unixify_And_Compile --
+   -----------------------------
 
-   function Pad_And_Compile
+   function Pad_Unixify_And_Compile
      (Pattern : Unbounded_String) return GNAT.Regexp.Regexp
    is
-      File_Pat : Unbounded_String := Pattern;
+      Cur       : Positive := 1;
+      Unixified : Unbounded_String;
    begin
+      --  Replace escaped backslashes by a forward slash. We'll be doing the
+      --  same to filenames when matching so even if a unix filename contains a
+      --  backslash that we transform, it will still match.
+
+      loop
+         exit when Cur > Length (Pattern);
+         declare
+            Next : constant Natural := Index (Pattern, "\", From => Cur);
+         begin
+            exit when Next = 0;
+            if Next < Length (Pattern)
+              and then Element (Pattern, Next + 1) = '\'
+            then
+               Append (Unixified, Slice (Pattern, Cur, Next - 1));
+               Append (Unixified, '/');
+            end if;
+            Cur := Next + 2;
+         end;
+      end loop;
+      if Cur <= Length (Pattern) then
+         Append (Unixified, Slice (Pattern, Cur, Length (Pattern)));
+      end if;
+
       --  Pad the pattern with a * on each side as a GNAT.Regexp needs to
       --  match the whole string.
 
-      if Length (File_Pat) = 0 or else Element (File_Pat, 1) /= '*' then
-         File_Pat := "*" & File_Pat;
+      if Length (Unixified) = 0 or else Element (Unixified, 1) /= '*' then
+         Unixified := "*" & Unixified;
       end if;
-      if Element (File_Pat, Length (File_Pat)) /= '*' then
-         Append (File_Pat, '*');
+      if Element (Unixified, Length (Unixified)) /= '*' then
+         Append (Unixified, '*');
       end if;
-      return GNAT.Regexp.Compile (Pattern => +File_Pat, Glob => True);
-   end Pad_And_Compile;
+      return GNAT.Regexp.Compile (Pattern => +Unixified, Glob => True);
+   end Pad_Unixify_And_Compile;
 
    ------------
    -- Escape --
